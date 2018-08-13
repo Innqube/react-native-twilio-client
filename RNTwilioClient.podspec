@@ -3,7 +3,7 @@ require 'json'
 spec = JSON.load(File.read(File.expand_path("./package.json", __dir__)))
 
 Pod::Spec.new do |s|
-  s.name         = "RNTwilioVoice"
+  s.name         = "RNTwilioClient"
   s.version      = spec['version']
   s.summary      = spec['description']
   s.authors      = spec['author']['name']
@@ -11,10 +11,10 @@ Pod::Spec.new do |s|
   s.license      = spec['license']
   s.platform     = :ios, "8.1"
 
-  s.source_files = [ "ios/RNTwilioVoice/*.h", "ios/RNTwilioVoice/*.m"]
-  s.source = {:path => "./RNTwilioVoice"}
+  s.source_files = [ "ios/RNTwilioClient/*.h", "ios/RNTwilioClient/*.m"]
+  s.source = {:path => "./RNTwilioClient"}
 
   s.dependency 'React'
-  s.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '${PODS_ROOT}/TwilioVoice' }
-  s.frameworks   = 'TwilioVoice'
+  s.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '${PODS_ROOT}/TwilioClient' }
+  s.frameworks   = 'TwilioClient'
 end
