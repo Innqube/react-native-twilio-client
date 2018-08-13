@@ -1,41 +1,41 @@
 {
   "_args": [
     [
-      "react-native-twilio-programmable-voice@3.20.1",
+      "react-native-twilio-client@1.0.0",
       "/Users/quique/dev/interpreter-intelligence/mobile-interpreter-direct"
     ]
   ],
-  "_from": "react-native-twilio-programmable-voice@3.20.1",
-  "_id": "react-native-twilio-programmable-voice@3.20.1",
+  "_from": "react-native-twilio-client@1.0.0",
+  "_id": "react-native-twilio-client@1.0.0",
   "_inBundle": false,
   "_integrity": "sha512-Qpx5qGumuZ+x/agfBxa4Fpf/17e3g/zvsvxzlIxQXE+NKqRvQz2cNwd85grvGNfShCLsyTBvrCwfDGzE8Voh0A==",
-  "_location": "/react-native-twilio-programmable-voice",
+  "_location": "/react-native-twilio-client",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "react-native-twilio-programmable-voice@3.20.1",
-    "name": "react-native-twilio-programmable-voice",
-    "escapedName": "react-native-twilio-programmable-voice",
-    "rawSpec": "3.20.1",
+    "raw": "react-native-twilio-client@1.0.0",
+    "name": "react-native-twilio-client",
+    "escapedName": "react-native-twilio-client",
+    "rawSpec": "1.0.0",
     "saveSpec": null,
-    "fetchSpec": "3.20.1"
+    "fetchSpec": "1.0.0"
   },
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/react-native-twilio-programmable-voice/-/react-native-twilio-programmable-voice-3.20.1.tgz",
-  "_spec": "3.20.1",
+  "_resolved": "https://registry.npmjs.org/react-native-twilio-client/-/react-native-twilio-client-1.0.0.tgz",
+  "_spec": "1.0.0",
   "_where": "/Users/quique/dev/interpreter-intelligence/mobile-interpreter-direct",
   "author": {
     "name": "Fabrizio Moscon"
   },
   "bugs": {
-    "url": "https://github.com/hoxfon/react-native-twilio-programmable-voice/issues"
+    "url": "https://github.com/innqube/react-native-twilio-client/issues"
   },
   "description": "React Native wrapper for Twilio Programmable Voice SDK",
   "devDependencies": {},
-  "homepage": "https://github.com/hoxfon/react-native-twilio-programmable-voice",
+  "homepage": "https://github.com/innqube/react-native-twilio-client",
   "keywords": [
     "twilio",
     "react-native",
@@ -51,10 +51,10 @@
   ],
   "license": "MIT",
   "main": "index.js",
-  "name": "react-native-twilio-programmable-voice",
+  "name": "react-native-twilio-client",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/hoxfon/react-native-twilio-programmable-voice.git"
+    "url": "git+ssh://git@github.com/innqube/react-native-twilio-client.git"
   },
   "rnpm": {
     "android": {
@@ -64,5 +64,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "3.20.1"
+  "version": "1.0.0"
 }

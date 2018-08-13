@@ -15,6 +15,6 @@ Pod::Spec.new do |s|
   s.source = {:path => "./RNTwilioClient"}
 
   s.dependency 'React'
-  s.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '${PODS_ROOT}/TwilioClient' }
-  s.frameworks   = 'TwilioClient'
+  s.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '${PODS_ROOT}/TwilioVoice' }
+  s.frameworks   = 'TwilioVoice'
 end

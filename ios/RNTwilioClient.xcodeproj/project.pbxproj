@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		016DD9B51ECCA23A00315CD4 /* TwilioVoice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 016DD9B41ECCA23A00315CD4 /* TwilioVoice.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		38F71DFA1E9C333F0067E86F /* RNTwilioClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 38F71DF91E9C333F0067E86F /* RNTwilioClient.m */; };
 		38F71DFB1E9C333F0067E86F /* RNTwilioClient.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 38F71DF81E9C333F0067E86F /* RNTwilioClient.h */; };
 		F35FCCCA2110E0C200F77262 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F35FCCC92110E0C200F77262 /* PushKit.framework */; };
 		F35FCCCC2110E0EF00F77262 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F35FCCCB2110E0EF00F77262 /* Intents.framework */; };
+		F3885BC82121F18A00E097C4 /* TwilioVoice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3885BC72121F18900E097C4 /* TwilioVoice.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,13 +28,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		016DD9B41ECCA23A00315CD4 /* TwilioVoice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioVoice.framework; path = "../../../Downloads/twilio-voice-ios/TwilioVoice.framework"; sourceTree = "<group>"; };
 		38F71DF51E9C333F0067E86F /* libRNTwilioClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNTwilioClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38F71DF81E9C333F0067E86F /* RNTwilioClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNTwilioClient.h; sourceTree = "<group>"; };
 		38F71DF91E9C333F0067E86F /* RNTwilioClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTwilioClient.m; sourceTree = "<group>"; };
 		F35FCCC92110E0C200F77262 /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		F35FCCCB2110E0EF00F77262 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
-		F35FCCCD2110E46F00F77262 /* libRNVoipPushNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNVoipPushNotification.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3885BC72121F18900E097C4 /* TwilioVoice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioVoice.framework; path = ../../../ios/Pods/TwilioVoice/TwilioVoice.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,7 +43,7 @@
 			files = (
 				F35FCCCC2110E0EF00F77262 /* Intents.framework in Frameworks */,
 				F35FCCCA2110E0C200F77262 /* PushKit.framework in Frameworks */,
-				016DD9B51ECCA23A00315CD4 /* TwilioVoice.framework in Frameworks */,
+				F3885BC82121F18A00E097C4 /* TwilioVoice.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,10 +53,9 @@
 		016DD9801ECC9B4B00315CD4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3885BC72121F18900E097C4 /* TwilioVoice.framework */,
 				F35FCCCB2110E0EF00F77262 /* Intents.framework */,
 				F35FCCC92110E0C200F77262 /* PushKit.framework */,
-				016DD9B41ECCA23A00315CD4 /* TwilioVoice.framework */,
-				F35FCCCD2110E46F00F77262 /* libRNVoipPushNotification.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -114,7 +112,7 @@
 		38F71DED1E9C333E0067E86F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Erva;
 				TargetAttributes = {
 					38F71DF41E9C333F0067E86F = {
@@ -163,15 +161,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -180,7 +186,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = "${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -219,15 +225,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -236,7 +250,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = "${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -267,11 +281,10 @@
 					"$(SRCROOT)/../../../ios/Pods/TwilioVoice",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../React",
+					"$(SRCROOT)/../../react-native/React",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
-					"${SRCROOT}/../../react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -288,11 +301,10 @@
 					"$(SRCROOT)/../../../ios/Pods/TwilioVoice",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../React",
+					"$(SRCROOT)/../../react-native/React",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
-					"${SRCROOT}/../../react-native-voip-push-notification/ios/RNVoipPushNotification",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

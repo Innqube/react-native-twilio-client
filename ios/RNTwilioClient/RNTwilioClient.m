@@ -4,10 +4,8 @@
 
 #import "RNTwilioClient.h"
 #import <React/RCTLog.h>
-#import <React/RCTPushNotificationManager.h>
 #import <PushKit/PushKit.h>
 #import <CallKit/CallKit.h>
-#import "RNVoipPushNotificationManager.h"
 
 
 @import AVFoundation;
@@ -291,7 +289,7 @@ RCT_EXPORT_METHOD(displayIncomingCall:
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
     NSLog(@"[RNTwilioClient][didUpdatePushCredentials]");
-    [RNVoipPushNotificationManager didUpdatePushCredentials:credentials forType:(NSString *) type];
+//    [RNVoipPushNotificationManager didUpdatePushCredentials:credentials forType:(NSString *) type];
 
     if ([type isEqualToString:PKPushTypeVoIP]) {
         self.deviceTokenString = [credentials.token description];
@@ -342,7 +340,7 @@ RCT_EXPORT_METHOD(displayIncomingCall:
 
     if ([type isEqualToString:PKPushTypeVoIP] && [mode isEqualToString:@"video"]) {
         NSLog(@"VOIP_VIDEO_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
-        [RNVoipPushNotificationManager didReceiveIncomingPushWithPayload:payload forType:type];
+
     } else {
         NSLog(@"VOIP_VOICE_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
         [TwilioVoice handleNotification:payload.dictionaryPayload
