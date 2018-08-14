@@ -23,6 +23,8 @@ const _eventHandlers = {
     performEndVideoCall: new Map(),
     requestTransactionError: new Map(),
     callRejected: new Map(),
+    voipRemoteNotificationsRegistered: new Map(),
+    voipRemoteNotificationReceived: new Map()
 }
 
 const Twilio = {
