@@ -53,6 +53,7 @@ RCT_EXPORT_MODULE()
              @"connectionDidDisconnect",
              @"callRejected",
              @"deviceReady",
+             @"deviceNotReady",
              @"performAnswerVoiceCall",
              @"performAnswerVideoCall",
              @"performEndVideoCall",
