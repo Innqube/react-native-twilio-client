@@ -106,9 +106,32 @@ TwilioVoice.addEventListener('connectionDidDisconnect', (data) => {
 
 TwilioVoice.addEventListener('callRejected', (value) => {});
 
-TwilioVoice.connect({To: '+549111222333'})
+TwilioVoice.addEventListener('voipRemoteNotificationsRegistered', (deviceToken) => {
+    // Use this device token for TwilioVideo identity register
+});
 
-TwilioVoice.disconnect()
+TwilioVoice.addEventListener('voipRemoteNotificationReceived', (notification) => {
+    // Show incoming video call
+    // TwilioClient.displayIncomingCall(
+    //          notification.uuid, 
+    //          notification.handle, 
+    //          notification.handleType, 
+    //          notification.hasVideo, 
+    //          notification.localizedCallerName
+    // );
+});
+
+TwilioVoice.addEventListener('requestTransactionError', (error) => {});
+
+TwilioVoice.addEventListener('performAnswerVoiceCall', (callUuid) => {});
+
+TwilioVoice.addEventListener('performAnswerVideoCall', (callUuid) => {});
+
+TwilioVoice.addEventListener('performEndVideoCall', (callUuid) => {});
+
+TwilioVoice.connect({To: '+549111222333'});
+
+TwilioVoice.disconnect();
 
 TwilioVoice.setMuted(mutedValue)
 
@@ -117,7 +140,28 @@ TwilioVoice.sendDigits(digits)
 TwilioVoice.getActiveCall()
     .then(incomingCall => {
         // handle incoming call
-    })
+    });
+
+// Retrieve TwilioVoice notification payload
+TwilioVoice.getDictionaryPayload()
+    .then(
+        (dictionaryPayload) => {
+            // {
+            //      twi_to: string,
+            //      twi_from: string,
+            //      twi_message_type: string,
+            //      twi_message_id: string,
+            //      twi_call_sid: string,
+            //      twi_account_sid: string,
+            //      twi_bridge_token: string,
+            //      twi_bridge_token: string,
+            // }
+        }
+    );
+
+// Display incoming call (IOS Callkit)
+TwilioVoice.displayIncomingCall(uuid, handle, handleType = 'number', hasVideo = false, localizedCallername);
+
 ```
 
 ## Twilio Voice SDK reference
