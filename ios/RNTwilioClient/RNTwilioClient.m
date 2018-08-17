@@ -71,22 +71,22 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_REMAP_METHOD(getDictionaryPayload,
-            promiseResolver:
-            (RCTPromiseResolveBlock) resolve
-            promiseRejecter:
-            (RCTPromiseRejectBlock) reject) {
+        promiseResolver:
+(RCTPromiseResolveBlock) resolve
+        promiseRejecter:
+(RCTPromiseRejectBlock) reject) {
     resolve(self.dictionaryPayload);
 }
 
 RCT_EXPORT_METHOD(initWithAccessToken:
-    (NSString *) token) {
+(NSString *) token) {
     _token = token;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppTerminateNotification) name:UIApplicationWillTerminateNotification object:nil];
     [self initPushRegistry];
 }
 
 RCT_EXPORT_METHOD(configureCallKit:
-    (NSDictionary *) options) {
+(NSDictionary *) options) {
     NSLog(@"[RNTwilioClient][setup] options = %@", options);
     self.callKitCallController = [[CXCallController alloc] init];
     _settings = [[NSMutableDictionary alloc] initWithDictionary:options];
@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(configureCallKit:
 }
 
 RCT_EXPORT_METHOD(connect:
-    (NSDictionary *) params) {
+(NSDictionary *) params) {
 
     NSLog(@"[RNTwilioClient][connect] Calling phone number %@", [params valueForKey:@"To"]);
 
@@ -113,26 +113,26 @@ RCT_EXPORT_METHOD(connect:
 }
 
 RCT_EXPORT_METHOD(disconnect:
-    (NSString *) uuidStr) {
+(NSString *) uuidStr) {
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidStr];
     NSLog(@"[RNTwilioClient][disconnect] Disconnecting call");
     [self performEndCallActionWithUUID:(uuid != nil ? uuid : self.call.uuid)];
 }
 
 RCT_EXPORT_METHOD(setMuted:
-    (BOOL *) muted) {
+(BOOL *) muted) {
     NSLog(@"[RNTwilioVoice][setMuted]");
     self.call.muted = (BOOL) muted;
 }
 
 RCT_EXPORT_METHOD(setSpeakerPhone:
-    (BOOL *) speaker) {
+(BOOL *) speaker) {
     NSLog(@"[RNTwilioClient][setSpeakerPhone]");
     [self toggleAudioRoute:speaker];
 }
 
 RCT_EXPORT_METHOD(sendDigits:
-    (NSString *) digits) {
+(NSString *) digits) {
     if (self.call && self.call.state == TVOCallStateConnected) {
         NSLog(@"[RNTwilioClient][sendDigits] %@", digits);
         [self.call sendDigits:digits];
@@ -140,27 +140,27 @@ RCT_EXPORT_METHOD(sendDigits:
 }
 
 RCT_EXPORT_METHOD(unregister) {
-    NSLog(@"[RNTwilioClient][unregister]");
-    NSString *accessToken = [self fetchAccessToken];
+        NSLog(@"[RNTwilioClient][unregister]");
+        NSString *accessToken = [self fetchAccessToken];
 
-    [TwilioVoice unregisterWithAccessToken:accessToken
-                               deviceToken:self.deviceTokenString
-                                completion:^(NSError *_Nullable error) {
-                                    if (error) {
-                                        NSLog(@"An error occurred while unregistering: %@", [error localizedDescription]);
-                                    } else {
-                                        NSLog(@"Successfully unregistered for VoIP push notifications.");
-                                    }
-                                }];
+        [TwilioVoice unregisterWithAccessToken:accessToken
+        deviceToken:self.deviceTokenString
+        completion:^(NSError *_Nullable error) {
+            if (error) {
+                NSLog(@"An error occurred while unregistering: %@", [error localizedDescription]);
+            } else {
+                NSLog(@"Successfully unregistered for VoIP push notifications.");
+            }
+        }];
 
-    self.deviceTokenString = nil;
+        self.deviceTokenString = nil;
 }
 
 RCT_REMAP_METHOD(getActiveCall,
-            resolver:
-            (RCTPromiseResolveBlock) resolve
-            rejecter:
-            (RCTPromiseRejectBlock) reject) {
+        resolver:
+(RCTPromiseResolveBlock) resolve
+        rejecter:
+(RCTPromiseRejectBlock) reject) {
     NSLog(@"[RNTwilioClient][getActiveCall]");
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     if (self.callInvite) {
@@ -205,15 +205,15 @@ RCT_REMAP_METHOD(getActiveCall,
 }
 
 RCT_EXPORT_METHOD(displayIncomingCall:
-    (NSString *) uuidString
-            handle:
-            (NSString *) handle
-            handleType:
-            (NSString *) handleType
-            hasVideo:
-            (BOOL) hasVideo
-            localizedCallerName:
-            (NSString *_Nullable) localizedCallerName) {
+(NSString *) uuidString
+        handle:
+(NSString *) handle
+        handleType:
+(NSString *) handleType
+        hasVideo:
+(BOOL) hasVideo
+        localizedCallerName:
+(NSString *_Nullable) localizedCallerName) {
     NSLog(@"[RNTwilioClient][displayIncomingCall] uuidString = %@", uuidString);
     int _handleType = [self getHandleType:handleType];
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
@@ -281,15 +281,15 @@ RCT_EXPORT_METHOD(displayIncomingCall:
 #pragma mark - PKPushRegistryDelegate
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
-    NSLog(@"[RNTwilioClient][didUpdatePushCredentials]");
+    self.deviceTokenString = [credentials.token description];
+    NSLog(@"[RNTwilioClient][didUpdatePushCredentials][DeviceToken: %@]", self.deviceTokenString);
 
     if ([type isEqualToString:PKPushTypeVoIP]) {
 
         // Twilio Video registration event
-        [self sendEventWithName:@"voipRemoteNotificationsRegistered" body:@{@"deviceToken": [credentials.token description]}];
+        [self sendEventWithName:@"voipRemoteNotificationsRegistered" body:self.deviceTokenString];
 
         // Twilio Voice registration
-        self.deviceTokenString = [credentials.token description];
         NSString *accessToken = [self fetchAccessToken];
 
         [TwilioVoice registerWithAccessToken:accessToken
