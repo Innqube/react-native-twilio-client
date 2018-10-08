@@ -22,7 +22,7 @@
 
 # Twilio Programmable Voice
 -keep class com.twilio.voice.** { *; }
--keep class com.hoxfon.** { *; }
+-keep class com.ngs.** { *; }
 
 -assumenosideeffects class android.util.Log {
     public static *** d(...);

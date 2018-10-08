@@ -1,4 +1,4 @@
-package com.hoxfon.react.RNTwilioVoice;
+package com.ngs.react.RNTwilioClient;
 
 import android.content.Context;
 import android.media.Ringtone;
@@ -9,7 +9,7 @@ public class SoundPoolManager {
 
     private boolean playing = false;
     private static SoundPoolManager instance;
-    private Ringtone ringtone = null;
+    private Ringtone ringtone;
 
     private SoundPoolManager(Context context) {
         Uri ringtoneSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);

@@ -1,4 +1,4 @@
-package com.hoxfon.react.RNTwilioVoice;
+package com.ngs.react.RNTwilioClient;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -10,14 +10,14 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TwilioVoicePackage implements ReactPackage {
+public class TwilioClientPackage implements ReactPackage {
 
     private boolean mShouldAskForPermission;
-    public TwilioVoicePackage() {
+    public TwilioClientPackage() {
         mShouldAskForPermission = true;
     }
 
-    public TwilioVoicePackage(boolean shouldAskForPermissions) {
+    public TwilioClientPackage(boolean shouldAskForPermissions) {
         mShouldAskForPermission = shouldAskForPermissions;
     }
     // Deprecated in RN 0.47.0
@@ -33,7 +33,7 @@ public class TwilioVoicePackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new TwilioVoiceModule(reactContext, mShouldAskForPermission));
+        modules.add(new TwilioClientModule(reactContext, mShouldAskForPermission));
         return modules;
     }
 }

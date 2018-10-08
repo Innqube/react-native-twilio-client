@@ -1,4 +1,4 @@
-package com.hoxfon.react.RNTwilioVoice;
+package com.ngs.react.RNTwilioClient;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -16,8 +16,8 @@ import com.facebook.react.bridge.WritableMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import static com.hoxfon.react.RNTwilioVoice.EventManager.EVENT_PROXIMITY;
-import static com.hoxfon.react.RNTwilioVoice.TwilioVoiceModule.TAG;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_PROXIMITY;
+import static com.ngs.react.RNTwilioClient.TwilioClientModule.TAG;
 
 public class ProximityManager {
 
@@ -146,10 +146,6 @@ public class ProximityManager {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "register proximity listener");
             }
-            // SensorManager.SENSOR_DELAY_FASTEST(0 ms),
-            // SensorManager.SENSOR_DELAY_GAME(20 ms),
-            // SensorManager.SENSOR_DELAY_UI(60 ms),
-            // SensorManager.SENSOR_DELAY_NORMAL(200 ms)
             sensorManager.registerListener(
                 proximityListener,
                 proximitySensor,
