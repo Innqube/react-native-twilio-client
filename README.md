@@ -142,23 +142,6 @@ TwilioVoice.getActiveCall()
         // handle incoming call
     });
 
-// Retrieve TwilioVoice notification payload
-TwilioVoice.getDictionaryPayload()
-    .then(
-        (dictionaryPayload) => {
-            // {
-            //      twi_to: string,
-            //      twi_from: string,
-            //      twi_message_type: string,
-            //      twi_message_id: string,
-            //      twi_call_sid: string,
-            //      twi_account_sid: string,
-            //      twi_bridge_token: string,
-            //      twi_bridge_token: string,
-            // }
-        }
-    );
-
 // Display incoming call (IOS Callkit)
 TwilioVoice.displayIncomingCall(uuid, handle, handleType = 'number', hasVideo = false, localizedCallername);
 

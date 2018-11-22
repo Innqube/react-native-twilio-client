@@ -8,10 +8,11 @@ const ANDROID = 'android'
 const IOS = 'ios'
 
 const TwilioClient = NativeModules.RNTwilioClient
+const EventEmitterHelper = NativeModules.EventEmitterHelper
 
-const NativeAppEventEmitter = new NativeEventEmitter(TwilioClient)
+const NativeAppEventEmitter = new NativeEventEmitter(EventEmitterHelper)
 
-    // Supported events
+// Supported events
 const _eventHandlers = {
     deviceReady: new Map(),
     deviceNotReady: new Map(),
@@ -24,8 +25,7 @@ const _eventHandlers = {
     requestTransactionError: new Map(),
     callRejected: new Map(),
     // Events for TwilioVideo
-    voipRemoteNotificationsRegistered: new Map(),
-    voipRemoteNotificationReceived: new Map()
+    voipRemoteNotificationsRegistered: new Map()
 }
 
 const Twilio = {
@@ -84,14 +84,6 @@ const Twilio = {
             TwilioClient.requestPermissions(senderId)
         }
     },
-    getActiveCall() {
-        return TwilioClient.getActiveCall()
-    },
-    configureCallKit(params = {}) {
-        if (Platform.OS === IOS) {
-            TwilioClient.configureCallKit(params)
-        }
-    },
     unregister() {
         if (Platform.OS === IOS) {
             TwilioClient.unregister()
@@ -112,15 +104,11 @@ const Twilio = {
         _eventHandlers[type].get(handler).remove()
         _eventHandlers[type].delete(handler)
     },
-    getDictionaryPayload() {
-        if (Platform.OS === IOS) {
-            return TwilioClient.getDictionaryPayload()
-        }
-        return 'Android not supported';
+    sendMessage(message) {
+        TwilioClient.sendMessage(message)
     },
-    displayIncomingCall(uuid, handle, handleType = 'number', hasVideo = false, localizedCallerName) {
-        if (Platform.OS !== IOS) return;
-        TwilioClient.displayIncomingCall(uuid, handle, handleType, hasVideo, localizedCallerName);
+    deviceReadyForCalls() {
+        TwilioClient.deviceReadyForCalls()
     }
 }
 
