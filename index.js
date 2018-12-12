@@ -106,9 +106,6 @@ const Twilio = {
     },
     sendMessage(message) {
         TwilioClient.sendMessage(message)
-    },
-    deviceReadyForCalls() {
-        TwilioClient.deviceReadyForCalls()
     }
 }
 
