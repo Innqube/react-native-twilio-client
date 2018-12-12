@@ -13,7 +13,6 @@
 
 RCT_EXPORT_MODULE();
 
-// The list of available events
 - (NSArray<NSString *> *)supportedEvents {
   return @[
            @"connectionDidConnect",
@@ -46,7 +45,6 @@ RCT_EXPORT_MODULE();
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-// This will actually throw the event out to our Javascript
 - (void)emitEventInternal:(NSNotification *)notification {
   // We will receive the dictionary here - we now need to extract the name
   // and payload and throw the event
@@ -60,7 +58,6 @@ RCT_EXPORT_MODULE();
     }
 }
 
-// This is our static function that we call from our code
 + (void)emitEventWithName:(NSString *)name andPayload:(NSDictionary *)payload
 {
   // userInfo requires a dictionary so we wrap out name and payload into an array and stick
