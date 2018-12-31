@@ -86,14 +86,12 @@ RCT_EXPORT_METHOD(initWithAccessToken:
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppTerminateNotification) name:UIApplicationWillTerminateNotification object:nil];
     
     if ([self.type isEqualToString:PKPushTypeVoIP]) {
-        // Twilio Video registration event
+        // Twilio Video registration
         [EventEmitterHelper emitEventWithName:@"voipRemoteNotificationsRegistered" andPayload:@{@"token":self.deviceTokenString}];
-        
         NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. DeviceToken: %@", self.deviceTokenString);
         
         // Twilio Voice registration
         NSString *accessToken = [self fetchAccessToken];
-        
         NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. AccessToken: %@", accessToken);
         
         [TwilioVoice registerWithAccessToken:accessToken
@@ -707,6 +705,7 @@ RCT_REMAP_METHOD(getActiveCall,
     TwilioVoice.audioEnabled = YES;
     
     NSLog(@"[IIMobile - RNTwilioClient] sendPerformAnswerVideoCallEvent called with UUID: %@", uuid.UUIDString);
+    
     [EventEmitterHelper emitEventWithName:@"performAnswerVideoCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString} ];
 }
 
