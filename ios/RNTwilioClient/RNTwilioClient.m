@@ -169,8 +169,6 @@ RCT_EXPORT_METHOD(unregister) {
                 NSLog(@"[IIMobile - RNTwilioClient] Successfully unregistered for VoIP push notifications.");
             }
         }];
-
-        self.deviceTokenString = nil;
 }
 
 RCT_REMAP_METHOD(getActiveCall,
@@ -279,9 +277,9 @@ RCT_REMAP_METHOD(getActiveCall,
 
 #pragma mark - PKPushRegistryDelegate ##################
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
-   NSLog(@"[IIMobile - RNTwilioClient][didUpdatePushCredentials][DeviceToken: %@]", self.deviceTokenString);
     self.deviceTokenString = [credentials.token description];
     self.type = type;
+    NSLog(@"[IIMobile - RNTwilioClient][didUpdatePushCredentials][DeviceToken: %@]", self.deviceTokenString);
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry didInvalidatePushTokenForType:(PKPushType)type {

@@ -12,7 +12,7 @@ const EventEmitterHelper = NativeModules.EventEmitterHelper
 
 const NativeAppEventEmitter = new NativeEventEmitter(EventEmitterHelper)
 
-// Supported events
+    // Supported events
 const _eventHandlers = {
     deviceReady: new Map(),
     deviceNotReady: new Map(),
@@ -104,8 +104,11 @@ const Twilio = {
         _eventHandlers[type].get(handler).remove()
         _eventHandlers[type].delete(handler)
     },
-    sendMessage(message) {
+    log(message) {
         TwilioClient.sendMessage(message)
+    },
+    deviceReadyForCalls() {
+        TwilioClient.deviceReadyForCalls()
     }
 }
 
