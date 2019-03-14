@@ -715,4 +715,8 @@ RCT_REMAP_METHOD(getActiveCall,
     }
 }
 
++(BOOL)requiresMainQueueSetup {
+    return NO;
+}
+
 @end
