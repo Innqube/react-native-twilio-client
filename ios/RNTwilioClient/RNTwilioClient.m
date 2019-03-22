@@ -305,9 +305,15 @@ RCT_REMAP_METHOD(getActiveCall,
     NSLog(@"[IIMobile - RNTwilioClient][didReceiveIncomingPushWithPayload] payload %@", payload.dictionaryPayload);
     
     NSString *mode = payload.dictionaryPayload[@"mode"];
+    NSString *msgType = payload.dictionaryPayload[@"twi_message_type"];
+    NSString *action = payload.dictionaryPayload[@"action"];
     self.dictionaryPayload = payload.dictionaryPayload;
-    
-    if ([type isEqualToString:PKPushTypeVoIP] && [mode isEqualToString:@"video"]) {
+
+    if (![type isEqualToString:PKPushTypeVoIP]) {
+        return;
+    }
+
+    if ([mode isEqualToString:@"video"]) {
         NSLog(@"[IIMobile - RNTwilioClient] VOIP_VIDEO_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
         NSLog(@"[IIMobile - RNTwilioClient][displayIncomingCall] uuidString = %@", payload.dictionaryPayload[@"session"]);
         int _handleType = [self getHandleType:@"generic"];
@@ -320,16 +326,18 @@ RCT_REMAP_METHOD(getActiveCall,
         callUpdate.supportsUngrouping = NO;
         callUpdate.hasVideo = true;
         callUpdate.localizedCallerName = payload.dictionaryPayload[@"displayName"];
-        
+
         [TwilioVoice configureAudioSession];
-        
+
         [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *_Nullable error) {
             [EventEmitterHelper emitEventWithName:@"displayIncomingCall" andPayload:@{@"error": error ? error.localizedDescription : @""}];
         }];
-    } else {
+    } else if ([msgType isEqualToString:@"twilio.voice.call"]) {
         NSLog(@"[IIMobile - RNTwilioClient] VOIP_VOICE_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
         [TwilioVoice handleNotification:payload.dictionaryPayload
                                delegate: self];
+    } else if ([action isEqualToString:@"cancel"]) {
+        [self performEndCallActionWithUUID:self.call.uuid];
     }
 }
 
