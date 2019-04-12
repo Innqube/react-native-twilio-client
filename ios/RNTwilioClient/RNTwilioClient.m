@@ -91,24 +91,23 @@ RCT_EXPORT_METHOD(initWithAccessToken:
         NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. DeviceToken: %@", self.deviceTokenString);
         
         // Twilio Voice registration
-        NSString *accessToken = [self fetchAccessToken];
-        NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. AccessToken: %@", accessToken);
-        
-        [TwilioVoice registerWithAccessToken:accessToken
+        NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. AccessToken: %@", token);
+
+        [TwilioVoice registerWithAccessToken:token
                                  deviceToken:self.deviceTokenString
                                   completion:^(NSError *error) {
                                       if (error) {
                                           NSLog(@"[IIMobile - RNTwilioClient] An error occurred while registering: %@", [error localizedDescription]);
                                           NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
                                           params[@"err"] = [error localizedDescription];
-                                          
+
                                           [EventEmitterHelper emitEventWithName:@"deviceNotReady" andPayload:params];
                                       } else {
                                           NSLog(@"[IIMobile - RNTwilioClient] Successfully registered for VoIP push notifications.");
                                           [EventEmitterHelper emitEventWithName:@"deviceReady" andPayload:nil];
                                       }
                                   }];
-        
+
     }
 }
 
@@ -158,9 +157,8 @@ RCT_EXPORT_METHOD(sendDigits:
 
 RCT_EXPORT_METHOD(unregister) {
         NSLog(@"[IIMobile - RNTwilioClient][unregister]");
-        NSString *accessToken = [self fetchAccessToken];
 
-        [TwilioVoice unregisterWithAccessToken:accessToken
+        [TwilioVoice unregisterWithAccessToken:_token
         deviceToken:self.deviceTokenString
         completion:^(NSError *_Nullable error) {
             if (error) {
@@ -234,17 +232,6 @@ RCT_REMAP_METHOD(getActiveCall,
     self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 }
 
-- (NSString *)fetchAccessToken {
-    if (_tokenUrl) {
-        NSString *accessToken = [NSString stringWithContentsOfURL:[NSURL URLWithString:_tokenUrl]
-                                                         encoding:NSUTF8StringEncoding
-                                                            error:nil];
-        return accessToken;
-    } else {
-        return _token;
-    }
-}
-
 - (int)getHandleType:(NSString *)handleType {
     int _handleType;
     if ([handleType isEqualToString:@"generic"]) {
@@ -285,9 +272,7 @@ RCT_REMAP_METHOD(getActiveCall,
 - (void)pushRegistry:(PKPushRegistry *)registry didInvalidatePushTokenForType:(PKPushType)type {
     NSLog(@"[IIMobile - RNTwilioClient][didInvalidatePushTokenForType]");
     if ([type isEqualToString:PKPushTypeVoIP]) {
-        NSString *accessToken = [self fetchAccessToken];
-
-        [TwilioVoice unregisterWithAccessToken:accessToken
+        [TwilioVoice unregisterWithAccessToken:_token
                                    deviceToken:self.deviceTokenString
                                     completion:^(NSError *_Nullable error) {
                                         if (error) {
@@ -303,7 +288,7 @@ RCT_REMAP_METHOD(getActiveCall,
 
 - (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
     NSLog(@"[IIMobile - RNTwilioClient][didReceiveIncomingPushWithPayload] payload %@", payload.dictionaryPayload);
-    
+
     NSString *mode = payload.dictionaryPayload[@"mode"];
     NSString *msgType = payload.dictionaryPayload[@"twi_message_type"];
     NSString *action = payload.dictionaryPayload[@"action"];
@@ -415,14 +400,15 @@ RCT_REMAP_METHOD(getActiveCall,
     if (call.to) {
         callParams[@"to"] = call.to;
     }
-    
+
     self.callParams = callParams;
-    
+
     [EventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:callParams];
 }
 
 - (void)call:(TVOCall *)call didFailToConnectWithError:(NSError *)error {
     NSLog(@"[IIMobile - RNTwilioClient] Call failed to connect: %@", error);
+    [EventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
     self.callKitCompletionCallback(NO);
     [self performEndCallActionWithUUID:call.uuid];
     [self callDisconnected:error];
@@ -663,7 +649,7 @@ RCT_REMAP_METHOD(getActiveCall,
                     [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
                         if (error) {
                             NSLog(@"[IIMobile - RNTwilioClient] EndCallAction transaction request failed: %@", [error localizedDescription]);
-                            
+
                         } else {
                             NSLog(@"[IIMobile - RNTwilioClient] EndCallAction transaction request successful");
                         }
@@ -675,19 +661,23 @@ RCT_REMAP_METHOD(getActiveCall,
             NSLog(@"[IIMobile - RNTwilioClient] EndCallAction transaction request successful");
         }
     }];
-    
+
 }
 
 - (void)performVoiceCallWithUUID:(NSUUID *)uuid
                           client:(NSString *)client
                       completion:(void (^)(BOOL success))completionHandler {
 
-    self.call = [TwilioVoice call:[self fetchAccessToken]
-                           params:_callParams
-                             uuid:uuid
-                         delegate:self];
+    if (_token == nil) {
+        [EventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": @"Invalid access token"}];
+    } else {
+        self.call = [TwilioVoice call:_token
+                               params:_callParams
+                                 uuid:uuid
+                             delegate:self];
 
-    self.callKitCompletionCallback = completionHandler;
+        self.callKitCompletionCallback = completionHandler;
+    }
 }
 
 - (void)performAnswerVoiceCallWithUUID:(NSUUID *)uuid
