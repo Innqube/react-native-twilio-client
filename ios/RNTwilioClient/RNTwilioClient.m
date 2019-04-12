@@ -86,12 +86,10 @@ RCT_EXPORT_METHOD(initWithAccessToken:
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppTerminateNotification) name:UIApplicationWillTerminateNotification object:nil];
     
     if ([self.type isEqualToString:PKPushTypeVoIP]) {
-        // Twilio Video registration
-        [EventEmitterHelper emitEventWithName:@"voipRemoteNotificationsRegistered" andPayload:@{@"token":self.deviceTokenString}];
-        NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. DeviceToken: %@", self.deviceTokenString);
-        
-        // Twilio Voice registration
+
+        // Twilio Voice
         NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. AccessToken: %@", token);
+        NSLog(@"[IIMobile - RNTwilioClient] didUpdatePushCredentials. DeviceToken: %@", self.deviceTokenString);
 
         [TwilioVoice registerWithAccessToken:token
                                  deviceToken:self.deviceTokenString
@@ -156,17 +154,28 @@ RCT_EXPORT_METHOD(sendDigits:
 }
 
 RCT_EXPORT_METHOD(unregister) {
-        NSLog(@"[IIMobile - RNTwilioClient][unregister]");
+    NSLog(@"[IIMobile - RNTwilioClient][unregister]");
 
-        [TwilioVoice unregisterWithAccessToken:_token
-        deviceToken:self.deviceTokenString
-        completion:^(NSError *_Nullable error) {
-            if (error) {
-                NSLog(@"[IIMobile - RNTwilioClient] An error occurred while unregistering: %@", [error localizedDescription]);
-            } else {
-                NSLog(@"[IIMobile - RNTwilioClient] Successfully unregistered for VoIP push notifications.");
-            }
-        }];
+    [TwilioVoice unregisterWithAccessToken:_token
+    deviceToken:self.deviceTokenString
+    completion:^(NSError *_Nullable error) {
+        if (error) {
+            NSLog(@"[IIMobile - RNTwilioClient] An error occurred while unregistering: %@", [error localizedDescription]);
+        } else {
+            NSLog(@"[IIMobile - RNTwilioClient] Successfully unregistered for VoIP push notifications.");
+        }
+    }];
+}
+
+RCT_REMAP_METHOD(getDeviceToken, res: (RCTPromiseResolveBlock)resolve1
+                 rej:(RCTPromiseRejectBlock)reject1) {
+    NSLog(@"[IIMobile - RNTwilioClient][getDeviceToken] %@", self.deviceTokenString);
+
+    if (self.deviceTokenString != nil) {
+        resolve1(self.deviceTokenString);
+    } else {
+        reject1(@"Device token is null", nil, nil);
+    }
 }
 
 RCT_REMAP_METHOD(getActiveCall,

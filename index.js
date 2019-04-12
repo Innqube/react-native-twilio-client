@@ -109,6 +109,9 @@ const Twilio = {
     },
     deviceReadyForCalls() {
         TwilioClient.deviceReadyForCalls()
+    },
+    getDeviceToken() {
+        return TwilioClient.getDeviceToken();
     }
 }
 
