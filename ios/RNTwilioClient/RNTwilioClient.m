@@ -308,6 +308,7 @@ RCT_REMAP_METHOD(getActiveCall,
     }
 
     if ([mode isEqualToString:@"video"]) {
+        // Receive Video Call, handle by II
         NSLog(@"[IIMobile - RNTwilioClient] VOIP_VIDEO_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
         NSLog(@"[IIMobile - RNTwilioClient][displayIncomingCall] uuidString = %@", payload.dictionaryPayload[@"session"]);
         int _handleType = [self getHandleType:@"generic"];
@@ -327,10 +328,17 @@ RCT_REMAP_METHOD(getActiveCall,
             [EventEmitterHelper emitEventWithName:@"displayIncomingCall" andPayload:@{@"error": error ? error.localizedDescription : @""}];
         }];
     } else if ([msgType isEqualToString:@"twilio.voice.call"]) {
+        // Receive Voice Call, Twilio handle this push
         NSLog(@"[IIMobile - RNTwilioClient] VOIP_VOICE_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
         [TwilioVoice handleNotification:payload.dictionaryPayload
                                delegate: self];
+        /*
+    } else if ([msgType isEqualToString:@"twilio.voice.cancel"] && self.callInvite && self.callInvite.state == TVOCallInviteStatePending) {
+        // Cancel Voice Call, Twilio handle this push
+        [self performEndCallActionWithUUID:self.call.uuid];
+         */
     } else if ([action isEqualToString:@"cancel"]) {
+        // Cancel Video or Voice Call, sent by II
         [self performEndCallActionWithUUID:self.call.uuid];
     }
 }
@@ -550,17 +558,22 @@ RCT_REMAP_METHOD(getActiveCall,
     NSLog(@"[IIMobile - RNTwilioClient] provider:performEndCallAction with UUID: %@", [action.callUUID UUIDString]);
     TwilioVoice.audioEnabled = NO;
 
+    // Pending Voice Call
     if (self.callInvite && self.callInvite.state == TVOCallInviteStatePending) {
-        [EventEmitterHelper emitEventWithName:@"callRejected" andPayload:nil];
         [self.callInvite reject];
         self.callInvite = nil;
     } else if (self.call) {
         [self.call disconnect];
     }
 
+    // Pending Video Call
     NSString *mode = self.dictionaryPayload[@"mode"];
-    if ([mode isEqualToString:@"video"]) {
-        [EventEmitterHelper emitEventWithName:@"performEndVideoCall" andPayload:nil];
+    if (self.callUuid == nil && [mode isEqualToString:@"video"]) {
+        NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+        params[@"session"] = self.dictionaryPayload[@"session"];
+        params[@"companyUuid"] = self.dictionaryPayload[@"companyUuid"];
+        params[@"reservationSid"] = self.dictionaryPayload[@"reservationSid"];
+        [EventEmitterHelper emitEventWithName:@"performEndVideoCall" andPayload:params];
     }
 
     [action fulfill];
