@@ -1,15 +1,15 @@
 //
-//  EventEmitterHelper.m
+//  RNEventEmitterHelper.m
 //  Interpreter Intelligence
 //
-//  Created by Enrique Viard on 11/16/18.
-//  Copyright © 2018 Facebook. All rights reserved.
+//  Created by Enrique Viard on 5/22/19.
+//  Copyright © 2019 No Good Software Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventEmitterHelper.h"
+#import "RNEventEmitterHelper.h"
 
-@implementation EventEmitterHelper
+@implementation RNEventEmitterHelper
 
 RCT_EXPORT_MODULE();
 
@@ -26,7 +26,11 @@ RCT_EXPORT_MODULE();
            @"requestTransactionError",
            @"displayIncomingCall",
            @"voipRemoteNotificationsRegistered",
-           @"voipRemoteNotificationReceived"
+           @"voipRemoteNotificationReceived",
+           @"onSynchronizationStatusCompleted",
+           @"onSynchronizationStatusFailed",
+           @"messagesAdded",
+           @"onJoinChannel"
            ];
 }
 

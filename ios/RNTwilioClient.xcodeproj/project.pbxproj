@@ -9,9 +9,16 @@
 /* Begin PBXBuildFile section */
 		38F71DFA1E9C333F0067E86F /* RNTwilioClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 38F71DF91E9C333F0067E86F /* RNTwilioClient.m */; };
 		38F71DFB1E9C333F0067E86F /* RNTwilioClient.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 38F71DF81E9C333F0067E86F /* RNTwilioClient.h */; };
+		C775C696C2F187FC52161A7B /* RNEventEmitterHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C775CE8AB456F80F0AE6C3A1 /* RNEventEmitterHelper.m */; };
 		F35FCCCA2110E0C200F77262 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F35FCCC92110E0C200F77262 /* PushKit.framework */; };
 		F35FCCCC2110E0EF00F77262 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F35FCCCB2110E0EF00F77262 /* Intents.framework */; };
-		F3885BC82121F18A00E097C4 /* TwilioVoice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3885BC72121F18900E097C4 /* TwilioVoice.framework */; };
+		F3E08BBF2295D278000B5F40 /* RNTwilioChatClient.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C775C9B031681A8725A2737C /* RNTwilioChatClient.h */; };
+		F3E08BC02295D278000B5F40 /* RNEventEmitterHelper.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C775C09E7922873006849547 /* RNEventEmitterHelper.h */; };
+		F3E08BC12295D278000B5F40 /* RNLogHelper.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C775CFE443E0FA0D577A8C33 /* RNLogHelper.h */; };
+		F3E08CB92295EA43000B5F40 /* TwilioChatClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3F00B7D229470FF00CBC72B /* TwilioChatClient.framework */; };
+		F3E08D1D2295FB8D000B5F40 /* RNTwilioChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = C775C493DE87DE5DDB5FEE64 /* RNTwilioChatClient.m */; };
+		F3E08D1E2295FB99000B5F40 /* RNLogHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C775C5DFBEE75B24D086393A /* RNLogHelper.m */; };
+		F3F00B7E229470FF00CBC72B /* TwilioVoice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3F00B7C229470FF00CBC72B /* TwilioVoice.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -21,6 +28,9 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				F3E08BBF2295D278000B5F40 /* RNTwilioChatClient.h in CopyFiles */,
+				F3E08BC02295D278000B5F40 /* RNEventEmitterHelper.h in CopyFiles */,
+				F3E08BC12295D278000B5F40 /* RNLogHelper.h in CopyFiles */,
 				38F71DFB1E9C333F0067E86F /* RNTwilioClient.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -31,9 +41,16 @@
 		38F71DF51E9C333F0067E86F /* libRNTwilioClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNTwilioClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		38F71DF81E9C333F0067E86F /* RNTwilioClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNTwilioClient.h; sourceTree = "<group>"; };
 		38F71DF91E9C333F0067E86F /* RNTwilioClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNTwilioClient.m; sourceTree = "<group>"; };
+		C775C09E7922873006849547 /* RNEventEmitterHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNEventEmitterHelper.h; sourceTree = "<group>"; };
+		C775C493DE87DE5DDB5FEE64 /* RNTwilioChatClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTwilioChatClient.m; sourceTree = "<group>"; };
+		C775C5DFBEE75B24D086393A /* RNLogHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNLogHelper.m; sourceTree = "<group>"; };
+		C775C9B031681A8725A2737C /* RNTwilioChatClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNTwilioChatClient.h; sourceTree = "<group>"; };
+		C775CE8AB456F80F0AE6C3A1 /* RNEventEmitterHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEventEmitterHelper.m; sourceTree = "<group>"; };
+		C775CFE443E0FA0D577A8C33 /* RNLogHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNLogHelper.h; sourceTree = "<group>"; };
 		F35FCCC92110E0C200F77262 /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		F35FCCCB2110E0EF00F77262 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
-		F3885BC72121F18900E097C4 /* TwilioVoice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioVoice.framework; path = ../../../ios/Pods/TwilioVoice/TwilioVoice.framework; sourceTree = "<group>"; };
+		F3F00B7C229470FF00CBC72B /* TwilioVoice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioVoice.framework; path = Frameworks/TwilioVoice.framework; sourceTree = "<group>"; };
+		F3F00B7D229470FF00CBC72B /* TwilioChatClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioChatClient.framework; path = Frameworks/TwilioChatClient.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,7 +60,8 @@
 			files = (
 				F35FCCCC2110E0EF00F77262 /* Intents.framework in Frameworks */,
 				F35FCCCA2110E0C200F77262 /* PushKit.framework in Frameworks */,
-				F3885BC82121F18A00E097C4 /* TwilioVoice.framework in Frameworks */,
+				F3E08CB92295EA43000B5F40 /* TwilioChatClient.framework in Frameworks */,
+				F3F00B7E229470FF00CBC72B /* TwilioVoice.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,7 +71,8 @@
 		016DD9801ECC9B4B00315CD4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F3885BC72121F18900E097C4 /* TwilioVoice.framework */,
+				F3F00B7D229470FF00CBC72B /* TwilioChatClient.framework */,
+				F3F00B7C229470FF00CBC72B /* TwilioVoice.framework */,
 				F35FCCCB2110E0EF00F77262 /* Intents.framework */,
 				F35FCCC92110E0C200F77262 /* PushKit.framework */,
 			);
@@ -80,8 +99,14 @@
 		38F71DF71E9C333F0067E86F /* RNTwilioClient */ = {
 			isa = PBXGroup;
 			children = (
+				C775C9B031681A8725A2737C /* RNTwilioChatClient.h */,
+				C775C493DE87DE5DDB5FEE64 /* RNTwilioChatClient.m */,
 				38F71DF81E9C333F0067E86F /* RNTwilioClient.h */,
 				38F71DF91E9C333F0067E86F /* RNTwilioClient.m */,
+				C775C09E7922873006849547 /* RNEventEmitterHelper.h */,
+				C775CE8AB456F80F0AE6C3A1 /* RNEventEmitterHelper.m */,
+				C775CFE443E0FA0D577A8C33 /* RNLogHelper.h */,
+				C775C5DFBEE75B24D086393A /* RNLogHelper.m */,
 			);
 			path = RNTwilioClient;
 			sourceTree = "<group>";
@@ -126,6 +151,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 38F71DEC1E9C333E0067E86F;
@@ -144,6 +170,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				38F71DFA1E9C333F0067E86F /* RNTwilioClient.m in Sources */,
+				C775C696C2F187FC52161A7B /* RNEventEmitterHelper.m in Sources */,
+				F3E08D1E2295FB99000B5F40 /* RNLogHelper.m in Sources */,
+				F3E08D1D2295FB8D000B5F40 /* RNTwilioChatClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,7 +215,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice";
+				FRAMEWORK_SEARCH_PATHS = (
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioChatClient",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -206,6 +238,7 @@
 					"$(SRCROOT)/../../react-native/React/**",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioChatClient",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -250,7 +283,10 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice";
+				FRAMEWORK_SEARCH_PATHS = (
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioChatClient",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -264,6 +300,7 @@
 					"$(SRCROOT)/../../react-native/React/**",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioChatClient",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -279,12 +316,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)/../../../ios/Pods/TwilioVoice",
+					"$(SRCROOT)/../../../ios/Pods/TwilioChatClient",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../React",
 					"$(SRCROOT)/../../react-native/React",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioChatClient",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -299,12 +339,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)/../../../ios/Pods/TwilioVoice",
+					"$(SRCROOT)/../../../ios/Pods/TwilioChatClient",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../React",
 					"$(SRCROOT)/../../react-native/React",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioVoice",
+					"${SRCROOT}/../../../ios/Pods/Headers/Public/TwilioChatClient",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

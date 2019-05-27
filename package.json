@@ -24,12 +24,8 @@
   "_requiredBy": [
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/react-native-twilio-client/-/react-native-twilio-client-1.0.0.tgz",
   "_spec": "1.0.0",
   "_where": "/Users/quique/dev/interpreter-intelligence/mobile-interpreter-direct",
-  "author": {
-    "name": "Fabrizio Moscon"
-  },
   "bugs": {
     "url": "https://github.com/innqube/react-native-twilio-client/issues"
   },
@@ -49,8 +45,11 @@
     "gcm",
     "fcm"
   ],
+  "author": {
+    "name": "InnQube"
+  },
   "license": "MIT",
-  "main": "index.js",
+  "main": "libs/index.js",
   "name": "react-native-twilio-client",
   "repository": {
     "type": "git",

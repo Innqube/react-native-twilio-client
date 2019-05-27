@@ -1,7 +1,11 @@
 //
-//  RNTwilioClient.h
-//  TwilioClient
+//  RNTwilioClient.m
+//  Interpreter Intelligence
 //
+//  Created by Enrique Viard.
+//  Copyright © 2018 No Good Software Inc. All rights reserved.
+//
+
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>

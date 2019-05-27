@@ -1,12 +1,17 @@
 //
 //  RNTwilioClient.m
+//  Interpreter Intelligence
 //
+//  Created by Enrique Viard.
+//  Copyright © 2018 No Good Software Inc. All rights reserved.
+//
+
 
 #import "RNTwilioClient.h"
 #import <React/RCTLog.h>
 #import <PushKit/PushKit.h>
 #import <CallKit/CallKit.h>
-#import "EventEmitterHelper.h"
+#import "RNEventEmitterHelper.h"
 
 @import AVFoundation;
 @import PushKit;
@@ -99,10 +104,10 @@ RCT_EXPORT_METHOD(initWithAccessToken:
                                           NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
                                           params[@"err"] = [error localizedDescription];
 
-                                          [EventEmitterHelper emitEventWithName:@"deviceNotReady" andPayload:params];
+                                          [RNEventEmitterHelper emitEventWithName:@"deviceNotReady" andPayload:params];
                                       } else {
                                           NSLog(@"[IIMobile - RNTwilioClient] Successfully registered for VoIP push notifications.");
-                                          [EventEmitterHelper emitEventWithName:@"deviceReady" andPayload:nil];
+                                          [RNEventEmitterHelper emitEventWithName:@"deviceReady" andPayload:nil];
                                       }
                                   }];
 
@@ -325,7 +330,7 @@ RCT_REMAP_METHOD(getActiveCall,
         [TwilioVoice configureAudioSession];
 
         [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *_Nullable error) {
-            [EventEmitterHelper emitEventWithName:@"displayIncomingCall" andPayload:@{@"error": error ? error.localizedDescription : @""}];
+            [RNEventEmitterHelper emitEventWithName:@"displayIncomingCall" andPayload:@{@"error": error ? error.localizedDescription : @""}];
         }];
     } else if ([msgType isEqualToString:@"twilio.voice.call"]) {
         // Receive Voice Call, Twilio handle this push
@@ -389,7 +394,7 @@ RCT_REMAP_METHOD(getActiveCall,
     } else if (self.callInvite.state == TVOCallInviteStateRejected) {
         params[@"call_state"] = StateRejected;
     }
-    [EventEmitterHelper emitEventWithName:@"connectionDidDisconnect" andPayload:params];
+    [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect" andPayload:params];
 
     self.callInvite = nil;
 }
@@ -420,12 +425,12 @@ RCT_REMAP_METHOD(getActiveCall,
 
     self.callParams = callParams;
 
-    [EventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:callParams];
+    [RNEventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:callParams];
 }
 
 - (void)call:(TVOCall *)call didFailToConnectWithError:(NSError *)error {
     NSLog(@"[IIMobile - RNTwilioClient] Call failed to connect: %@", error);
-    [EventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
+    [RNEventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
     self.callKitCompletionCallback(NO);
     [self performEndCallActionWithUUID:call.uuid];
     [self callDisconnected:error];
@@ -458,7 +463,7 @@ RCT_REMAP_METHOD(getActiveCall,
     if (self.call.state == TVOCallStateDisconnected) {
         params[@"call_state"] = StateDisconnected;
     }
-    [EventEmitterHelper emitEventWithName:@"connectionDidDisconnect" andPayload:params];
+    [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect" andPayload:params];
 
     [self.call disconnect];
     self.call = nil;
@@ -573,7 +578,7 @@ RCT_REMAP_METHOD(getActiveCall,
         params[@"session"] = self.dictionaryPayload[@"session"];
         params[@"companyUuid"] = self.dictionaryPayload[@"companyUuid"];
         params[@"reservationSid"] = self.dictionaryPayload[@"reservationSid"];
-        [EventEmitterHelper emitEventWithName:@"performEndVideoCall" andPayload:params];
+        [RNEventEmitterHelper emitEventWithName:@"performEndVideoCall" andPayload:params];
     }
 
     [action fulfill];
@@ -601,7 +606,7 @@ RCT_REMAP_METHOD(getActiveCall,
     [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
         if (error) {
             NSLog(@"[IIMobile - RNTwilioClient] StartCallAction transaction request failed: %@", [error localizedDescription]);
-            [EventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
+            [RNEventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
         } else {
             NSLog(@"[IIMobile - RNTwilioClient] StartCallAction transaction request successful");
 
@@ -691,7 +696,7 @@ RCT_REMAP_METHOD(getActiveCall,
                       completion:(void (^)(BOOL success))completionHandler {
 
     if (_token == nil) {
-        [EventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": @"Invalid access token"}];
+        [RNEventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": @"Invalid access token"}];
     } else {
         self.call = [TwilioVoice call:_token
                                params:_callParams
@@ -710,8 +715,8 @@ RCT_REMAP_METHOD(getActiveCall,
     self.callMode = @"voice";
     
     NSLog(@"[IIMobile - RNTwilioClient] sendPerformAnswerVoiceCallEvent called with UUID: %@", uuid.UUIDString);
-    [EventEmitterHelper emitEventWithName:@"performAnswerVoiceCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString}];
-    [EventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:self.callParams];
+    [RNEventEmitterHelper emitEventWithName:@"performAnswerVoiceCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString}];
+    [RNEventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:self.callParams];
 }
 
 - (void)performAnswerVideoCallWithUUID:(NSUUID *)uuid
@@ -724,7 +729,7 @@ RCT_REMAP_METHOD(getActiveCall,
     
     NSLog(@"[IIMobile - RNTwilioClient] sendPerformAnswerVideoCallEvent called with UUID: %@", uuid.UUIDString);
     
-    [EventEmitterHelper emitEventWithName:@"performAnswerVideoCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString} ];
+    [RNEventEmitterHelper emitEventWithName:@"performAnswerVideoCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString} ];
 }
 
 - (void)handleAppTerminateNotification {
