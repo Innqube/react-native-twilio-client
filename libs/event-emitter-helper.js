@@ -22,7 +22,7 @@ const _eventHandlers = {
     // Chat events
     onSynchronizationStatusCompleted: new Map(),
     onSynchronizationStatusFailed: new Map(),
-    messagesAdded: new Map(),
+    messageAdded: new Map(),
     onJoinChannel: new Map(),
 }
 

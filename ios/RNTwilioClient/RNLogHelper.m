@@ -13,7 +13,7 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(sendMessage:
+RCT_EXPORT_METHOD(log:
                   (NSString *) message) {
     if (message != nil) {
         NSLog(@"[IIMobile - RNLogHelper] %@", message);

@@ -1,6 +1,8 @@
 import {
     NativeModules,
 } from 'react-native';
+import Channel from './domain/channel';
+import Message from './domain/message';
 
 const {
     RNTwilioChatClient,
@@ -16,34 +18,33 @@ const TwilioChatClient = {
                 err: 'Invalid token, token must be a string'
             }
         };
-        const response = await RNTwilioChatClient.createClient(initialToken, null);
-
-        console.log('RESPONSE: ' + response);
-        return response;
+        return await RNTwilioChatClient.createClient(initialToken, null);
     },
 
     sendMessage(message) {
-        return RNTwilioChatClient.sendMessage(message, null)
-            .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
+        return RNTwilioChatClient.sendMessage(message);
+            // .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
     },
 
     joinChannel(channelSid) {
         return RNTwilioChatClient.joinChannel(channelSid);
     },
-    getPublicChannels() {
+    getPublicChannels(): Promise<Channel[]> {
         return RNTwilioChatClient.getPublicChannels();
     },
-    getUserChannels() {
+    getUserChannels(): Promise<Channel[]> {
         return RNTwilioChatClient.getUserChannels();
     },
-    createChannel(uniqueName, friendlyName, type) {
+    createChannel(uniqueName, friendlyName, type): Promise<Channel> {
         return RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
+    },
+    getLastMessages(count): Promise<Message[]> {
+        if (typeof count !== 'number') {
+            throw new Error('Count is required and must be a number');
+        }
+        return RNTwilioChatClient.getLastMessages(count);
     }
 
-    // getPublicChannels() {
-    //     return TwilioChatChannels.getPublicChannels()
-    //         .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
-    // }
 }
 
 export default TwilioChatClient;

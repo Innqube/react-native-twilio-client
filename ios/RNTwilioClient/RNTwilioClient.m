@@ -37,7 +37,6 @@
 @implementation RNTwilioClient {
     NSMutableDictionary *_settings;
     NSMutableDictionary *_callParams;
-    NSString *_tokenUrl;
     NSString *_token;
 }
 
@@ -179,7 +178,7 @@ RCT_REMAP_METHOD(getDeviceToken, res: (RCTPromiseResolveBlock)resolve1
     if (self.deviceTokenString != nil) {
         resolve1(self.deviceTokenString);
     } else {
-        reject1(@"Device token is null", nil, nil);
+        reject1(@"error", @"Device token is null", nil);
     }
 }
 

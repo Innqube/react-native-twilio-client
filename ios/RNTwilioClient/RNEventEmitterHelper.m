@@ -29,7 +29,7 @@ RCT_EXPORT_MODULE();
            @"voipRemoteNotificationReceived",
            @"onSynchronizationStatusCompleted",
            @"onSynchronizationStatusFailed",
-           @"messagesAdded",
+           @"messageAdded",
            @"onJoinChannel"
            ];
 }

@@ -4,7 +4,7 @@ const {RNLogHelper} = NativeModules;
 
 const LogHelper = {
     log(message) {
-        RNLogHelper.sendMessage(message)
+        RNLogHelper.log(message)
     }
 }
 

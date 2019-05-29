@@ -56,23 +56,28 @@ RCT_REMAP_METHOD(createClient, token:(NSString*)token properties:(NSDictionary *
                 resolve(chatClient);
             });
         } else {
-            reject(@"Create ChatClient failed", nil, nil);
+            reject(@"error", @"Create ChatClient failed", nil);
         }
     }];
 }
 
-RCT_REMAP_METHOD(sendMessage, body:(NSString *)body send_message_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage called with message: %@", body);
-    TCHMessageOptions *messageOptions = [[TCHMessageOptions new] withBody:body];
-    [self.channel.messages sendMessageWithOptions:messageOptions completion:^(TCHResult * _Nonnull result, TCHMessage * _Nullable message) {
-        if (result.isSuccessful) {
-            NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage: message '%@' sent", body);
-            resolve(@"Message sent");
-        } else {
-            NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage: message '%@' not sent", body);
-            reject(@"Message not sent", nil, nil);
-        }
-    }];
+RCT_REMAP_METHOD(sendMessage, message:(NSString*)message send_message_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage called with message: %@", message);
+    
+    if (message == nil) {
+        reject(@"Message cannot be null", nil, nil);
+    } else {
+        TCHMessageOptions *messageOptions = [[TCHMessageOptions new] withBody:message];
+        [self.channel.messages sendMessageWithOptions:messageOptions completion:^(TCHResult * _Nonnull result, TCHMessage * _Nullable message) {
+            if (result.isSuccessful) {
+                NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage: message '%@' sent", message);
+                resolve(@"Message sent");
+            } else {
+                NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage: message '%@' not sent", message);
+                reject(@"error", @"Message not sent", nil);
+            }
+        }];
+    }
 }
 
 RCT_REMAP_METHOD(joinChannel, channelSid:(NSString *)channelSid join_channel_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -82,11 +87,14 @@ RCT_REMAP_METHOD(joinChannel, channelSid:(NSString *)channelSid join_channel_res
             self.channel = channel;
             [self.channel joinWithCompletion:^(TCHResult *result) {
                 NSLog(@"[IIMobile - RNTwilioChatClient] Joines %@ channel", channelSid);
-                resolve(channel);
-                //[RNEventEmitterHelper emitEventWithName:@"onJoinChannel" andPayload:@{@"channelSid": channelSid}];
+                resolve(@{
+                          @"sid": channel.sid,
+                          @"uniqueName": channel.uniqueName,
+                          @"friendlyName": channel.friendlyName
+                          });
             }];
         } else {
-            reject(@"Failed to join channel", nil, nil);
+            reject(@"error", @"Failed to join channel", nil);
         }
     }];
 }
@@ -107,16 +115,29 @@ RCT_REMAP_METHOD(createChannel, uniqueName:(NSString *)uniqueName friendlyName:(
         
         [client.channelsList createChannelWithOptions:channelOptions
                                            completion:^(TCHResult *result, TCHChannel *channel) {
-                                               self.channel = channel;
-                                               [self.channel joinWithCompletion:^(TCHResult *result) {
-                                                   [self.channel setUniqueName:uniqueName completion:^(TCHResult *result) {
-                                                       NSLog(@"[IIMobile - RNTwilioChatClient] createChannel: %@ channel created with unique name: %@", type, uniqueName);
+                                               if ([result isSuccessful]) {
+                                                   self.channel = channel;
+                                                   [self.channel joinWithCompletion:^(TCHResult *result) {
+                                                       if ([result isSuccessful]) {
+                                                           [self.channel setUniqueName:uniqueName completion:^(TCHResult *result) {
+                                                               NSLog(@"[IIMobile - RNTwilioChatClient] createChannel: %@ channel created with unique name: %@", type, uniqueName);
+                                                               resolve(@{
+                                                                         @"sid": channel.sid,
+                                                                         @"uniqueName": channel.uniqueName,
+                                                                         @"friendlyName": channel.friendlyName
+                                                                         });
+                                                           }];
+                                                       } else{
+                                                           reject(@"error", @"createChannel: setUniqueName failed", result.error);
+                                                       }
                                                    }];
-                                               }];
+                                               } else {
+                                                   reject(@"error", @"createChannel: createChannelWithOptions failed", result.error);
+                                               }
                                            }];
     } else {
         NSLog(@"[IIMobile - RNTwilioChatClient] createChannel: failed to create channel. Some parameters are null");
-        reject(@"Failed to create channel. Some parameters are null", nil, nil);
+        reject(@"error", @"Failed to create channel. Some parameters are null", nil);
     }
 }
 
@@ -136,7 +157,7 @@ RCT_REMAP_METHOD(getPublicChannels, lpublic_channels_resolver:(RCTPromiseResolve
             }
             resolve(channels);
         } else {
-            reject(@"getPublicChannels failed", nil, nil);
+            reject(@"error", @"getPublicChannels failed", result.error);
         }
     }];
 }
@@ -157,10 +178,32 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
             }
             resolve(channels);
         } else {
-            reject(@"getUserChannels failed", nil, nil);
+            reject(@"error", @"getUserChannels failed", result.error);
         }
     }];
 }
+
+RCT_REMAP_METHOD(getLastMessages, count: (nonnull NSNumber *)count last_messages_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.channel.messages getLastMessagesWithCount:count.longValue
+                                         completion:^(TCHResult *result, NSArray<TCHMessage *> *messages) {
+                                             if ([result isSuccessful]) {
+                                                 NSMutableArray *jsonArray = [[NSMutableArray alloc] init];
+                                                 for (TCHMessage *message in messages) {
+                                                     NSLog(@"[IIMobile - RNTwilioChatClient] Message: %@", message.body);
+                                                     [jsonArray addObject: @{
+                                                                             @"sid": message.sid,
+                                                                             @"author": message.author,
+                                                                             @"timpeStamp": message.timestamp,
+                                                                             @"body": message.body
+                                                                            }];
+                                                 }
+                                                 resolve(jsonArray);
+                                             } else {
+                                                 reject(@"error", @"getLastMessages failed", result.error);
+                                             }
+                                         }];
+}
+
 
 - (void) createGeneralChannel {
     NSDictionary *channelOptions = @{TCHChannelOptionFriendlyName: @"General Chat Channel",
@@ -209,12 +252,15 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 }
 
 - (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel messageAdded:(TCHMessage *)message {
-    // FIXME Revisar por qué se usa un array acá
-//    [RNEventEmitterHelper emitEventWithName:@"messageAdded" andPayload:@[message]];
     NSLog(@"[IIMobile - RNTwilioChatClient] messageAdded");
-    [RNEventEmitterHelper emitEventWithName:@"messagesAdded" andPayload:@{@"messages": @[message]}];
+    NSDictionary *messageJson = @{
+                                  @"sid": message.sid,
+                                  @"author": message.author,
+                                  @"timpeStamp": message.timestamp,
+                                  @"body": message.body
+                                  };
+    [RNEventEmitterHelper emitEventWithName:@"messageAdded" andPayload:messageJson];
 }
-
 
 
 @end

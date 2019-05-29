@@ -101,11 +101,11 @@
 			children = (
 				C775C9B031681A8725A2737C /* RNTwilioChatClient.h */,
 				C775C493DE87DE5DDB5FEE64 /* RNTwilioChatClient.m */,
+				C775CFE443E0FA0D577A8C33 /* RNLogHelper.h */,
 				38F71DF81E9C333F0067E86F /* RNTwilioClient.h */,
 				38F71DF91E9C333F0067E86F /* RNTwilioClient.m */,
 				C775C09E7922873006849547 /* RNEventEmitterHelper.h */,
 				C775CE8AB456F80F0AE6C3A1 /* RNEventEmitterHelper.m */,
-				C775CFE443E0FA0D577A8C33 /* RNLogHelper.h */,
 				C775C5DFBEE75B24D086393A /* RNLogHelper.m */,
 			);
 			path = RNTwilioClient;
