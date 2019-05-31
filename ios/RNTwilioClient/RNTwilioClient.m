@@ -575,6 +575,7 @@ RCT_REMAP_METHOD(getActiveCall,
         params[@"reservationSid"] = self.dictionaryPayload[@"reservationSid"];
         [EventEmitterHelper emitEventWithName:@"performEndVideoCall" andPayload:params];
     }
+    self.callUuid = nil;
 
     [action fulfill];
 }
