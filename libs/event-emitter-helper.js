@@ -20,8 +20,8 @@ const _eventHandlers = {
     callRejected: new Map(),
     voipRemoteNotificationsRegistered: new Map(),
     // Chat events
-    onSynchronizationStatusCompleted: new Map(),
-    onSynchronizationStatusFailed: new Map(),
+    synchronizationStatusCompleted: new Map(),
+    synchronizationStatusFailed: new Map(),
     messageAdded: new Map(),
     onJoinChannel: new Map(),
 }

@@ -27,8 +27,8 @@ RCT_EXPORT_MODULE();
            @"displayIncomingCall",
            @"voipRemoteNotificationsRegistered",
            @"voipRemoteNotificationReceived",
-           @"onSynchronizationStatusCompleted",
-           @"onSynchronizationStatusFailed",
+           @"synchronizationStatusCompleted",
+           @"synchronizationStatusFailed",
            @"messageAdded",
            @"onJoinChannel"
            ];

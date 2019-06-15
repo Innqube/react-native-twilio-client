@@ -189,13 +189,15 @@ RCT_REMAP_METHOD(getLastMessages, count: (nonnull NSNumber *)count last_messages
                                              if ([result isSuccessful]) {
                                                  NSMutableArray *jsonArray = [[NSMutableArray alloc] init];
                                                  for (TCHMessage *message in messages) {
-                                                     NSLog(@"[IIMobile - RNTwilioChatClient] Message: %@", message.body);
-                                                     [jsonArray addObject: @{
-                                                                             @"sid": message.sid,
-                                                                             @"author": message.author,
-                                                                             @"timpeStamp": message.timestamp,
-                                                                             @"body": message.body
-                                                                            }];
+                                                     if (message.body != nil && message.body != @"(null)") {
+                                                         [jsonArray addObject: @{
+                                                                                 @"sid": message.sid,
+                                                                                 @"index": message.index,
+                                                                                 @"author": message.author,
+                                                                                 @"timeStamp": message.timestamp,
+                                                                                 @"body": message.body
+                                                                                }];
+                                                     }
                                                  }
                                                  resolve(jsonArray);
                                              } else {
@@ -204,6 +206,29 @@ RCT_REMAP_METHOD(getLastMessages, count: (nonnull NSNumber *)count last_messages
                                          }];
 }
 
+RCT_REMAP_METHOD(getMessagesBefore, index: (nonnull NSNumber *)index count: (nonnull NSNumber *) count messages_before_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+[self.channel.messages getMessagesBefore:(index.intValue - 1)
+                               withCount:count.longValue
+                              completion:^(TCHResult *result, NSArray<TCHMessage *> *messages) {
+                                  if ([result isSuccessful]) {
+                                      NSMutableArray *jsonArray = [[NSMutableArray alloc] init];
+                                      for (TCHMessage *message in messages) {
+                                          if (message.body != nil && message.body != @"(null)") {
+                                              [jsonArray addObject: @{
+                                                                      @"sid": message.sid,
+                                                                      @"index": message.index,
+                                                                      @"author": message.author,
+                                                                      @"timeStamp": message.timestamp,
+                                                                      @"body": message.body
+                                                                      }];
+                                          }
+                                      }
+                                      resolve(jsonArray);
+                                  } else {
+                                      reject(@"error", @"getMessagesBefore failed", result.error);
+                                  }
+                              }];
+}
 
 - (void) createGeneralChannel {
     NSDictionary *channelOptions = @{TCHChannelOptionFriendlyName: @"General Chat Channel",
@@ -245,9 +270,9 @@ RCT_REMAP_METHOD(getLastMessages, count: (nonnull NSNumber *)count last_messages
 - (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
     NSLog(@"[IIMobile - RNTwilioChatClient] synchronizationStatusUpdated with status: %@", [self convertSyncStatusToString:status]);
     if (status == TCHClientSynchronizationStatusCompleted) {
-        [RNEventEmitterHelper emitEventWithName:@"onSynchronizationStatusCompleted" andPayload:nil];
+        [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusCompleted" andPayload:nil];
     } else {
-        [RNEventEmitterHelper emitEventWithName:@"onSynchronizationStatusFailed" andPayload:nil];
+        [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusFailed" andPayload:nil];
     }
 }
 
@@ -262,5 +287,8 @@ RCT_REMAP_METHOD(getLastMessages, count: (nonnull NSNumber *)count last_messages
     [RNEventEmitterHelper emitEventWithName:@"messageAdded" andPayload:messageJson];
 }
 
++(BOOL)requiresMainQueueSetup {
+    return NO;
+}
 
 @end

@@ -22,6 +22,9 @@ const TwilioChatClient = {
     },
 
     sendMessage(message) {
+        if (typeof message !== 'string') {
+            throw new Error('Message is required and must be a string');
+        }
         return RNTwilioChatClient.sendMessage(message);
             // .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
     },
@@ -43,8 +46,16 @@ const TwilioChatClient = {
             throw new Error('Count is required and must be a number');
         }
         return RNTwilioChatClient.getLastMessages(count);
+    },
+    getMessagesBefore(index, count): Promise<Message[]> {
+        if (typeof count !== 'number') {
+            throw new Error('Count is required and must be a number');
+        }
+        if (typeof index !== 'number') {
+            throw new Error('Index is required and must be a number');
+        }
+        return RNTwilioChatClient.getMessagesBefore(index, count);
     }
-
 }
 
 export default TwilioChatClient;

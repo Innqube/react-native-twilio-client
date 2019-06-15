@@ -7,6 +7,7 @@ class Message {
     constructor(props) {
         this.sid = props.sid;
         this.author = props.author;
+        this.index = props.index;
         this.timeStamp = props.timeStamp;
         this.body = props.body;
     }
