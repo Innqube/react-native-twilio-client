@@ -269,11 +269,8 @@ RCT_REMAP_METHOD(getMessagesBefore, index: (nonnull NSNumber *)index count: (non
 
 - (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
     NSLog(@"[IIMobile - RNTwilioChatClient] synchronizationStatusUpdated with status: %@", [self convertSyncStatusToString:status]);
-    if (status == TCHClientSynchronizationStatusCompleted) {
-        [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusCompleted" andPayload:nil];
-    } else {
-        [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusFailed" andPayload:nil];
-    }
+    
+    [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusUpdated" andPayload:@{@"status": [self convertSyncStatusToString:status]}];
 }
 
 - (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel messageAdded:(TCHMessage *)message {

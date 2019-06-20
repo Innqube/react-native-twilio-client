@@ -1,21 +1,19 @@
 {
   "_args": [
     [
-      "react-native-twilio-client@1.0.0",
+      "git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
       "/Users/quique/dev/interpreter-intelligence/mobile-interpreter-direct"
     ]
   ],
   "_from": "git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
-  "_id": "react-native-twilio-client@1.0.0",
+  "_id": "react-native-twilio-client@git+https://github.com/Innqube/react-native-twilio-client.git#b3a42f98d2a5855f62967e821b58fab387a2bcb9",
   "_inBundle": false,
   "_integrity": "",
   "_location": "/react-native-twilio-client",
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "react-native-twilio-client@git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
-    "name": "react-native-twilio-client",
-    "escapedName": "react-native-twilio-client",
+    "raw": "git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
     "rawSpec": "git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
     "saveSpec": "git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
     "fetchSpec": "https://github.com/Innqube/react-native-twilio-client.git",
@@ -25,7 +23,7 @@
     "/"
   ],
   "_resolved": "git+https://github.com/Innqube/react-native-twilio-client.git#b3a42f98d2a5855f62967e821b58fab387a2bcb9",
-  "_spec": "react-native-twilio-client@git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
+  "_spec": "git+https://github.com/Innqube/react-native-twilio-client.git#rn-twilio-chat-integration",
   "_where": "/Users/quique/dev/interpreter-intelligence/mobile-interpreter-direct",
   "author": {
     "name": "InnQube"
