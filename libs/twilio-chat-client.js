@@ -28,9 +28,8 @@ const TwilioChatClient = {
         return RNTwilioChatClient.sendMessage(message);
             // .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
     },
-
-    joinChannel(channelSid) {
-        return RNTwilioChatClient.joinChannel(channelSid);
+    joinChannel(uniqueName, friendlyName, type) {
+        return RNTwilioChatClient.joinChannel(uniqueName, friendlyName, type);
     },
     getPublicChannels(): Promise<Channel[]> {
         return RNTwilioChatClient.getPublicChannels();
@@ -55,6 +54,9 @@ const TwilioChatClient = {
             throw new Error('Index is required and must be a number');
         }
         return RNTwilioChatClient.getMessagesBefore(index, count);
+    },
+    typing() {
+        RNTwilioChatClient.typing();
     }
 }
 

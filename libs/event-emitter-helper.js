@@ -22,6 +22,8 @@ const _eventHandlers = {
     // Chat events
     synchronizationStatusUpdated: new Map(),
     messageAdded: new Map(),
+    typingStartedOnChannel: new Map(),
+    typingEndedOnChannel: new Map()
 }
 
 const EventEmitterHelper = {
