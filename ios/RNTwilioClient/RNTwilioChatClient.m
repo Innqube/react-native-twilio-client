@@ -74,7 +74,7 @@ RCT_REMAP_METHOD(sendMessage, message:(NSString*)message send_message_resolver:(
                 NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage: message '%@' sent", message);
                 resolve(@"Message sent");
             } else {
-                NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage: message '%@' not sent", message);
+                NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage: message '%@' not sent with error", message, result.error);
                 reject(@"error", @"Message not sent", nil);
             }
         }];
@@ -220,7 +220,7 @@ RCT_REMAP_METHOD(getLastMessages, count: (nonnull NSNumber *)count last_messages
                                          }];
 }
 
-RCT_REMAP_METHOD(getMessagesBefore, index: (nonnull NSNumber *)index count: (nonnull NSNumber *) count messages_before_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(getMessagesBefore, beforeIndex: (nonnull NSNumber *)index count: (nonnull NSNumber *) count messages_before_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     [self.channel.messages getMessagesBefore:(index.intValue - 1)
                                    withCount:count.longValue
                                   completion:^(TCHResult *result, NSArray<TCHMessage *> *messages) {
@@ -233,27 +233,90 @@ RCT_REMAP_METHOD(getMessagesBefore, index: (nonnull NSNumber *)index count: (non
                                   }];
 }
 
+RCT_REMAP_METHOD(getMessagesAfter, afterIndex: (nonnull NSNumber *)index count: (nonnull NSNumber *) count messages_before_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.channel.messages getMessagesAfter:(index.intValue + 1)
+                                   withCount:count.longValue
+                                  completion:^(TCHResult *result, NSArray<TCHMessage *> *messages) {
+                                      if ([result isSuccessful]) {
+                                          resolve([self buildMessageJsonArray:messages]);
+                                      } else {
+                                          NSLog(@"[IIMobile - RNTwilioChatClient] getMessagesAfter failed with error %@", result.error);
+                                          reject(@"error", @"getMessagesAfter failed", result.error);
+                                      }
+                                  }];
+}
+
 RCT_EXPORT_METHOD(typing) {
     [self.channel typing];
 }
 
+RCT_REMAP_METHOD(getUnreadMessagesCount, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if (self.channel.messages.lastConsumedMessageIndex) {
+        [self.channel getUnconsumedMessagesCountWithCompletion:^(TCHResult *result, NSUInteger count) {
+            if ([result isSuccessful]) {
+                NSString *strCount = [NSString stringWithFormat:@"%lu", (unsigned long)count];
+                NSLog(@"[IIMobile - RNTwilioChatClient] getUnreadMessages: %@", strCount);
+                resolve(strCount);
+            } else {
+                NSLog(@"[IIMobile - RNTwilioChatClient] getUnreadMessages failed with error %@", result.error);
+                reject(@"error", @"getUnreadMessages failed", nil);
+            }
+        }];
+    } else {
+          [self.channel getMessagesCountWithCompletion:^(TCHResult *result, NSUInteger count) {
+              if ([result isSuccessful]) {
+                  NSString *strCount = [NSString stringWithFormat:@"%lu", (unsigned long)count];
+                  NSLog(@"[IIMobile - RNTwilioChatClient] getUnreadMessages: %@", strCount);
+                  resolve(strCount);
+              } else {
+                  NSLog(@"[IIMobile - RNTwilioChatClient] getUnreadMessages failed with error %@", result.error);
+                  reject(@"error", @"getUnreadMessages failed", nil);
+              }
+          }];
+    }
+}
+
+RCT_REMAP_METHOD(getMessagesCount, countResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.channel getMessagesCountWithCompletion:^(TCHResult *result, NSUInteger count) {
+        if ([result isSuccessful]) {
+            NSString *strCount = [NSString stringWithFormat:@"%lu", (unsigned long)count];
+            NSLog(@"[IIMobile - RNTwilioChatClient] getMessagesCount: %@", strCount);
+            resolve(strCount);
+        } else {
+            NSLog(@"[IIMobile - RNTwilioChatClient] getMessagesCount failed with error %@", result.error);
+            reject(@"error", @"getUnreadMessages failed", nil);
+        }
+    }];
+}
+
+RCT_REMAP_METHOD(getLastConsumedMessageIndex, consumedMessageIndexResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if (self.channel.messages.lastConsumedMessageIndex) {
+        NSLog(@"[IIMobile - RNTwilioChatClient] getLastConsumedMessageIndex: %@", self.channel.messages.lastConsumedMessageIndex);
+        resolve(self.channel.messages.lastConsumedMessageIndex);
+    } else {
+        NSLog(@"[IIMobile - RNTwilioChatClient] getLastConsumedMessageIndex: 0");
+        resolve(@"0");
+    }
+}
+
 - (NSDictionary*) buildMessageJson:(TCHMessage *)message {
+    //(message.body != nil && ![message.body  isEqual: @"(null)"])
     return @{
              @"sid": message.sid,
              @"index": message.index,
              @"author": message.author,
              @"timeStamp": message.timestamp,
-             @"body": message.body
+             @"body": message.body ?  message.body : @""
              };
 }
 
 - (NSMutableArray*) buildMessageJsonArray:(NSArray<TCHMessage *> *)messages {
     NSMutableArray *jsonArray = [[NSMutableArray alloc] init];
     for (TCHMessage *message in messages) {
-        if (message.body != nil && ![message.body  isEqual: @"(null)"]) {
+        //if (message.body != nil && ![message.body  isEqual: @"(null)"]) {
             NSDictionary *jsonMessage = [self buildMessageJson:message];
             [jsonArray addObject: jsonMessage];
-        }
+        //}
     }
     return jsonArray;
 }
@@ -322,6 +385,7 @@ RCT_EXPORT_METHOD(typing) {
                               };
     [RNEventEmitterHelper emitEventWithName:@"typingEndedOnChannel" andPayload:payload];
 }
+
 
 +(BOOL)requiresMainQueueSetup {
     return NO;

@@ -55,8 +55,26 @@ const TwilioChatClient = {
         }
         return RNTwilioChatClient.getMessagesBefore(index, count);
     },
+    getMessagesAfter(index, count): Promise<Message[]> {
+        if (typeof count !== 'number') {
+            throw new Error('Count is required and must be a number');
+        }
+        if (typeof index !== 'number') {
+            throw new Error('Index is required and must be a number');
+        }
+        return RNTwilioChatClient.getMessagesAfter(index, count);
+    },
     typing() {
         RNTwilioChatClient.typing();
+    },
+    getUnreadMessagesCount() {
+        return RNTwilioChatClient.getUnreadMessagesCount();
+    },
+    getLastConsumedMessageIndex() {
+        return RNTwilioChatClient.getLastConsumedMessageIndex();
+    },
+    getMessagesCount() {
+        return RNTwilioChatClient.getMessagesCount();
     }
 }
 
