@@ -75,6 +75,15 @@ const TwilioChatClient = {
     },
     getMessagesCount() {
         return RNTwilioChatClient.getMessagesCount();
+    },
+    setNoMessagesConsumed() {
+        return RNTwilioChatClient.setNoMessagesConsumed();
+    },
+    setAllMessagesConsumed() {
+        return RNTwilioChatClient.setAllMessagesConsumed();
+    },
+    setLastConsumedMessage(index) {
+        return RNTwilioChatClient.setLastConsumedMessage(index);
     }
 }
 

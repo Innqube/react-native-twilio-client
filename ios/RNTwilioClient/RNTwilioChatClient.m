@@ -299,6 +299,43 @@ RCT_REMAP_METHOD(getLastConsumedMessageIndex, consumedMessageIndexResolver:(RCTP
     }
 }
 
+RCT_REMAP_METHOD(setNoMessagesConsumed, noMessageConsumedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.channel.messages setNoMessagesConsumedWithCompletion:^(TCHResult *result, NSUInteger count) {
+        if ([result isSuccessful]) {
+            NSLog(@"[IIMobile - RNTwilioChatClient] setNoMessagesConsumed: Ok");
+            resolve(@"ok");
+        } else {
+            NSLog(@"[IIMobile - RNTwilioChatClient] setNoMessagesConsumed failed with error %@", result.error);
+            reject(@"error", @"failed to set all messages as not read", nil);
+        }
+    }];
+}
+
+RCT_REMAP_METHOD(setAllMessagesConsumed, allMessageConsumedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.channel.messages setNoMessagesConsumedWithCompletion:^(TCHResult *result, NSUInteger count) {
+        if ([result isSuccessful]) {
+            NSLog(@"[IIMobile - RNTwilioChatClient] setAllMessagesConsumed: Ok");
+            resolve(@"ok");
+        } else {
+            NSLog(@"[IIMobile - RNTwilioChatClient] setAllMessagesConsumed failed with error %@", result.error);
+            reject(@"error", @"failed to set all messages as read", nil);
+        }
+    }];
+}
+
+RCT_REMAP_METHOD(setLastConsumedMessage, withIndex:(nonnull NSNumber *)index allMessageConsumedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.channel.messages setLastConsumedMessageIndex:index
+                                            completion:^(TCHResult *result, NSUInteger count) {
+        if ([result isSuccessful]) {
+            NSLog(@"[IIMobile - RNTwilioChatClient] setLastConsumedMessage: Ok");
+            resolve(@"ok");
+        } else {
+            NSLog(@"[IIMobile - RNTwilioChatClient] setLastConsumedMessage failed with error %@", result.error);
+            reject(@"error", @"failed to set last consumed message index", nil);
+        }
+    }];
+}
+
 - (NSDictionary*) buildMessageJson:(TCHMessage *)message {
     //(message.body != nil && ![message.body  isEqual: @"(null)"])
     return @{
