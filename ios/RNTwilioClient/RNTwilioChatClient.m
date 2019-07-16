@@ -323,17 +323,30 @@ RCT_REMAP_METHOD(setAllMessagesConsumed, allMessageConsumedResolver:(RCTPromiseR
     }];
 }
 
-RCT_REMAP_METHOD(setLastConsumedMessage, withIndex:(nonnull NSNumber *)index allMessageConsumedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(setLastConsumedMessage, withIndex:(nonnull NSNumber *)index setMessageConsumedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     [self.channel.messages setLastConsumedMessageIndex:index
                                             completion:^(TCHResult *result, NSUInteger count) {
         if ([result isSuccessful]) {
-            NSLog(@"[IIMobile - RNTwilioChatClient] setLastConsumedMessage: Ok");
+            NSLog(@"[IIMobile - RNTwilioChatClient] setLastConsumedMessage: %@", index);
             resolve(@"ok");
         } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] setLastConsumedMessage failed with error %@", result.error);
             reject(@"error", @"failed to set last consumed message index", nil);
         }
     }];
+}
+
+RCT_REMAP_METHOD(advanceLastConsumedMessage, withIndex:(nonnull NSNumber *)index advanceMessageConsumedResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [self.channel.messages advanceLastConsumedMessageIndex:index
+                                            completion:^(TCHResult *result, NSUInteger count) {
+                                                if ([result isSuccessful]) {
+                                                    NSLog(@"[IIMobile - RNTwilioChatClient] advanceLastConsumedMessage: %@", index);
+                                                    resolve(@"ok");
+                                                } else {
+                                                    NSLog(@"[IIMobile - RNTwilioChatClient] advanceLastConsumedMessage failed with error %@", result.error);
+                                                    reject(@"error", @"failed to advance last consumed message index", nil);
+                                                }
+                                            }];
 }
 
 - (NSDictionary*) buildMessageJson:(TCHMessage *)message {

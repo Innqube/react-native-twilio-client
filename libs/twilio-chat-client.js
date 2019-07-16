@@ -84,6 +84,9 @@ const TwilioChatClient = {
     },
     setLastConsumedMessage(index) {
         return RNTwilioChatClient.setLastConsumedMessage(index);
+    },
+    advanceLastConsumedMessage(index) {
+        return RNTwilioChatClient.advanceLastConsumedMessage(index);
     }
 }
 
