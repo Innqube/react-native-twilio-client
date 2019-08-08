@@ -734,6 +734,11 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
         audioManager.setSpeakerphoneOn(value);
     }
 
+    @ReactMethod
+    public void sendMessage(String message) {
+
+    }
+
     // *** End TwilioClient public methods ****
 
 }
