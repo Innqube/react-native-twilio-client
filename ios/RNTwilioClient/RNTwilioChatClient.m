@@ -154,9 +154,10 @@ RCT_REMAP_METHOD(joinChannel, uniqueName:(NSString *)uniqueName friendlyName:(NS
     }
 }
 
+
 RCT_REMAP_METHOD(createChannel, uniqueName:(NSString *)uniqueName friendlyName:(NSString *) friendlyName type:(NSString *) type create_channel_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioChatClient] createChannel called with type: %@ with uniqueName: %@", type, uniqueName);
-    
+
     [self createChannel:uniqueName
        withFriendlyName:friendlyName
                 andType:type
@@ -204,6 +205,29 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
         } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] getUserChannels failed with error %@", result.error);
             reject(@"error", @"getUserChannels failed", result.error);
+        }
+    }];
+}
+
+RCT_REMAP_METHOD(getChannelMembers, members_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSLog(@"[IIMobile - RNTwilioChatClient] getChannelMembers called");
+
+    [self.channel.members membersWithCompletion:^(TCHResult *result, TCHMemberPaginator *paginator) {
+        if (result.isSuccessful) {
+            NSMutableArray *members = [[NSMutableArray alloc] init];
+            for (TCHMember *member in paginator.items) {
+                [members addObject:@{
+                                     @"sid": member.sid,
+                                     @"identity": member.identity,
+                                     @"lastConsumedMessageIndex": member.lastConsumedMessageIndex ? member.lastConsumedMessageIndex  : @"null"
+                                     }];
+
+            }
+            NSLog(@"[IIMobile - RNTwilioChatClient] getChannelMembers with members %@", members);
+            resolve(members);
+        } else {
+            NSLog(@"[IIMobile - RNTwilioChatClient] getChannelMembers failed with error %@", result.error);
+            reject(@"error", @"getChannelMembers failed", result.error);
         }
     }];
 }

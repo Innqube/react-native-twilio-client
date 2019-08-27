@@ -26,7 +26,7 @@ const TwilioChatClient = {
             throw new Error('Message is required and must be a string');
         }
         return RNTwilioChatClient.sendMessage(message);
-            // .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
+        // .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
     },
     joinChannel(uniqueName, friendlyName, type) {
         return RNTwilioChatClient.joinChannel(uniqueName, friendlyName, type);
@@ -39,6 +39,9 @@ const TwilioChatClient = {
     },
     createChannel(uniqueName, friendlyName, type): Promise<Channel> {
         return RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
+    },
+    getChannelMembers(): Promise<any[]> {
+        return RNTwilioChatClient.getChannelMembers();
     },
     getLastMessages(count): Promise<Message[]> {
         if (typeof count !== 'number') {
