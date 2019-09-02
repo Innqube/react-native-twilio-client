@@ -373,24 +373,22 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, withIndex:(nonnull NSNumber *)index
                                             }];
 }
 
-- (NSDictionary*) buildMessageJson:(TCHMessage *)message {
-    //(message.body != nil && ![message.body  isEqual: @"(null)"])
+- (NSDictionary*) buildMessageJson:(TCHMessage *)message withChannel:(TCHChannel *) channel {
     return @{
              @"sid": message.sid,
              @"index": message.index,
              @"author": message.author,
              @"timeStamp": message.timestamp,
-             @"body": message.body ?  message.body : @""
+             @"body": message.body ?  message.body : @"",
+             @"channelUniqueName": channel.uniqueName
              };
 }
 
 - (NSMutableArray*) buildMessageJsonArray:(NSArray<TCHMessage *> *)messages {
     NSMutableArray *jsonArray = [[NSMutableArray alloc] init];
     for (TCHMessage *message in messages) {
-        //if (message.body != nil && ![message.body  isEqual: @"(null)"]) {
-            NSDictionary *jsonMessage = [self buildMessageJson:message];
+        NSDictionary *jsonMessage = [self buildMessageJson:message withChannel: self.channel];
             [jsonArray addObject: jsonMessage];
-        //}
     }
     return jsonArray;
 }
@@ -398,7 +396,7 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, withIndex:(nonnull NSNumber *)index
 - (void) createGeneralChannel {
     NSDictionary *channelOptions = @{TCHChannelOptionFriendlyName: @"General Chat Channel",
                                      TCHChannelOptionType: @(TCHChannelTypePublic)};
-    
+
     [client.channelsList createChannelWithOptions:channelOptions
                                        completion:^(TCHResult *result, TCHChannel *channel) {
                                            self.channel = channel;
@@ -412,7 +410,7 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, withIndex:(nonnull NSNumber *)index
 
 - (NSString*) convertSyncStatusToString:(TCHClientSynchronizationStatus) status {
     NSString *result = nil;
-    
+
     switch(status) {
             case TCHClientSynchronizationStatusStarted:
             result = @"TCHClientSynchronizationStatusStarted";
@@ -434,13 +432,13 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, withIndex:(nonnull NSNumber *)index
 
 - (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
     NSLog(@"[IIMobile - RNTwilioChatClient] synchronizationStatusUpdated with status: %@", [self convertSyncStatusToString:status]);
-    
+
     [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusUpdated" andPayload:@{@"status": [self convertSyncStatusToString:status]}];
 }
 
 - (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel messageAdded:(TCHMessage *)message {
     NSLog(@"[IIMobile - RNTwilioChatClient] messageAdded");
-    NSDictionary *messageJson = [self buildMessageJson:message];
+    NSDictionary *messageJson = [self buildMessageJson:message withChannel:channel];
     [RNEventEmitterHelper emitEventWithName:@"messageAdded" andPayload:messageJson];
 }
 
