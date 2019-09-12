@@ -356,8 +356,8 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
                 }
                 SoundPoolManager.getInstance(getReactApplicationContext()).playRinging();
 
-                if (getCurrentActivity() != null) {
-                    Window window = getCurrentActivity().getWindow();
+                if (getReactApplicationContext().getCurrentActivity() != null) {
+                    Window window = getReactApplicationContext().getCurrentActivity().getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                             | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                     );
@@ -429,11 +429,6 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
             }
             registerForCallInvites();
         }
-    }
-
-    @Override
-    public void onActivityResult(int i, int i1, Intent intent) {
-
     }
 
     private class VoiceBroadcastReceiver extends BroadcastReceiver {
