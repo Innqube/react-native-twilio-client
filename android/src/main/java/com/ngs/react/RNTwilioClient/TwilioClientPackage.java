@@ -5,9 +5,10 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.ngs.react.RNLogHelper.LogHelperModule;
 
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TwilioClientPackage implements ReactPackage {
@@ -34,6 +35,7 @@ public class TwilioClientPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new TwilioClientModule(reactContext, mShouldAskForPermission));
+        modules.add(new LogHelperModule(reactContext));
         return modules;
     }
 }

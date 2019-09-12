@@ -14,7 +14,6 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
-
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,20 +21,17 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.AssertionException;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.ReadableMap;
-
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
-
-import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.AssertionException;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.twilio.voice.Call;
@@ -49,7 +45,13 @@ import com.twilio.voice.Voice;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ngs.react.RNTwilioClient.EventManager.*;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_CONNECTION_DID_CONNECT;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_CONNECTION_DID_DISCONNECT;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_DEVICE_DID_RECEIVE_INCOMING;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_DEVICE_NOT_READY;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_DEVICE_READY;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_VOIP_REMOTE_NOTIFICATION_RECEIVED;
+import static com.ngs.react.RNTwilioClient.EventManager.EVENT_VOIP_REMOTE_NOTIFICATION_REGISTERED;
 
 public class TwilioClientModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
@@ -354,8 +356,8 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
                 }
                 SoundPoolManager.getInstance(getReactApplicationContext()).playRinging();
 
-                if (getReactApplicationContext().getCurrentActivity() != null) {
-                    Window window = getReactApplicationContext().getCurrentActivity().getWindow();
+                if (getCurrentActivity() != null) {
+                    Window window = getCurrentActivity().getWindow();
                     window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                             | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                     );
@@ -427,6 +429,11 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
             }
             registerForCallInvites();
         }
+    }
+
+    @Override
+    public void onActivityResult(int i, int i1, Intent intent) {
+
     }
 
     private class VoiceBroadcastReceiver extends BroadcastReceiver {
