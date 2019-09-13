@@ -4,11 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
@@ -20,47 +16,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.AssertionException;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.twilio.chat.CallbackListener;
-import com.twilio.chat.Channels;
-import com.twilio.chat.ChatClient;
-import com.twilio.chat.ChatClientListener;
-import com.twilio.chat.ErrorInfo;
-import com.twilio.chat.NotificationPayload;
-import com.twilio.chat.StatusListener;
-import com.twilio.chat.Users;
-import com.twilio.voice.Call;
-import com.twilio.voice.CallException;
-import com.twilio.voice.CallInvite;
-import com.twilio.voice.LogLevel;
-import com.twilio.voice.RegistrationException;
-import com.twilio.voice.RegistrationListener;
-import com.twilio.voice.Voice;
+import com.twilio.chat.*;
+import com.twilio.voice.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_CONNECTION_DID_CONNECT;
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_CONNECTION_DID_DISCONNECT;
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_DEVICE_DID_RECEIVE_INCOMING;
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_DEVICE_NOT_READY;
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_DEVICE_READY;
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_VOIP_REMOTE_NOTIFICATION_RECEIVED;
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_VOIP_REMOTE_NOTIFICATION_REGISTERED;
+import static com.ngs.react.RNTwilioClient.EventManager.*;
 
 public class TwilioClientModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
@@ -773,20 +738,20 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     }
 
     @ReactMethod
-    public void create(String token, final Callback errorCallback, final Callback successCallback) {
-        ChatClient.Properties properties = new ChatClient.Properties.Builder()
-                .setRegion("us1")
-                .createProperties();
-
+    public void create(String token, final Promise promise) {
+        ChatClient.Properties properties = new ChatClient.Properties.Builder().createProperties();
         ChatClient.create(getReactApplicationContext(), token, properties, new CallbackListener<ChatClient>() {
             @Override
             public void onSuccess(ChatClient chatClient) {
-                successCallback.invoke(chatClient);
+                promise.resolve(chatClient);
             }
 
             @Override
             public void onError(ErrorInfo errorInfo) {
-                errorCallback.invoke(errorInfo);
+                promise.reject(
+                        Integer.valueOf(errorInfo == null ? -1 : errorInfo.getCode()).toString(),
+                        errorInfo == null ? "Unknown error" : errorInfo.getMessage()
+                );
             }
         });
     }
