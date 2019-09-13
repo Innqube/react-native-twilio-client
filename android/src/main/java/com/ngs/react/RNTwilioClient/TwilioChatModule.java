@@ -35,7 +35,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
             @Override
             public void onSuccess(ChatClient chatClient) {
                 Log.d(LOG_TAG, "Chat client created");
-                promise.resolve(chatClient);
+                promise.resolve(null);
             }
 
             @Override
