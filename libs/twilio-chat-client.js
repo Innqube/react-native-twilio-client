@@ -11,6 +11,10 @@ const {
 
 const TwilioChatClient = {
 
+    create(token) {
+        return RNTwilioChatClient.create(token);
+    },
+
     async initialize(initialToken) {
         if (typeof initialToken !== 'string') {
             return {
