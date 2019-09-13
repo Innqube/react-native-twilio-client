@@ -32,7 +32,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void create(String token, final Promise promise) {
-        Log.d(LOG_TAG, "About to create client");
+        Log.d(LOG_TAG, "create");
         ChatClient.Properties properties = new ChatClient.Properties.Builder().createProperties();
         ChatClient.create(getReactApplicationContext(), token, properties, new PromiseCallbackListener<ChatClient>(promise) {
             @Override
@@ -46,6 +46,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void createChannel(String friendlyName, String uniqueName, ReadableMap attributes, final Promise promise) {
+        Log.d(LOG_TAG, "createChannel");
         try {
             JSONObject attr = Converters.convertMapToJson(attributes);
             this.chatClient
@@ -73,6 +74,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getChannel(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getChannel");
         chatClient.getChannels().getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
             @Override
             public void onSuccess(Channel channel) {
@@ -88,6 +90,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void sendMessage(String channelSidOrUniqueName, final String message, final Promise promise) {
+        Log.d(LOG_TAG, "sendMessage");
         chatClient
                 .getChannels()
                 .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
@@ -115,6 +118,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getMessages(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
+        Log.d(LOG_TAG, "getMessages");
         chatClient
                 .getChannels()
                 .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
