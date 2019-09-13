@@ -8,14 +8,45 @@ const {
     RNTwilioChatClient,
 } = NativeModules;
 
+const Message = {
+
+    author: string;
+    channelSid: string;
+    messageBody: string;
+    messageIndex: number;
+    sid: string;
+    attributes;
+    dateCreated: string;
+
+}
+
+const ChatChannel = {
+
+    uniqueName: string;
+    riendlyName: string;
+    sid: string;
+    lastMessageIndex: number;
+    attributes;
+
+    getMessages(index: number, count: number): Promise<Message[]> {
+        return RNTwilioChatClient.getMessages(this.uniqueName, index, count);
+    }
+
+}
 
 const TwilioChatClient = {
 
     create(token) {
-        return RNTwilioChatClient.create(token);
+        return RNTwilioChatClient
+            .create(token)
+            .then(() => new Promise((resolve, reject) => resolve(this)));
     },
 
-    async initialize(initialToken) {
+    getChannel(channelSidOrUniqueName: string): Promise<ChatChannel> {
+        return RNTwilioChatClient.getChannel(channelSidOrUniqueName);
+    }
+
+    /* async initialize(initialToken) {
         if (typeof initialToken !== 'string') {
             return {
                 initialized: false,
@@ -95,6 +126,9 @@ const TwilioChatClient = {
     advanceLastConsumedMessage(index) {
         return RNTwilioChatClient.advanceLastConsumedMessage(index);
     }
+    */
 }
 
 export default TwilioChatClient;
+export default ChatChannel;
+export default Message;
