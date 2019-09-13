@@ -5,28 +5,13 @@ import Channel from './domain/channel';
 import Message from './domain/message';
 
 const {
-    RNTwilioChatClient,
+    RNTwilioChat,
 } = NativeModules;
 
-const Message = {
-
-    author: string;
-    channelSid: string;
-    messageBody: string;
-    messageIndex: number;
-    sid: string;
-    attributes;
-    dateCreated: string;
-
+const TwilioMessage = {
 }
 
 const ChatChannel = {
-
-    uniqueName: string;
-    riendlyName: string;
-    sid: string;
-    lastMessageIndex: number;
-    attributes;
 
     getMessages(index: number, count: number): Promise<Message[]> {
         return RNTwilioChatClient.getMessages(this.uniqueName, index, count);
@@ -37,13 +22,13 @@ const ChatChannel = {
 const TwilioChatClient = {
 
     create(token) {
-        return RNTwilioChatClient
+        return RNTwilioChat
             .create(token)
             .then(() => new Promise((resolve, reject) => resolve(this)));
     },
 
     getChannel(channelSidOrUniqueName: string): Promise<ChatChannel> {
-        return RNTwilioChatClient.getChannel(channelSidOrUniqueName);
+        return RNTwilioChat.getChannel(channelSidOrUniqueName);
     }
 
     /* async initialize(initialToken) {
@@ -130,5 +115,3 @@ const TwilioChatClient = {
 }
 
 export default TwilioChatClient;
-export default ChatChannel;
-export default Message;
