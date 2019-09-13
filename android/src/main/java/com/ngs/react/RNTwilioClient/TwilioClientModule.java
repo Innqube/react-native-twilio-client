@@ -739,18 +739,21 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
 
     @ReactMethod
     public void create(String token, final Promise promise) {
+        Log.d("[IIMobile-Chat]", "About to create client");
         ChatClient.Properties properties = new ChatClient.Properties.Builder().createProperties();
         ChatClient.create(getReactApplicationContext(), token, properties, new CallbackListener<ChatClient>() {
             @Override
             public void onSuccess(ChatClient chatClient) {
+                Log.d("[IIMobile-Chat]", "Chat client created");
                 promise.resolve(chatClient);
             }
 
             @Override
             public void onError(ErrorInfo errorInfo) {
+                Log.d("[IIMobile-Chat]", "Error creating client: " + errorInfo.getCode() + ": " + errorInfo.getMessage());
                 promise.reject(
-                        Integer.valueOf(errorInfo == null ? -1 : errorInfo.getCode()).toString(),
-                        errorInfo == null ? "Unknown error" : errorInfo.getMessage()
+                        Integer.valueOf(errorInfo.getCode()).toString(),
+                        errorInfo.getMessage()
                 );
             }
         });
