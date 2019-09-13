@@ -1,7 +1,6 @@
 package com.ngs.react.RNTwilioClient;
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -20,11 +19,6 @@ public class TwilioClientPackage implements ReactPackage {
 
     public TwilioClientPackage(boolean shouldAskForPermissions) {
         mShouldAskForPermission = shouldAskForPermissions;
-    }
-
-    // Deprecated in RN 0.47.0
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
     }
 
     @Override

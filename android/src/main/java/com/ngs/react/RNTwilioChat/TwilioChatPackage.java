@@ -1,7 +1,6 @@
 package com.ngs.react.RNTwilioChat;
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -17,11 +16,6 @@ public class TwilioChatPackage implements ReactPackage {
         List<NativeModule> list = new ArrayList<>();
         list.add(new TwilioChatModule(reactContext));
         return list;
-    }
-
-    @Override
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
     }
 
     @Override
