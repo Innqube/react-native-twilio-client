@@ -5,33 +5,13 @@ import Channel from './domain/channel';
 import Message from './domain/message';
 
 const {
-    RNTwilioChat,
+    RNTwilioChatClient,
 } = NativeModules;
 
-const TwilioMessage = {
-}
-
-const ChatChannel = {
-
-    getMessages(index: number, count: number): Promise<Message[]> {
-        return RNTwilioChatClient.getMessages(this.uniqueName, index, count);
-    }
-
-}
 
 const TwilioChatClient = {
 
-    create(token) {
-        return RNTwilioChat
-            .create(token)
-            .then(() => new Promise((resolve, reject) => resolve(this)));
-    },
-
-    getChannel(channelSidOrUniqueName: string): Promise<ChatChannel> {
-        return RNTwilioChat.getChannel(channelSidOrUniqueName);
-    }
-
-    /* async initialize(initialToken) {
+    async initialize(initialToken) {
         if (typeof initialToken !== 'string') {
             return {
                 initialized: false,
@@ -40,7 +20,15 @@ const TwilioChatClient = {
         };
         return await RNTwilioChatClient.createClient(initialToken, null);
     },
-
+    update(updatedToken) {
+        if (typeof updatedToken !== 'string') {
+            return {
+                updated: false,
+                err: 'Invalid token, token must be a string'
+            }
+        };
+        return RNTwilioChatClient.updateClient(updatedToken, null);
+    },
     sendMessage(message) {
         if (typeof message !== 'string') {
             throw new Error('Message is required and must be a string');
@@ -111,7 +99,6 @@ const TwilioChatClient = {
     advanceLastConsumedMessage(index) {
         return RNTwilioChatClient.advanceLastConsumedMessage(index);
     }
-    */
 }
 
 export default TwilioChatClient;

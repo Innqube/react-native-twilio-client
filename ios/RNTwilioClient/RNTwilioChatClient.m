@@ -62,9 +62,21 @@ RCT_REMAP_METHOD(createClient, token:(NSString*)token properties:(NSDictionary *
     }];
 }
 
+RCT_REMAP_METHOD(updateClient, updatedToken:(NSString*)token resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+
+    [self.client updateToken:token
+                 completion:^(TCHResult * _Nonnull result) {
+                     if (result.isSuccessful) {
+                         NSLog(@"[IIMobile - RNTwilioChatClient] ChatClient successfully updated");
+                     } else {
+                         NSLog(@"[IIMobile - RNTwilioChatClient] ChatClient update failed with error %@", result.error);
+                     }
+                 }];
+}
+
 RCT_REMAP_METHOD(sendMessage, message:(NSString*)message send_message_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioChatClient] sendMessage called with message: %@", message);
-    
+
     if (message == nil) {
         reject(@"Message cannot be null", nil, nil);
     } else {
@@ -83,8 +95,8 @@ RCT_REMAP_METHOD(sendMessage, message:(NSString*)message send_message_resolver:(
 
 RCT_REMAP_METHOD(joinChannel, uniqueName:(NSString *)uniqueName friendlyName:(NSString *)friendlyName type:(NSString *)type join_channel_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioChatClient] joinChannel called with uniqueName: %@", uniqueName);
-    
-    [client.channelsList channelWithSidOrUniqueName:uniqueName completion:^(TCHResult *result, TCHChannel *channel) {
+
+    [self.client.channelsList channelWithSidOrUniqueName:uniqueName completion:^(TCHResult *result, TCHChannel *channel) {
         if (channel) {
             [self joinChannel:channel resolver:resolve rejecter:reject];
         } else {
@@ -94,8 +106,8 @@ RCT_REMAP_METHOD(joinChannel, uniqueName:(NSString *)uniqueName friendlyName:(NS
 }
 /*
 - (BOOL)isMe:(TCHMember *)member {
-    
-    
+
+
     return ([[member identity] isEqualToString:[[[[ChatManager sharedManager] client] user] identity]]);
 }*/
 
@@ -118,7 +130,7 @@ RCT_REMAP_METHOD(joinChannel, uniqueName:(NSString *)uniqueName friendlyName:(NS
                       @"friendlyName": channel.friendlyName
                       });
         } else {
-            NSLog(@"[IIMobile - RNTwilioChatClient] joinChannel: Failed to join %@ channel with error %@", channel.uniqueName, result.error);
+            NSLog(@"[IIMobile - RNTwilioChatClient] joinChannel: Failed to join %@ channel with error %@", channel.uniqueName, result.resultText);
             reject(@"error", @"Failed to join channel.", nil);
         }
     }];
@@ -135,11 +147,11 @@ RCT_REMAP_METHOD(joinChannel, uniqueName:(NSString *)uniqueName friendlyName:(NS
         } else if ([type isEqualToString:@"public"]) {
             channelType = @(TCHChannelTypePublic);
         }
-        
+
         NSDictionary *channelOptions = @{TCHChannelOptionUniqueName: uniqueName,
                                          TCHChannelOptionFriendlyName: friendlyName,
                                          TCHChannelOptionType: channelType};
-        
+
         [client.channelsList createChannelWithOptions:channelOptions
                                            completion:^(TCHResult *result, TCHChannel *channel) {
                                                if ([result isSuccessful]) {
@@ -458,6 +470,13 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, withIndex:(nonnull NSNumber *)index
     [RNEventEmitterHelper emitEventWithName:@"typingEndedOnChannel" andPayload:payload];
 }
 
+- (void)chatClientTokenWillExpire:(TwilioChatClient *)chatClient {
+    [RNEventEmitterHelper emitEventWithName:@"tokenAboutToExpire" andPayload:payload];
+}
+
+- (void)chatClientTokenExpired:(nonnull TwilioChatClient *)client {
+    [RNEventEmitterHelper emitEventWithName:@"tokenExpired" andPayload:payload];
+}
 
 +(BOOL)requiresMainQueueSetup {
     return NO;

@@ -30,7 +30,9 @@ RCT_EXPORT_MODULE();
            @"synchronizationStatusUpdated",
            @"messageAdded",
            @"typingEndedOnChannel",
-           @"typingStartedOnChannel"
+           @"typingStartedOnChannel",
+           @"tokenAboutToExpire",
+           @"tokenExpired"
            ];
 }
 

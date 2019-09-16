@@ -23,7 +23,9 @@ const _eventHandlers = {
     synchronizationStatusUpdated: new Map(),
     messageAdded: new Map(),
     typingStartedOnChannel: new Map(),
-    typingEndedOnChannel: new Map()
+    typingEndedOnChannel: new Map(),
+    tokenAboutToExpire: new Map(),
+    tokenExpired: new Map()
 }
 
 const EventEmitterHelper = {
