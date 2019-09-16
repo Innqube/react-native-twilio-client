@@ -145,6 +145,24 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                 });
     }
 
+    @ReactMethod
+    public void getUnconsumedMessagesCount(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getUnconsumedMessagesCount");
+        chatClient
+            .getChannels()
+            .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
+                    @Override
+                    public void onSuccess(Channel channel) {
+                        channel.getUnconsumedMessagesCount(new PromiseCallbackListener<Long>(promise) {
+                            @Override
+                            public void onSuccess(Long unconsumed) {
+                                promise.resolve(unconsumed);
+                            }
+                        });
+                    }
+            });
+    }
+
     abstract class PromiseCallbackListener<T> extends CallbackListener<T> {
 
         private Promise promise;
