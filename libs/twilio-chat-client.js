@@ -27,7 +27,7 @@ const TwilioChatClient = {
                 err: 'Invalid token, token must be a string'
             }
         };
-        return RNTwilioChatClient.updateClient(updatedToken, null);
+        return RNTwilioChatClient.updateClient(updatedToken);
     },
     sendMessage(message) {
         if (typeof message !== 'string') {
