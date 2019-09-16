@@ -471,11 +471,11 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, withIndex:(nonnull NSNumber *)index
 }
 
 - (void)chatClientTokenWillExpire:(TwilioChatClient *)chatClient {
-    [RNEventEmitterHelper emitEventWithName:@"tokenAboutToExpire" andPayload:payload];
+    [RNEventEmitterHelper emitEventWithName:@"tokenAboutToExpire" andPayload:nil];
 }
 
 - (void)chatClientTokenExpired:(nonnull TwilioChatClient *)client {
-    [RNEventEmitterHelper emitEventWithName:@"tokenExpired" andPayload:payload];
+    [RNEventEmitterHelper emitEventWithName:@"tokenExpired" andPayload:nil];
 }
 
 +(BOOL)requiresMainQueueSetup {
