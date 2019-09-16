@@ -1,29 +1,12 @@
 import {NativeModules} from "react-native";
+import ChatChannel from './chat/chat-channel';
+import EventEmitterHelper from './event-emitter-helper';
 
 const {
     RNTwilioChatClient,
 } = NativeModules;
 
-const TwilioMessage = {
-}
-
-const ChatChannel = function (props) {
-
-    this.uniqueName = props.uniqueName;
-    this.friendlyName = props.friendlyName;
-    this.sid = props.sid;
-    this.lastMessageIndex = props.lastMessageIndex;
-    this.attributes = props.attributes;
-
-    this.getMessages = function(index, count) {
-        return RNTwilioChatClient.getMessages(this.uniqueName, index, count);
-    },
-
-    this.getUnconsumedMessagesCount = function() {
-        return RNTwilioChatClient.getUnconsumedMessagesCount(this.uniqueName);
-    }
-
-}
+const TwilioMessage = {}
 
 const TwilioChat = {
 
@@ -36,7 +19,19 @@ const TwilioChat = {
     getChannel(channelSidOrUniqueName) {
         return RNTwilioChatClient
             .getChannel(channelSidOrUniqueName)
-            .then(channel => Promise.resolve(new ChatChannel(channel)));
+            .then(channel => {
+                const chatChannel = new ChatChannel(channel);
+                EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
+                return new Promise((resolve, reject) => resolve(chatChannel));
+            });
+    },
+
+    _messageFilter(message, channel) {
+        if (message.channel.sid === channel.sid) {
+            if (channel.onNewMessage) {
+                channel.onNewMessage(message);
+            }
+        }
     }
 
 }
