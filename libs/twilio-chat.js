@@ -13,16 +13,16 @@ const ChatChannel = {
 
 }
 
-const TwilioChatClient = {
+const TwilioChat = {
 
     create(token) {
-        return RNTwilioChat
+        return RNTwilioChatClient
             .create(token)
             .then(() => new Promise((resolve, reject) => resolve(this)));
     },
 
     getChannel(channelSidOrUniqueName) {
-        return RNTwilioChat.getChannel(channelSidOrUniqueName);
+        return RNTwilioChatClient.getChannel(channelSidOrUniqueName);
     }
 
 }
