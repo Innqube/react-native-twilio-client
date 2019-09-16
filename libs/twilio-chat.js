@@ -7,21 +7,19 @@ const {
 const TwilioMessage = {
 }
 
-const ChatChannel = {
+const ChatChannel = function (props) {
 
-    constructor(props) {
-        this.uniqueName = props.uniqueName;
-        this.friendlyName = props.friendlyName;
-        this.sid = props.sid;
-        this.lastMessageIndex = props.lastMessageIndex;
-        this.attributes = props.attributes;
-    },
+    this.uniqueName = props.uniqueName;
+    this.friendlyName = props.friendlyName;
+    this.sid = props.sid;
+    this.lastMessageIndex = props.lastMessageIndex;
+    this.attributes = props.attributes;
 
-    getMessages(index, count) {
+    this.getMessages = function(index, count) {
         return RNTwilioChatClient.getMessages(this.uniqueName, index, count);
     },
 
-    getUnconsumedMessagesCount() {
+    this.getUnconsumedMessagesCount = function() {
         return RNTwilioChatClient.getUnconsumedMessagesCount(this.uniqueName);
     }
 
@@ -38,11 +36,7 @@ const TwilioChat = {
     getChannel(channelSidOrUniqueName) {
         return RNTwilioChatClient
             .getChannel(channelSidOrUniqueName)
-            .then(() => new Promise((resolve, reject) => resolve(
-                    new ChatChannel(RNTwilioChatClient.getChannel(channelSidOrUniqueName))
-                    )
-                )
-            );
+            .then(channel => Promise.resolve(new ChatChannel(channel)));
     }
 
 }
