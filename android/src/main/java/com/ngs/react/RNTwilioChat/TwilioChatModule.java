@@ -22,7 +22,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RNTwilioChat";
+        return "RNTwilioChatClient";
     }
 
     @ReactMethod

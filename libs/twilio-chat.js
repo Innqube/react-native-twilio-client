@@ -1,3 +1,5 @@
+import {NativeModules} from "react-native";
+
 const {
     RNTwilioChatClient,
 } = NativeModules;
