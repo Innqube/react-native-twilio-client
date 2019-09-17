@@ -31,7 +31,7 @@ class TwilioChatChannel {
 
     typing = () => RNTwilioChatChannels.typing(this.uniqueName);
 
-    getUnreadMessagesCount = () => RNTwilioChatChannels.getUnreadMessagesCount(this.uniqueName);
+    getUnconsumedMessagesCount = () => RNTwilioChatChannels.getUnconsumedMessagesCount(this.uniqueName);
 
     getMessagesCount = () => RNTwilioChatChannels.getMessagesCount(this.uniqueName);
 
