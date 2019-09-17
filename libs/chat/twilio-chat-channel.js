@@ -31,15 +31,13 @@ class TwilioChatChannel {
 
     typing = () => RNTwilioChatChannels.typing(this.uniqueName);
 
-    getUnreadMessagesCount = () => RNTwilioChatChannels.getUnreadMessagesCount(this.uniqueName);
+    getUnconsumedMessagesCount = () => RNTwilioChatChannels.getUnconsumedMessagesCount(this.uniqueName);
 
     getMessagesCount = () => RNTwilioChatChannels.getMessagesCount(this.uniqueName);
 
     getMembersCount = () => RNTwilioChatChannels.getMembersCount(this.uniqueName);
 
     getLastMessages = (count = 10) => RNTwilioChatChannels.getLastMessages(this.uniqueName, count);
-
-    getMessages = (index, count) => RNTwilioChatChannels.getMessages(this.uniqueName, index, count);
 
     getMessagesBefore = (index, count) => RNTwilioChatChannels.getMessagesBefore(this.uniqueName, index, count);
 
