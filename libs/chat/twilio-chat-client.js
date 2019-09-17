@@ -48,22 +48,34 @@ class TwilioChatClient {
     };
 
     shutdown = () => RNTwilioChatClient.shutdown();
+
     register = (token) => RNTwilioChatClient.register(token);
+
     unRegister = (token) => RNTwilioChatClient.unRegister(token);
 
     createChannel = (uniqueName, friendlyName, type) =>  RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
+
     getPublicChannels = () => RNTwilioChatClient.getPublicChannels();
+
     getUserChannels = () => RNTwilioChatClient.getUserChannels();
+
     getChannel = (channelSidOrUniqueName) => {
         return RNTwilioChatClient
             .getChannel(channelSidOrUniqueName)
             .then(channel => {
                 const chatChannel = new TwilioChatChannel(channel);
-                EventEmitterHelper.addEventListener('messageAdded', message => _messageFilter(message, chatChannel));
+                EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
                 return Promise.resolve(chatChannel);
             });
     };
 
+    _messageFilter(message, channel) {
+        if (message.channel.sid === channel.sid) {
+            if (channel.onNewMessage) {
+                channel.onNewMessage(message);
+            }
+        }
+    }
 };
 
 export default TwilioChatClient;
