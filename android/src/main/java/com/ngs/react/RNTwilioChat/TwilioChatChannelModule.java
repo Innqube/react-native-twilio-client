@@ -1,18 +1,22 @@
 package com.ngs.react.RNTwilioChat;
 
-import android.os.Parcel;
+import android.util.Log;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.ngs.react.Converters;
+import com.ngs.react.PromiseCallbackListener;
 import com.twilio.chat.*;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
+import java.util.List;
 
 public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
 
     private static final String LOG_TAG = "[IIMobile-Channel]";
-    private Channel channel;
 
     public TwilioChatChannelModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -23,143 +27,161 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
         return "RNTwilioChatChannel";
     }
 
-    public String getSid() {
-        return channel.getSid();
+    interface GotChannel {
+        void gotChannel(Channel channel);
     }
 
-    public String getFriendlyName() {
-        return channel.getFriendlyName();
+    private void getChannel(String channelSidOrUniqueName, final GotChannel gotChannel) {
+        TwilioChatModule
+                .getChatClient()
+                .getChannels()
+                .getChannel(channelSidOrUniqueName, new CallbackListener<Channel>() {
+                    @Override
+                    public void onSuccess(Channel channel) {
+                        gotChannel.gotChannel(channel);
+                    }
+
+                    @Override
+                    public void onError(ErrorInfo errorInfo) {
+                        Log.d(LOG_TAG, "Error getting channel. Code: " + errorInfo.getCode() +
+                                "Message: " + errorInfo.getMessage() + ", " +
+                                "Status: " + errorInfo.getStatus());
+                    }
+                });
     }
 
-    public Channel.NotificationLevel getNotificationLevel() {
-        return channel.getNotificationLevel();
+
+    @ReactMethod
+    public void sendMessage(String channelSidOrUniqueName, final String message, final Promise promise) {
+        Log.d(LOG_TAG, "sendMessage");
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel
+                    .getMessages()
+                    .sendMessage(
+                            Message.options().withBody(message),
+                            new PromiseCallbackListener<Message>(promise) {
+                                @Override
+                                public void onSuccess(Message message) {
+                                    try {
+                                        JSONObject json = Serializers.messageToJsonObject(message);
+                                        promise.resolve(json);
+                                    } catch (JSONException e) {
+                                        promise.reject(e);
+                                    }
+                                }
+                            }
+                    );
+        });
     }
 
-    public void setFriendlyName(String friendlyName, StatusListener listener) {
-        channel.setFriendlyName(friendlyName, listener);
+    @ReactMethod
+    public void getMessages(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
+        Log.d(LOG_TAG, "getMessages");
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages()
+                    .getMessagesAfter(index, count, new PromiseCallbackListener<List<Message>>(promise) {
+                        @Override
+                        public void onSuccess(List<Message> messages) {
+                            try {
+                                JSONArray jsonArray = new JSONArray();
+
+                                for (Message message : messages) {
+                                    jsonArray.put(Serializers.messageToJsonObject(message));
+                                }
+
+                                promise.resolve(Converters.convertJsonToArray(jsonArray));
+                            } catch (JSONException je) {
+                                promise.resolve(je);
+                            }
+                        }
+                    });
+        });
     }
 
-    public void setNotificationLevel(Channel.NotificationLevel notificationLevel, StatusListener listener) {
-        channel.setNotificationLevel(notificationLevel, listener);
+    @ReactMethod
+    public void join(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "join");
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.join(new StatusListener() {
+                @Override
+                public void onSuccess() {
+                    promise.resolve(null);
+                }
+
+                @Override
+                public void onError(ErrorInfo errorInfo) {
+                    promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
+                }
+            });
+        });
     }
 
-    public Channel.ChannelType getType() {
-        return channel.getType();
+    @ReactMethod
+    public void leave(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "leave");
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.leave(new StatusListener() {
+                @Override
+                public void onSuccess() {
+                    promise.resolve(null);
+                }
+
+                @Override
+                public void onError(ErrorInfo errorInfo) {
+                    promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
+                }
+            });
+        });
     }
 
-    public String getUniqueName() {
-        return channel.getUniqueName();
+    @ReactMethod
+    public void typing(String channelSidOrUniqueName) {
+        Log.d(LOG_TAG, "typing");
+        getChannel(channelSidOrUniqueName, Channel::typing);
     }
 
-    public void setUniqueName(String uniqueName, StatusListener listener) {
-        channel.setUniqueName(uniqueName, listener);
+    @ReactMethod
+    public void getMessagesCount(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getMessagesCount");
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessagesCount(new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long messageCount) {
+                    Log.d(LOG_TAG, "success: getMessagesCount: " + messageCount);
+                    promise.resolve(messageCount != null ? messageCount.toString() : null);
+                }
+            });
+        });
     }
 
-    public JSONObject getAttributes() throws JSONException {
-        return channel.getAttributes();
+    @ReactMethod
+    public void getUnconsumedMessagesCount(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getUnconsumedMessagesCount");
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getUnconsumedMessagesCount(new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long unconsumed) {
+                    Log.d(LOG_TAG, "success: getUnconsumedMessagesCount: " + unconsumed);
+                    promise.resolve(unconsumed != null ? unconsumed.toString() : null);
+                }
+            });
+        });
     }
 
-    public void setAttributes(JSONObject updatedAttributes, StatusListener listener) {
-        channel.setAttributes(updatedAttributes, listener);
+    @ReactMethod
+    public void getMembersCount(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getMembersCount");
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMembersCount(new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long membersCount) {
+                    Log.d(LOG_TAG, "success: membersCount: " + membersCount);
+                    promise.resolve(membersCount != null ? membersCount.toString() : null);
+                }
+            });
+        });
     }
 
-    public Messages getMessages() {
-        return channel.getMessages();
-    }
-
-    public Channel.ChannelStatus getStatus() {
-        return channel.getStatus();
-    }
-
-    public void addListener(ChannelListener listener) {
-        channel.addListener(listener);
-    }
-
-    public void removeListener(ChannelListener listener) {
-        channel.removeListener(listener);
-    }
-
-    public void removeAllListeners() {
-        channel.removeAllListeners();
-    }
-
-    public Members getMembers() {
-        return channel.getMembers();
-    }
-
-    public void join(StatusListener listener) {
-        channel.join(listener);
-    }
-
-    public void leave(StatusListener listener) {
-        channel.leave(listener);
-    }
-
-    public void destroy(StatusListener listener) {
-        channel.destroy(listener);
-    }
-
-    public void declineInvitation(StatusListener listener) {
-        channel.declineInvitation(listener);
-    }
-
-    public void typing() {
-        channel.typing();
-    }
-
-    public Channel.SynchronizationStatus getSynchronizationStatus() {
-        return channel.getSynchronizationStatus();
-    }
-
-    public String getDateCreated() {
-        return channel.getDateCreated();
-    }
-
-    public Date getDateCreatedAsDate() {
-        return channel.getDateCreatedAsDate();
-    }
-
-    public String getCreatedBy() {
-        return channel.getCreatedBy();
-    }
-
-    public String getDateUpdated() {
-        return channel.getDateUpdated();
-    }
-
-    public Date getDateUpdatedAsDate() {
-        return channel.getDateUpdatedAsDate();
-    }
-
-    public Date getLastMessageDate() {
-        return channel.getLastMessageDate();
-    }
-
-    public Long getLastMessageIndex() {
-        return channel.getLastMessageIndex();
-    }
-
-    public void getMessagesCount(CallbackListener<Long> listener) {
-        channel.getMessagesCount(listener);
-    }
-
-    public void getUnconsumedMessagesCount(CallbackListener<Long> listener) {
-        channel.getUnconsumedMessagesCount(listener);
-    }
-
-    public void getMembersCount(CallbackListener<Long> listener) {
-        channel.getMembersCount(listener);
-    }
-
-    public int describeContents() {
-        return channel.describeContents();
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        channel.writeToParcel(dest, flags);
-    }
-
-    public void dispose() {
-        channel.dispose();
-    }
 }

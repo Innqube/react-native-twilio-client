@@ -4,12 +4,10 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.ngs.react.Converters;
+import com.ngs.react.PromiseCallbackListener;
 import com.twilio.chat.*;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public class TwilioChatModule extends ReactContextBaseJavaModule {
 
@@ -352,7 +350,6 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         }
     }
 
-
     @ReactMethod
     public void getChannel(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "getChannel: " + channelSidOrUniqueName);
@@ -369,102 +366,10 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         });
     }
 
-    @ReactMethod
-    public void sendMessage(String channelSidOrUniqueName, final String message, final Promise promise) {
-        Log.d(LOG_TAG, "sendMessage");
-        CHAT_CLIENT
-                .getChannels()
-                .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
-                    @Override
-                    public void onSuccess(Channel channel) {
-                        channel
-                                .getMessages()
-                                .sendMessage(
-                                        Message.options().withBody(message),
-                                        new PromiseCallbackListener<Message>(promise) {
-                                            @Override
-                                            public void onSuccess(Message message) {
-                                                try {
-                                                    JSONObject json = Serializers.messageToJsonObject(message);
-                                                    promise.resolve(json);
-                                                } catch (JSONException e) {
-                                                    promise.reject(e);
-                                                }
-                                            }
-                                        }
-                                );
-                    }
-                });
-    }
-
-    @ReactMethod
-    public void getMessages(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
-        Log.d(LOG_TAG, "getMessages");
-        CHAT_CLIENT
-                .getChannels()
-                .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
-                    @Override
-                    public void onSuccess(Channel channel) {
-                        channel.getMessages()
-                                .getMessagesAfter(index, count, new PromiseCallbackListener<List<Message>>(promise) {
-                                    @Override
-                                    public void onSuccess(List<Message> messages) {
-                                        try {
-                                            JSONArray jsonArray = new JSONArray();
-
-                                            for (Message message : messages) {
-                                                jsonArray.put(Serializers.messageToJsonObject(message));
-                                            }
-
-                                            promise.resolve(Converters.convertJsonToArray(jsonArray));
-                                        } catch (JSONException je) {
-                                            promise.resolve(je);
-                                        }
-                                    }
-                                });
-                    }
-                });
-    }
-
-    @ReactMethod
-    public void getUnconsumedMessagesCount(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "getUnconsumedMessagesCount");
-        CHAT_CLIENT
-            .getChannels()
-            .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
-                    @Override
-                    public void onSuccess(Channel channel) {
-                        channel.getUnconsumedMessagesCount(new PromiseCallbackListener<Long>(promise) {
-                            @Override
-                            public void onSuccess(Long unconsumed) {
-                                Log.d(LOG_TAG, "success: getUnconsumedMessagesCount: " + unconsumed);
-                                promise.resolve(unconsumed != null ? unconsumed.toString() : null);
-                            }
-                        });
-                    }
-            });
-    }
-
     private void sendEvent(ReactContext reactContext, String eventName, WritableMap params) {
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
-    }
-
-    abstract class PromiseCallbackListener<T> extends CallbackListener<T> {
-
-        private Promise promise;
-
-        PromiseCallbackListener(Promise promise) {
-            this.promise = promise;
-        }
-
-        @Override
-        public void onError(ErrorInfo errorInfo) {
-            Log.d(LOG_TAG, "Error creating client: " + errorInfo.getCode() + ": " + errorInfo.getMessage());
-            promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
-        }
-
     }
 
 }
