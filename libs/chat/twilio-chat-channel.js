@@ -39,8 +39,6 @@ class TwilioChatChannel {
 
     getLastMessages = (count = 10) => RNTwilioChatChannels.getLastMessages(this.uniqueName, count);
 
-    getMessages = (index, count) => RNTwilioChatChannels.getMessages(this.uniqueName, index, count);
-
     getMessagesBefore = (index, count) => RNTwilioChatChannels.getMessagesBefore(this.uniqueName, index, count);
 
     getMessagesAfter = (index, count) => RNTwilioChatChannels.getMessagesAfter(this.uniqueName, index, count);
