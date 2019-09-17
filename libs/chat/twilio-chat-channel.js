@@ -7,7 +7,7 @@ import EventEmitterHelper from '../event-emitter-helper';
  */
 
 const {
-    RNTwilioChatChannel,
+    RNTwilioChatChannels,
 } = NativeModules;
 
 class TwilioChatChannel {
@@ -18,45 +18,46 @@ class TwilioChatChannel {
         this.sid = props.sid;
         this.lastMessageIndex = props.lastMessageIndex;
         this.attributes = props.attributes;
+        this.type = props.type;
 
         this._initListeners();
     }
 
     onNewMessage = (message) => dispatchEvent(new CustomEvent('onNewMessage', message));
 
-    join = (uniqueName, friendlyName, type) => RNTwilioChatChannel.join(uniqueName, friendlyName, type);
+    join = () => RNTwilioChatChannels.join(this.uniqueName);
 
-    leave = () => RNTwilioChatChannel.leave();
+    leave = () => RNTwilioChatChannels.leave(this.uniqueName);
 
-    typing = () => RNTwilioChatChannel.typing();
+    typing = () => RNTwilioChatChannels.typing(this.uniqueName);
 
-    getUnreadMessagesCount = () => RNTwilioChatChannel.getUnreadMessagesCount();
+    getUnreadMessagesCount = () => RNTwilioChatChannels.getUnreadMessagesCount(this.uniqueName);
 
-    getMessagesCount = () => RNTwilioChatChannel.getMessagesCount();
+    getMessagesCount = () => RNTwilioChatChannels.getMessagesCount(this.uniqueName);
 
-    getMembersCount = () => RNTwilioChatChannel.getMembersCount();
+    getMembersCount = () => RNTwilioChatChannels.getMembersCount(this.uniqueName);
 
-    getLastMessages = (count = 10) => RNTwilioChatChannel.getLastMessages(count);
+    getLastMessages = (count = 10) => RNTwilioChatChannels.getLastMessages(this.uniqueName, count);
 
-    getMessages = (index, count) => RNTwilioChatChannel.getMessages(uniqueName, index, count);
+    getMessages = (index, count) => RNTwilioChatChannels.getMessages(this.uniqueName, index, count);
 
-    getMessagesBefore = (index, count) => RNTwilioChatChannel.getMessagesBefore(index, count);
+    getMessagesBefore = (index, count) => RNTwilioChatChannels.getMessagesBefore(this.uniqueName, index, count);
 
-    getMessagesAfter = (index, count) => RNTwilioChatChannel.getMessagesAfter(index, count);
+    getMessagesAfter = (index, count) => RNTwilioChatChannels.getMessagesAfter(this.uniqueName, index, count);
 
-    setNoMessagesConsumed = () => RNTwilioChatChannel.setNoMessagesConsumed();
+    setNoMessagesConsumed = () => RNTwilioChatChannels.setNoMessagesConsumed(this.uniqueName);
 
-    setAllMessagesConsumed = () => RNTwilioChatChannel.setAllMessagesConsumed();
+    setAllMessagesConsumed = () => RNTwilioChatChannels.setAllMessagesConsumed(this.uniqueName);
 
-    setLastConsumedMessage = (index) => RNTwilioChatChannel.setLastConsumedMessage(index);
+    setLastConsumedMessage = (index) => RNTwilioChatChannels.setLastConsumedMessage(this.uniqueName, index);
 
-    advanceLastConsumedMessage = (index) => RNTwilioChatChannel.advanceLastConsumedMessage(index);
+    advanceLastConsumedMessage = (index) => RNTwilioChatChannels.advanceLastConsumedMessage(this.uniqueName, index);
 
-    getLastConsumedMessageIndex = () => RNTwilioChatChannel.getLastConsumedMessageIndex();
+    getLastConsumedMessageIndex = () => RNTwilioChatChannels.getLastConsumedMessageIndex(this.uniqueName, );
 
-    sendMessage = (message) => RNTwilioChatChannel.sendMessage(message);
+    sendMessage = (message) => RNTwilioChatChannels.sendMessage(message);
 
-    getChannelMembers = () => RNTwilioChatChannel.getChannelMembers();
+    getChannelMembers = () => RNTwilioChatChannels.getChannelMembers(this.uniqueName);
 
     _initListeners = () => {
         EventEmitterHelper.addEventListener('typingStartedOnChannel', this._onTypingStartedOnChannel);
