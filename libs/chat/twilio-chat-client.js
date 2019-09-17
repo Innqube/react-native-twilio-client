@@ -36,21 +36,35 @@ class TwilioChatClient {
 
     unRegister = (token) => RNTwilioChatClient.unRegister(token);
 
-    createChannel = (uniqueName, friendlyName, type) =>  RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
+    createChannel = (uniqueName, friendlyName, type) => RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
 
     getPublicChannels = () => RNTwilioChatClient.getPublicChannels();
 
     getUserChannels = () => RNTwilioChatClient.getUserChannels();
 
-    getChannel = (channelSidOrUniqueName) => {
+    getChannel = (channelSidOrUniqueName, friendlyName, type) => {
         return RNTwilioChatChannels
             .getChannel(channelSidOrUniqueName)
-            .then(channel => {
-                const chatChannel = new TwilioChatChannel(channel);
-                EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
-                return Promise.resolve(chatChannel);
-            });
+            .then(channel => Promise.resolve(new TwilioChatChannel(channel)))
+            .catch(async error =>
+                Promise.resolve(
+                    new TwilioChatChannel(
+                        await RNTwilioChatChannels
+                            .create(channelSidOrUniqueName, friendlyName, type)
+                    )
+                )
+            );
     };
+
+    // getChannel = (channelSidOrUniqueName) => {
+    //     return RNTwilioChatChannels
+    //         .getChannel(channelSidOrUniqueName)
+    //         .then(channel => {
+    //             const chatChannel = new TwilioChatChannel(channel);
+    //             EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
+    //             return Promise.resolve(chatChannel);
+    //         });
+    // };
 
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
@@ -113,7 +127,7 @@ class TwilioChatClient {
         EventEmitterHelper.removeEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         EventEmitterHelper.removeEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
         EventEmitterHelper.removeEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        EventEmitterHelper.removeEventListener('connectionStateChange', this._onConnectionStateChange);
+        EventEmitterHelper.removeEventListener('connectionStateChanged', this._onConnectionStateChanged);
     };
 
     _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this.tokenCallback());
@@ -142,7 +156,7 @@ class TwilioChatClient {
 
     _onNotificationSubscribed = (evt) => dispatchEvent(new CustomEvent('notificationSubscribed', evt));
 
-    _onConnectionStateChange = (evt) => dispatchEvent(new CustomEvent('connectionStateChange', evt));
+    _onConnectionStateChanged = (evt) => dispatchEvent(new CustomEvent('connectionStateChanged', evt));
 };
 
 export default TwilioChatClient;

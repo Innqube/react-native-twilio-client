@@ -157,16 +157,35 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 
 #pragma mark RNTwilioChatClient Delegates
 
-- (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
-    NSLog(@"[IIMobile - RNTwilioChatClient] synchronizationStatusUpdated with status: %@", [self convertSyncStatusToString:status]);
+- (void)chatClient:(TwilioChatClient *)client connectionStateChanged:(TCHClientConnectionState)state {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:connectionStateChanged with status: %@", @(state));
+    [RNEventEmitterHelper emitEventWithName:@"connectionStateChanged" andPayload:@(state)];
+}
 
+- (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:synchronizationStatusUpdated with status: %@", [self convertSyncStatusToString:status]);
     [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusUpdated" andPayload:@{@"status": [self convertSyncStatusToString:status]}];
 }
 
 - (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel messageAdded:(TCHMessage *)message {
-    NSLog(@"[IIMobile - RNTwilioChatClient] messageAdded");
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:messageAdded with body: %@", message.body);
     NSDictionary *messageJson = [self buildMessageJson:message withChannel:channel];
     [RNEventEmitterHelper emitEventWithName:@"messageAdded" andPayload:messageJson];
+}
+
+- (void)chatClient:(TwilioChatClient *)client channelAdded:(TCHChannel *)channel {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelAdded with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"channelAdded" andPayload:[RNTConvert TCHChannel:channel]];
+}
+
+- (void)chatClient:(TwilioChatClient *)client channelChanged:(TCHChannel *)channel {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelChanged with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"channelChanged" andPayload:[RNTConvert TCHChannel:channel]];
+}
+
+- (void)chatClient:(TwilioChatClient *)client channelDeleted:(TCHChannel *)channel {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelRemoved with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"channelRemoved" andPayload:[RNTConvert TCHChannel:channel]];
 }
 
 - (void)chatClient:(nonnull TwilioChatClient *)client typingStartedOnChannel:(nonnull TCHChannel *)channel member:(nonnull TCHMember *)member {

@@ -23,6 +23,7 @@ const _eventHandlers = {
 
     // ChatClient events
     synchronizationStatusUpdated: new Map(),
+    connectionStateChanged: new Map(),
     messageAdded: new Map(),
 
     tokenAboutToExpire: new Map(),
@@ -39,7 +40,6 @@ const _eventHandlers = {
     invitedToChannelNotification: new Map(),
     removedFromChannelNotification: new Map(),
     notificationSubscribed: new Map(),
-    connectionStateChange: new Map(),
 
     // ChatChannel events
     typingStartedOnChannel: new Map(),
