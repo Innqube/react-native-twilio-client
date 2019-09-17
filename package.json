@@ -34,7 +34,9 @@
   "bundleDependencies": false,
   "deprecated": false,
   "description": "React Native wrapper for Twilio Programmable Voice SDK",
-  "devDependencies": {},
+  "devDependencies": {
+    "react-native": "0.59.9"
+  },
   "homepage": "https://github.com/innqube/react-native-twilio-client",
   "keywords": [
     "twilio",
