@@ -50,40 +50,47 @@ const ChatChannel = function (props) {
         return RNTwilioChatClient.getMessagesBefore(index, count);
     };
 
-    // getMessagesAfter(index, count): Promise<Message[]> {
-    //     if (typeof count !== 'number') {
-    //         throw new Error('Count is required and must be a number');
-    //     }
-    //     if (typeof index !== 'number') {
-    //         throw new Error('Index is required and must be a number');
-    //     }
-    //     return RNTwilioChatClient.getMessagesAfter(index, count);
-    // },
-    // typing() {
-    //     RNTwilioChatClient.typing();
-    // },
-    // getUnreadMessagesCount() {
-    //     return RNTwilioChatClient.getUnreadMessagesCount();
-    // },
-    // getLastConsumedMessageIndex() {
-    //     return RNTwilioChatClient.getLastConsumedMessageIndex();
-    // },
-    // getMessagesCount() {
-    //     return RNTwilioChatClient.getMessagesCount();
-    // },
-    // setNoMessagesConsumed() {
-    //     return RNTwilioChatClient.setNoMessagesConsumed();
-    // },
-    // setAllMessagesConsumed() {
-    //     return RNTwilioChatClient.setAllMessagesConsumed();
-    // },
-    // setLastConsumedMessage(index) {
-    //     return RNTwilioChatClient.setLastConsumedMessage(index);
-    // },
-    // advanceLastConsumedMessage(index) {
-    //     return RNTwilioChatClient.advanceLastConsumedMessage(index);
-    // }
+    this.getMessagesAfter = function (index, count) {
+        if (typeof count !== 'number') {
+            throw new Error('Count is required and must be a number');
+        }
+        if (typeof index !== 'number') {
+            throw new Error('Index is required and must be a number');
+        }
+        return RNTwilioChatClient.getMessagesAfter(index, count);
+    };
 
+    this.typing = function () {
+        RNTwilioChatClient.typing();
+    };
+
+    this.getUnreadMessagesCount = function () {
+        return RNTwilioChatClient.getUnreadMessagesCount();
+    };
+
+    this.getLastConsumedMessageIndex = function () {
+        return RNTwilioChatClient.getLastConsumedMessageIndex();
+    };
+
+    this.getMessagesCount = function () {
+        return RNTwilioChatClient.getMessagesCount();
+    };
+
+    this.setNoMessagesConsumed = function () {
+        return RNTwilioChatClient.setNoMessagesConsumed();
+    };
+
+    this.setAllMessagesConsumed = function () {
+        return RNTwilioChatClient.setAllMessagesConsumed();
+    };
+
+    this.setLastConsumedMessage = function (index) {
+        return RNTwilioChatClient.setLastConsumedMessage(index);
+    };
+
+    this.advanceLastConsumedMessage = function (index) {
+        return RNTwilioChatClient.advanceLastConsumedMessage(index);
+    };
 };
 
 export default ChatChannel;
