@@ -289,6 +289,53 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                         @Override
                         public void onSuccess(Channel channel) {
                             try {
+                                channel.removeAllListeners();
+                                channel.addListener(new ChannelListener() {
+                                    @Override
+                                    public void onMessageAdded(Message message) {
+
+                                    }
+
+                                    @Override
+                                    public void onMessageUpdated(Message message, Message.UpdateReason updateReason) {
+
+                                    }
+
+                                    @Override
+                                    public void onMessageDeleted(Message message) {
+
+                                    }
+
+                                    @Override
+                                    public void onMemberAdded(Member member) {
+
+                                    }
+
+                                    @Override
+                                    public void onMemberUpdated(Member member, Member.UpdateReason updateReason) {
+
+                                    }
+
+                                    @Override
+                                    public void onMemberDeleted(Member member) {
+
+                                    }
+
+                                    @Override
+                                    public void onTypingStarted(Channel channel, Member member) {
+
+                                    }
+
+                                    @Override
+                                    public void onTypingEnded(Channel channel, Member member) {
+
+                                    }
+
+                                    @Override
+                                    public void onSynchronizationChanged(Channel channel) {
+
+                                    }
+                                });
                                 JSONObject json = Serializers.channelToJsonObject(channel);
                                 promise.resolve(Converters.convertJsonToMap(json));
                             } catch (JSONException e) {

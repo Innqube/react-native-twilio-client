@@ -16,6 +16,7 @@ public class TwilioChatPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> list = new ArrayList<>();
         list.add(new TwilioChatModule(reactContext));
+        list.add(new TwilioChatChannelModule(reactContext));
         return list;
     }
 
