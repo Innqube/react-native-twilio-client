@@ -5,6 +5,7 @@ import SynchronizationStatus from '../domain/synchronization-status';
 
 const {
     RNTwilioChatClient,
+    RNTwilioChatChannels
 } = NativeModules;
 
 class TwilioChatClient {
@@ -42,7 +43,7 @@ class TwilioChatClient {
     getUserChannels = () => RNTwilioChatClient.getUserChannels();
 
     getChannel = (channelSidOrUniqueName) => {
-        return RNTwilioChatClient
+        return RNTwilioChatChannels
             .getChannel(channelSidOrUniqueName)
             .then(channel => {
                 const chatChannel = new TwilioChatChannel(channel);
