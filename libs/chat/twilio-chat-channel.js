@@ -72,7 +72,7 @@ class TwilioChatChannel {
         dispatchEvent(new CustomEvent('typingStartedOnChannel', evt));
     };
 
-    _onTypingStartedOnChannel = (evt) => {
+    _onTypingEndedOnChannel = (evt) => {
         dispatchEvent(new CustomEvent('typingEndedOnChannel', evt));
     };
 };
