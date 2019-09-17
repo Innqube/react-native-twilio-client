@@ -1,5 +1,5 @@
 import {NativeModules} from "react-native";
-import ChatChannel from './chat/chat-channel';
+import TwilioChatChannel from './chat/twilio-chat-channel';
 import EventEmitterHelper from './event-emitter-helper';
 
 const {
@@ -20,7 +20,7 @@ const TwilioChat = {
         return RNTwilioChatClient
             .getChannel(channelSidOrUniqueName)
             .then(channel => {
-                const chatChannel = new ChatChannel(channel);
+                const chatChannel = new TwilioChatChannel(channel);
                 EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
                 return new Promise((resolve, reject) => resolve(chatChannel));
             });

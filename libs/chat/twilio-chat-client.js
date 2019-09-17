@@ -1,68 +1,67 @@
 import {
     NativeModules,
 } from 'react-native';
-import ChatChannel from './chat-channel';
+import TwilioChatChannel from './twilio-chat-channel';
 import EventEmitterHelper from '../event-emitter-helper';
+import SynchronizationStatus from '../domain/synchronization-status';
 
 const {
     RNTwilioChatClient,
 } = NativeModules;
 
-const TwilioChatClient = function (props) {
+class TwilioChatClient {
 
-    this.initialize = async function(initialToken) {
-        if (typeof initialToken !== 'string') {
-            return {
-                initialized: false,
-                err: 'Invalid token, token must be a string'
-            }
-        };
-        return await RNTwilioChatClient.createClient(initialToken, null);
-    };
+    constructor(props) {
+        this.tokenCallback = props.tokenCallback;
+    }
+    
+    create = () => new Promise(((resolve, reject) => {
+        this.tokenCallback()
+            .then(token => {
+                RNTwilioChatClient
+                    .createClient(token, null)
+                    .then(client => {
+                        EventEmitterHelper.addEventListener('synchronizationStatusUpdated', (status) => {
+                            switch (status) {
+                                case SynchronizationStatus.ClientSynchronizationStatusCompleted:
+                                    EventEmitterHelper.addEventListener('tokenAboutToExpire', async () => {
+                                        RNTwilioChatClient.updateClient(await this.tokenCallback());
+                                    });
+                                    dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusCompleted));
+                                    resolve(this);
+                                case SynchronizationStatus.ClientSynchronizationStatusStarted:
+                                    dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusStarted));
+                                    break;
+                                case SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted:
+                                    dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted));
+                                    break;
+                                case SynchronizationStatus.ClientSynchronizationStatusFailed:
+                                    dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusFailed));
+                                    reject('Synchronization failed');
+                            }
+                        });
+                    })
+            });
+    }));
 
-    this.update = function (updatedToken) {
-        if (typeof updatedToken !== 'string') {
-            return {
-                updated: false,
-                err: 'Invalid token, token must be a string'
-            }
-        }
-        return RNTwilioChatClient.updateClient(updatedToken);
-    };
+    update = () => ;
+    shutdown = () => RNTwilioChatClient.shutdown();
+    register = (token) => RNTwilioChatClient.register(token);
+    unRegister = (token) => RNTwilioChatClient.unRegister(token);
 
-    this.sendMessage = function (message) {
-        if (typeof message !== 'string') {
-            throw new Error('Message is required and must be a string');
-        }
-        return RNTwilioChatClient.sendMessage(message);
-        // .then(({sid, type, paginator}) => new Paginator(sid, type, paginator));
-    };
-
-    this.getChannel = function (channelSidOrUniqueName) {
+    createChannel = (uniqueName, friendlyName, type) =>  RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
+    getPublicChannels = () => RNTwilioChatClient.getPublicChannels();
+    getUserChannels = () => RNTwilioChatClient.getUserChannels();
+    getChannel = (channelSidOrUniqueName) => {
         return RNTwilioChatClient
             .getChannel(channelSidOrUniqueName)
             .then(channel => {
-                const chatChannel = new ChatChannel(channel);
-                EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
-                return new Promise((resolve, reject) => resolve(chatChannel));
+                const chatChannel = new TwilioChatChannel(channel);
+                EventEmitterHelper.addEventListener('messageAdded', message => _messageFilter(message, chatChannel));
+                return Promise.resolve(chatChannel);
             });
     };
 
-    this.createChannel = function (uniqueName, friendlyName, type) {
-        return RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
-    };
-
-    this.joinChannel = function (uniqueName, friendlyName, type) {
-        return RNTwilioChatClient.joinChannel(uniqueName, friendlyName, type);
-    };
-
-    this.getPublicChannels = function () {
-        return RNTwilioChatClient.getPublicChannels();
-    };
-
-    this.getUserChannels = function () {
-        return RNTwilioChatClient.getUserChannels();
-    };
 };
 
 export default TwilioChatClient;

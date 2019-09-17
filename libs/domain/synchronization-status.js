@@ -4,7 +4,7 @@
  */
  
 export default class SynchronizationStatus {
-    static ClientSynchronizationStatusCompleted = 'TCHClientSynchronizationStatusStarted';
+    static ClientSynchronizationStatusStarted = 'TCHClientSynchronizationStatusStarted';
     static ClientSynchronizationStatusChannelsListCompleted = 'TCHClientSynchronizationStatusChannelsListCompleted';
     static ClientSynchronizationStatusCompleted = 'TCHClientSynchronizationStatusCompleted';
     static ClientSynchronizationStatusFailed = 'TCHClientSynchronizationStatusFailed';
