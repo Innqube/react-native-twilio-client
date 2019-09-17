@@ -1,6 +1,7 @@
 package com.ngs.react.RNLogHelper;
 
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -16,6 +17,10 @@ public class LogHelperPackage implements ReactPackage {
         List<NativeModule> list = new ArrayList<>();
         list.add(new LogHelperModule(reactContext));
         return list;
+    }
+
+    public List<Class<? extends JavaScriptModule>> createJSModules() {
+        return null;
     }
 
     @Override
