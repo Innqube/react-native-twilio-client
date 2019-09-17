@@ -26,27 +26,6 @@ class TwilioChatClient {
             });
     }));
 
-    _synchronizationListener = (status, resolve, reject) => {
-        switch (status) {
-            case SynchronizationStatus.ClientSynchronizationStatusCompleted:
-                EventEmitterHelper.addEventListener('tokenAboutToExpire', async () => {
-                    RNTwilioChatClient.updateClient(await this.tokenCallback());
-                });
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusCompleted));
-                resolve(this);
-                break;
-            case SynchronizationStatus.ClientSynchronizationStatusStarted:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusStarted));
-                break;
-            case SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted));
-                break;
-            case SynchronizationStatus.ClientSynchronizationStatusFailed:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusFailed));
-                reject('Synchronization failed');
-        }
-    };
-
     shutdown = () => RNTwilioChatClient.shutdown();
 
     register = (token) => RNTwilioChatClient.register(token);
@@ -67,6 +46,27 @@ class TwilioChatClient {
                 EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
                 return Promise.resolve(chatChannel);
             });
+    };
+
+    _synchronizationListener = (status, resolve, reject) => {
+        switch (status) {
+            case SynchronizationStatus.ClientSynchronizationStatusCompleted:
+                EventEmitterHelper.addEventListener('tokenAboutToExpire', async () => {
+                    RNTwilioChatClient.updateClient(await this.tokenCallback());
+                });
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusCompleted));
+                resolve(this);
+                break;
+            case SynchronizationStatus.ClientSynchronizationStatusStarted:
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusStarted));
+                break;
+            case SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted:
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted));
+                break;
+            case SynchronizationStatus.ClientSynchronizationStatusFailed:
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusFailed));
+                reject('Synchronization failed');
+        }
     };
 
     _messageFilter(message, channel) {
