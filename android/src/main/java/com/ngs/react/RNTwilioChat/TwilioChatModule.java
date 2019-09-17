@@ -14,7 +14,11 @@ import java.util.List;
 public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     private static final String LOG_TAG = "[IIMobile-Chat]";
-    private ChatClient chatClient;
+    private static ChatClient CHAT_CLIENT;
+
+    public static ChatClient getChatClient() {
+        return CHAT_CLIENT;
+    }
 
     public TwilioChatModule(ReactApplicationContext context) {
         super(context);
@@ -38,7 +42,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
             @Override
             public void onSuccess(ChatClient chatClient) {
                 Log.d(LOG_TAG, "Chat client created");
-                TwilioChatModule.this.chatClient = chatClient;
+                CHAT_CLIENT = chatClient;
 
                 chatClient.setListener(new ChatClientListener() {
 
@@ -207,9 +211,9 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                     public void onUserUnsubscribed(User user) {
                         Log.d(LOG_TAG, "onUserUnsubscribed: " + user.getIdentity());
                         try {
-                            JSONObject errorInfoJson = Serializers.userToJsonObject(user);
-                            WritableMap errorInfoMap = Converters.convertJsonToMap(errorInfoJson);
-                            sendEvent(getReactApplicationContext() ,"userUnsubscribed", errorInfoMap);
+                            JSONObject userJson = Serializers.userToJsonObject(user);
+                            WritableMap userMap = Converters.convertJsonToMap(userJson);
+                            sendEvent(getReactApplicationContext() ,"userUnsubscribed", userMap);
                         } catch (JSONException e) {
                             Log.e(LOG_TAG, "Could not handle event", e);
                         }
@@ -279,7 +283,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         Log.d(LOG_TAG, "createChannel");
         try {
             JSONObject attr = Converters.convertMapToJson(attributes);
-            this.chatClient
+            CHAT_CLIENT
                     .getChannels()
                     .channelBuilder()
                     .withFriendlyName(friendlyName)
@@ -352,7 +356,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getChannel(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "getChannel: " + channelSidOrUniqueName);
-        chatClient.getChannels().getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
+        CHAT_CLIENT.getChannels().getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
             @Override
             public void onSuccess(Channel channel) {
                 try {
@@ -368,7 +372,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void sendMessage(String channelSidOrUniqueName, final String message, final Promise promise) {
         Log.d(LOG_TAG, "sendMessage");
-        chatClient
+        CHAT_CLIENT
                 .getChannels()
                 .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
                     @Override
@@ -396,7 +400,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getMessages(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
         Log.d(LOG_TAG, "getMessages");
-        chatClient
+        CHAT_CLIENT
                 .getChannels()
                 .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
                     @Override
@@ -425,7 +429,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getUnconsumedMessagesCount(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "getUnconsumedMessagesCount");
-        chatClient
+        CHAT_CLIENT
             .getChannels()
             .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
                     @Override

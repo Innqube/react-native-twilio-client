@@ -79,3 +79,30 @@ class TwilioChatClient {
 };
 
 export default TwilioChatClient;
+
+//             sendEvent(getReactApplicationContext() ,"channelJoined", channel);
+//             sendEvent(getReactApplicationContext() ,"channelInvited", channel);
+//             sendEvent(getReactApplicationContext() ,"channelAdded", channel);
+//             sendEvent(getReactApplicationContext() ,"channelUpdate", {channel, updateReason}});
+//             sendEvent(getReactApplicationContext() ,"channelDeleted", channel);
+//             sendEvent(getReactApplicationContext() ,"channelSynchronizationChange", channel);
+//             sendEvent(getReactApplicationContext() ,"error", {code: string, message: string, status: string}});
+//             sendEvent(getReactApplicationContext() ,"synchronizationStatus", string);
+//             sendEvent(getReactApplicationContext() ,"connectionStateChange", string);
+//             sendEvent(getReactApplicationContext() ,"tokenExpired", null);
+//             sendEvent(getReactApplicationContext() ,"tokenAboutToExpire", null);
+//             sendEvent(getReactApplicationContext() ,"userUpdated", {user, string});
+//             sendEvent(getReactApplicationContext() ,"userSubscribed", user);
+//             sendEvent(getReactApplicationContext() ,"userUnsubscribed", user);
+//             sendEvent(getReactApplicationContext() ,"addedToChannelNotification", channelSid: string);
+//             sendEvent(getReactApplicationContext() ,"invitedToChannelNotification", channelSid: string);
+//             sendEvent(getReactApplicationContext() ,"removedFromChannelNotification", channelSid: string);
+//             sendEvent(getReactApplicationContext() ,"notificationSubscribed", null);
+//             sendEvent(getReactApplicationContext() ,"error", {code: string, message: string, status: string});
+//
+//
+//     // not implemented
+//     public void onNewMessageNotification(String channelSid, String messageSid, long messageIndex) {
+//         Log.e(LOG_TAG, "Not implemented: onNewMessageNotification. ChannelSid: " +
+//             channelSid + ", messageSid: " + messageSid + ", messageIndex: " + messageSid);
+//     }
