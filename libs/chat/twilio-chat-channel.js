@@ -1,4 +1,5 @@
 import {NativeModules} from 'react-native';
+import EventEmitterHelper from '../event-emitter-helper';
 
 /**
  * @author Enrique Viard.
@@ -9,49 +10,71 @@ const {
     RNTwilioChatChannel,
 } = NativeModules;
 
-const TwilioChatChannel = (props) => {
+class TwilioChatChannel {
 
-    this.uniqueName = props.uniqueName;
-    this.friendlyName = props.friendlyName;
-    this.sid = props.sid;
-    this.lastMessageIndex = props.lastMessageIndex;
-    this.attributes = props.attributes;
+    constructor(props) {
+        this.uniqueName = props.uniqueName;
+        this.friendlyName = props.friendlyName;
+        this.sid = props.sid;
+        this.lastMessageIndex = props.lastMessageIndex;
+        this.attributes = props.attributes;
 
-    this.onNewMessage = (message) => dispatchEvent(new CustomEvent('onNewMessage', message));
+        this._initListeners();
+    }
 
-    this.join = (uniqueName, friendlyName, type) => RNTwilioChatChannel.join(uniqueName, friendlyName, type);
+    onNewMessage = (message) => dispatchEvent(new CustomEvent('onNewMessage', message));
 
-    this.leave = () => RNTwilioChatChannel.leave();
+    join = (uniqueName, friendlyName, type) => RNTwilioChatChannel.join(uniqueName, friendlyName, type);
 
-    this.typing = () => RNTwilioChatChannel.typing();
+    leave = () => RNTwilioChatChannel.leave();
 
-    this.getUnreadMessagesCount = () => RNTwilioChatChannel.getUnreadMessagesCount();
+    typing = () => RNTwilioChatChannel.typing();
 
-    this.getMessagesCount = () => RNTwilioChatChannel.getMessagesCount();
+    getUnreadMessagesCount = () => RNTwilioChatChannel.getUnreadMessagesCount();
 
-    this.getMembersCount = () => RNTwilioChatChannel.getMembersCount();
+    getMessagesCount = () => RNTwilioChatChannel.getMessagesCount();
 
-    this.getLastMessages = (count = 10) =>  RNTwilioChatChannel.getLastMessages(count);
+    getMembersCount = () => RNTwilioChatChannel.getMembersCount();
 
-    this.getMessages = (index, count) => RNTwilioChatChannel.getMessages(this.uniqueName, index, count);
+    getLastMessages = (count = 10) => RNTwilioChatChannel.getLastMessages(count);
 
-    this.getMessagesBefore = (index, count) => RNTwilioChatChannel.getMessagesBefore(index, count);
+    getMessages = (index, count) => RNTwilioChatChannel.getMessages(uniqueName, index, count);
 
-    this.getMessagesAfter = (index, count) => RNTwilioChatChannel.getMessagesAfter(index, count);
+    getMessagesBefore = (index, count) => RNTwilioChatChannel.getMessagesBefore(index, count);
 
-    this.setNoMessagesConsumed = () => RNTwilioChatChannel.setNoMessagesConsumed();
+    getMessagesAfter = (index, count) => RNTwilioChatChannel.getMessagesAfter(index, count);
 
-    this.setAllMessagesConsumed = () => RNTwilioChatChannel.setAllMessagesConsumed();
+    setNoMessagesConsumed = () => RNTwilioChatChannel.setNoMessagesConsumed();
 
-    this.setLastConsumedMessage = (index) => RNTwilioChatChannel.setLastConsumedMessage(index);
+    setAllMessagesConsumed = () => RNTwilioChatChannel.setAllMessagesConsumed();
 
-    this.advanceLastConsumedMessage = (index) => RNTwilioChatChannel.advanceLastConsumedMessage(index);
+    setLastConsumedMessage = (index) => RNTwilioChatChannel.setLastConsumedMessage(index);
 
-    this.getLastConsumedMessageIndex = () => RNTwilioChatChannel.getLastConsumedMessageIndex();
+    advanceLastConsumedMessage = (index) => RNTwilioChatChannel.advanceLastConsumedMessage(index);
 
-    this.sendMessage = (message) =>  RNTwilioChatChannel.sendMessage(message);
+    getLastConsumedMessageIndex = () => RNTwilioChatChannel.getLastConsumedMessageIndex();
 
-    this.getChannelMembers = () => RNTwilioChatChannel.getChannelMembers();
+    sendMessage = (message) => RNTwilioChatChannel.sendMessage(message);
+
+    getChannelMembers = () => RNTwilioChatChannel.getChannelMembers();
+
+    _initListeners = () => {
+        EventEmitterHelper.addEventListener('typingStartedOnChannel', this._onTypingStartedOnChannel);
+        EventEmitterHelper.addEventListener('typingEndedOnChannel', this._onTypingEndedOnChannel);
+    };
+
+    _removeListeners = () => {
+        EventEmitterHelper.removeEventListener('typingStartedOnChannel', this._onTypingStartedOnChannel);
+        EventEmitterHelper.removeEventListener('typingEndedOnChannel', this._onTypingEndedOnChannel);
+    };
+
+    _onTypingStartedOnChannel = (evt) => {
+        dispatchEvent(new CustomEvent('typingStartedOnChannel', evt));
+    };
+
+    _onTypingStartedOnChannel = (evt) => {
+        dispatchEvent(new CustomEvent('typingEndedOnChannel', evt));
+    };
 };
 
 export default TwilioChatChannel;

@@ -26,7 +26,10 @@ class TwilioChatClient {
             });
     }));
 
-    shutdown = () => RNTwilioChatClient.shutdown();
+    shutdown = () => {
+        this._removeAllListeners();
+        RNTwilioChatClient.shutdown();
+    };
 
     register = (token) => RNTwilioChatClient.register(token);
 
@@ -51,9 +54,7 @@ class TwilioChatClient {
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
             case SynchronizationStatus.ClientSynchronizationStatusCompleted:
-                EventEmitterHelper.addEventListener('tokenAboutToExpire', async () => {
-                    RNTwilioChatClient.updateClient(await this.tokenCallback());
-                });
+                this._initEventListeners();
                 dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusCompleted));
                 resolve(this);
                 break;
@@ -76,33 +77,71 @@ class TwilioChatClient {
             }
         }
     }
+
+    _initEventListeners = () => {
+        EventEmitterHelper.addEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
+        EventEmitterHelper.addEventListener('tokenExpired', this._onTokenAboutToExpire);
+        EventEmitterHelper.addEventListener('channelJoined', this._onChannelJoined);
+        EventEmitterHelper.addEventListener('channelInvited', this._onChannelInvited);
+        EventEmitterHelper.addEventListener('channelAdded', this._onChannelAdded);
+        EventEmitterHelper.addEventListener('channelUpdate', this._onChannelUpdate);
+        EventEmitterHelper.addEventListener('channelDeleted', this._onChannelDeleted);
+        EventEmitterHelper.addEventListener('userUpdated', this._onUserUpdated);
+        EventEmitterHelper.addEventListener('userSubscribed', this._onUserSubscribed);
+        EventEmitterHelper.addEventListener('userUnsubscribed', this._onUserUnsubscribed);
+        EventEmitterHelper.addEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
+        EventEmitterHelper.addEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
+        EventEmitterHelper.addEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
+        EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
+        EventEmitterHelper.addEventListener('connectionStateChange', this._onConnectionStateChange);
+    };
+
+    _removeAllListeners = () => {
+        EventEmitterHelper.removeEventListener('synchronizationStatusUpdated', this._synchronizationListener);
+        EventEmitterHelper.removeEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
+        EventEmitterHelper.removeEventListener('tokenExpired', this._onTokenAboutToExpire);
+        EventEmitterHelper.removeEventListener('channelJoined', this._onChannelJoined);
+        EventEmitterHelper.removeEventListener('channelInvited', this._onChannelInvited);
+        EventEmitterHelper.removeEventListener('channelAdded', this._onChannelAdded);
+        EventEmitterHelper.removeEventListener('channelUpdate', this._onChannelUpdate);
+        EventEmitterHelper.removeEventListener('channelDeleted', this._onChannelDeleted);
+        EventEmitterHelper.removeEventListener('userUpdated', this._onUserUpdated);
+        EventEmitterHelper.removeEventListener('userSubscribed', this._onUserSubscribed);
+        EventEmitterHelper.removeEventListener('userUnsubscribed', this._onUserUnsubscribed);
+        EventEmitterHelper.removeEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
+        EventEmitterHelper.removeEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
+        EventEmitterHelper.removeEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
+        EventEmitterHelper.removeEventListener('notificationSubscribed', this._onNotificationSubscribed);
+        EventEmitterHelper.removeEventListener('connectionStateChange', this._onConnectionStateChange);
+    };
+
+    _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this.tokenCallback());
+
+    _onChannelJoined = (evt) => dispatchEvent(new CustomEvent('channelJoined', evt));
+
+    _onChannelInvited = (evt) => dispatchEvent(new CustomEvent('channelInvited', evt));
+
+    _onChannelAdded = (evt) => dispatchEvent(new CustomEvent('channelAdded', evt));
+
+    _onChannelUpdate = (evt) => dispatchEvent(new CustomEvent('channelUpdate', evt));
+
+    _onChannelDeleted = (evt) => dispatchEvent(new CustomEvent('channelDeleted', evt));
+
+    _onUserUpdated = (evt) => dispatchEvent(new CustomEvent('userUpdated', evt));
+
+    _onUserSubscribed = (evt) => dispatchEvent(new CustomEvent('userSubscribed', evt));
+
+    _onUserUnsubscribed = (evt) => dispatchEvent(new CustomEvent('userUnsubscribed', evt));
+
+    _onAddedToChannelNotification = (evt) => dispatchEvent(new CustomEvent('addedToChannelNotification', evt));
+
+    _onInvitedToChannelNotification = (evt) => dispatchEvent(new CustomEvent('invitedToChannelNotification', evt));
+
+    _onRemovedFromChannelNotification = (evt) => dispatchEvent(new CustomEvent('removedFromChannelNotification', evt));
+
+    _onNotificationSubscribed = (evt) => dispatchEvent(new CustomEvent('notificationSubscribed', evt));
+
+    _onConnectionStateChange = (evt) => dispatchEvent(new CustomEvent('connectionStateChange', evt));
 };
 
 export default TwilioChatClient;
-
-//             sendEvent(getReactApplicationContext() ,"channelJoined", channel);
-//             sendEvent(getReactApplicationContext() ,"channelInvited", channel);
-//             sendEvent(getReactApplicationContext() ,"channelAdded", channel);
-//             sendEvent(getReactApplicationContext() ,"channelUpdate", {channel, updateReason}});
-//             sendEvent(getReactApplicationContext() ,"channelDeleted", channel);
-//             sendEvent(getReactApplicationContext() ,"channelSynchronizationChange", channel);
-//             sendEvent(getReactApplicationContext() ,"error", {code: string, message: string, status: string}});
-//             sendEvent(getReactApplicationContext() ,"synchronizationStatus", string);
-//             sendEvent(getReactApplicationContext() ,"connectionStateChange", string);
-//             sendEvent(getReactApplicationContext() ,"tokenExpired", null);
-//             sendEvent(getReactApplicationContext() ,"tokenAboutToExpire", null);
-//             sendEvent(getReactApplicationContext() ,"userUpdated", {user, string});
-//             sendEvent(getReactApplicationContext() ,"userSubscribed", user);
-//             sendEvent(getReactApplicationContext() ,"userUnsubscribed", user);
-//             sendEvent(getReactApplicationContext() ,"addedToChannelNotification", channelSid: string);
-//             sendEvent(getReactApplicationContext() ,"invitedToChannelNotification", channelSid: string);
-//             sendEvent(getReactApplicationContext() ,"removedFromChannelNotification", channelSid: string);
-//             sendEvent(getReactApplicationContext() ,"notificationSubscribed", null);
-//             sendEvent(getReactApplicationContext() ,"error", {code: string, message: string, status: string});
-//
-//
-//     // not implemented
-//     public void onNewMessageNotification(String channelSid, String messageSid, long messageIndex) {
-//         Log.e(LOG_TAG, "Not implemented: onNewMessageNotification. ChannelSid: " +
-//             channelSid + ", messageSid: " + messageSid + ", messageIndex: " + messageSid);
-//     }
