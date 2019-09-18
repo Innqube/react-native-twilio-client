@@ -49,17 +49,17 @@ class TwilioChatClient {
         switch (status) {
             case SynchronizationStatus.COMPLETED:
                 this._initEventListeners();
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.COMPLETED));
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.COMPLETED}));
                 resolve(this);
                 break;
             case SynchronizationStatus.STARTED:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.STARTED));
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.STARTED}));
                 break;
             case SynchronizationStatus.CHANNELS_COMPLETED:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.CHANNELS_COMPLETED));
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.CHANNELS_COMPLETED}));
                 break;
             case SynchronizationStatus.FAILED:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.FAILED));
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.FAILED}));
                 reject('Synchronization failed');
         }
     };
@@ -87,7 +87,7 @@ class TwilioChatClient {
         EventEmitterHelper.addEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         EventEmitterHelper.addEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
         EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        EventEmitterHelper.addEventListener('connectionStateChange', this._onConnectionStateChange);
+        EventEmitterHelper.addEventListener('connectionStateChange', this._onConnectionStateChanged);
     };
 
     _removeAllListeners = () => {
@@ -111,31 +111,31 @@ class TwilioChatClient {
 
     _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this.tokenCallback());
 
-    _onChannelJoined = (evt) => dispatchEvent(new CustomEvent('channelJoined', evt));
+    _onChannelJoined = (payload) => dispatchEvent(new CustomEvent('channelJoined', {detail: payload}));
 
-    _onChannelInvited = (evt) => dispatchEvent(new CustomEvent('channelInvited', evt));
+    _onChannelInvited = (payload) => dispatchEvent(new CustomEvent('channelInvited', {detail: payload}));
 
-    _onChannelAdded = (evt) => dispatchEvent(new CustomEvent('channelAdded', evt));
+    _onChannelAdded = (payload) => dispatchEvent(new CustomEvent('channelAdded', {detail: payload}));
 
-    _onChannelUpdate = (evt) => dispatchEvent(new CustomEvent('channelUpdate', evt));
+    _onChannelUpdate = (payload) => dispatchEvent(new CustomEvent('channelUpdate', {detail: payload}));
 
-    _onChannelDeleted = (evt) => dispatchEvent(new CustomEvent('channelDeleted', evt));
+    _onChannelDeleted = (payload) => dispatchEvent(new CustomEvent('channelDeleted', {detail: payload}));
 
-    _onUserUpdated = (evt) => dispatchEvent(new CustomEvent('userUpdated', evt));
+    _onUserUpdated = (payload) => dispatchEvent(new CustomEvent('userUpdated', {detail: payload}));
 
-    _onUserSubscribed = (evt) => dispatchEvent(new CustomEvent('userSubscribed', evt));
+    _onUserSubscribed = (payload) => dispatchEvent(new CustomEvent('userSubscribed', {detail: payload}));
 
-    _onUserUnsubscribed = (evt) => dispatchEvent(new CustomEvent('userUnsubscribed', evt));
+    _onUserUnsubscribed = (payload) => dispatchEvent(new CustomEvent('userUnsubscribed', {detail: payload}));
 
-    _onAddedToChannelNotification = (evt) => dispatchEvent(new CustomEvent('addedToChannelNotification', evt));
+    _onAddedToChannelNotification = (payload) => dispatchEvent(new CustomEvent('addedToChannelNotification', {detail: payload}));
 
-    _onInvitedToChannelNotification = (evt) => dispatchEvent(new CustomEvent('invitedToChannelNotification', evt));
+    _onInvitedToChannelNotification = (payload) => dispatchEvent(new CustomEvent('invitedToChannelNotification', {detail: payload}));
 
-    _onRemovedFromChannelNotification = (evt) => dispatchEvent(new CustomEvent('removedFromChannelNotification', evt));
+    _onRemovedFromChannelNotification = (payload) => dispatchEvent(new CustomEvent('removedFromChannelNotification', {detail: payload}));
 
-    _onNotificationSubscribed = (evt) => dispatchEvent(new CustomEvent('notificationSubscribed', evt));
+    _onNotificationSubscribed = (payload) => dispatchEvent(new CustomEvent('notificationSubscribed', {detail: payload}));
 
-    _onConnectionStateChanged = (evt) => dispatchEvent(new CustomEvent('connectionStateChanged', evt));
-};
+    _onConnectionStateChanged = (payload) => dispatchEvent(new CustomEvent('connectionStateChanged', {detail: payload}));
+}
 
 export default TwilioChatClient;
