@@ -36,7 +36,7 @@ class TwilioChatClient {
 
     unRegister = (token) => RNTwilioChatClient.unRegister(token);
 
-    createChannel = (uniqueName, friendlyName, type) => RNTwilioChatClient.createChannel(uniqueName, friendlyName, type);
+    createChannel = (uniqueName, friendlyName, type) => RNTwilioChatChannels.create(uniqueName, friendlyName, type);
 
     getPublicChannels = () => RNTwilioChatClient.getPublicChannels();
 

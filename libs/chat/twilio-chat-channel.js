@@ -27,8 +27,6 @@ class TwilioChatChannel {
 
     get = (uniqueName) => RNTwilioChatChannels.get(uniqueName);
 
-    create = (uniqueName, friendlyName, type) => RNTwilioChatChannels.create(uniqueName, friendlyName, type);
-
     join = () => RNTwilioChatChannels.join(this.uniqueName);
 
     leave = () => RNTwilioChatChannels.leave(this.uniqueName);
