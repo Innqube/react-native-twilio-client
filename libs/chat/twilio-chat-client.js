@@ -47,19 +47,19 @@ class TwilioChatClient {
 
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
-            case SynchronizationStatus.ClientSynchronizationStatusCompleted:
+            case SynchronizationStatus.COMPLETED:
                 this._initEventListeners();
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusCompleted));
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.COMPLETED));
                 resolve(this);
                 break;
-            case SynchronizationStatus.ClientSynchronizationStatusStarted:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusStarted));
+            case SynchronizationStatus.STARTED:
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.STARTED));
                 break;
-            case SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusChannelsListCompleted));
+            case SynchronizationStatus.CHANNELS_COMPLETED:
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.CHANNELS_COMPLETED));
                 break;
-            case SynchronizationStatus.ClientSynchronizationStatusFailed:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.ClientSynchronizationStatusFailed));
+            case SynchronizationStatus.FAILED:
+                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', SynchronizationStatus.FAILED));
                 reject('Synchronization failed');
         }
     };
