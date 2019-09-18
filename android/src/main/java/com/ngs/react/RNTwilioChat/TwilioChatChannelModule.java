@@ -1,12 +1,9 @@
 package com.ngs.react.RNTwilioChat;
 
 import android.util.Log;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.ngs.react.Converters;
+import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
+import com.ngs.react.Utils;
 import com.twilio.chat.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,56 +47,6 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
                 });
     }
 
-
-    @ReactMethod
-    public void sendMessage(String channelSidOrUniqueName, final String message, final Promise promise) {
-        Log.d(LOG_TAG, "sendMessage");
-
-        getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel
-                    .getMessages()
-                    .sendMessage(
-                            Message.options().withBody(message),
-                            new PromiseCallbackListener<Message>(promise) {
-                                @Override
-                                public void onSuccess(Message message) {
-                                    try {
-                                        JSONObject json = Serializers.messageToJsonObject(message);
-                                        promise.resolve(json);
-                                    } catch (JSONException e) {
-                                        promise.reject(e);
-                                    }
-                                }
-                            }
-                    );
-        });
-    }
-
-    @ReactMethod
-    public void getMessages(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
-        Log.d(LOG_TAG, "getMessages");
-
-        getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages()
-                    .getMessagesAfter(index, count, new PromiseCallbackListener<List<Message>>(promise) {
-                        @Override
-                        public void onSuccess(List<Message> messages) {
-                            try {
-                                JSONArray jsonArray = new JSONArray();
-
-                                for (Message message : messages) {
-                                    jsonArray.put(Serializers.messageToJsonObject(message));
-                                }
-
-                                promise.resolve(Converters.convertJsonToArray(jsonArray));
-                            } catch (JSONException je) {
-                                promise.resolve(je);
-                            }
-                        }
-                    });
-        });
-    }
-
     @ReactMethod
     public void join(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "join");
@@ -113,6 +60,59 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
                 @Override
                 public void onError(ErrorInfo errorInfo) {
                     promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
+                }
+            });
+            channel.addListener(new ChannelListener() {
+                @Override
+                public void onMessageAdded(Message message) {
+                    Log.d(LOG_TAG, "onMessageAdded: " + message.getSid());
+                    try {
+                        JSONObject channelJson = Utils.channelToJsonObject(channel);
+                        WritableMap channelMap = Utils.convertJsonToMap(channelJson);
+                        Utils.sendEvent(getReactApplicationContext() ,"messageAdded", channelMap);
+                    } catch (JSONException e) {
+                        Log.e(LOG_TAG, "Could not handle event", e);
+                    }
+                }
+
+                @Override
+                public void onMessageUpdated(Message message, Message.UpdateReason updateReason) {
+
+                }
+
+                @Override
+                public void onMessageDeleted(Message message) {
+
+                }
+
+                @Override
+                public void onMemberAdded(Member member) {
+
+                }
+
+                @Override
+                public void onMemberUpdated(Member member, Member.UpdateReason updateReason) {
+
+                }
+
+                @Override
+                public void onMemberDeleted(Member member) {
+
+                }
+
+                @Override
+                public void onTypingStarted(Channel channel, Member member) {
+
+                }
+
+                @Override
+                public void onTypingEnded(Channel channel, Member member) {
+
+                }
+
+                @Override
+                public void onSynchronizationChanged(Channel channel) {
+
                 }
             });
         });
@@ -143,20 +143,6 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getMessagesCount(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "getMessagesCount");
-        getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessagesCount(new PromiseCallbackListener<Long>(promise) {
-                @Override
-                public void onSuccess(Long messageCount) {
-                    Log.d(LOG_TAG, "success: getMessagesCount: " + messageCount);
-                    promise.resolve(messageCount != null ? messageCount.toString() : null);
-                }
-            });
-        });
-    }
-
-    @ReactMethod
     public void getUnconsumedMessagesCount(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "getUnconsumedMessagesCount");
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
@@ -165,6 +151,20 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
                 public void onSuccess(Long unconsumed) {
                     Log.d(LOG_TAG, "success: getUnconsumedMessagesCount: " + unconsumed);
                     promise.resolve(unconsumed != null ? unconsumed.toString() : null);
+                }
+            });
+        });
+    }
+
+    @ReactMethod
+    public void getMessagesCount(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getMessagesCount");
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessagesCount(new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long messageCount) {
+                    Log.d(LOG_TAG, "success: getMessagesCount: " + messageCount);
+                    promise.resolve(messageCount != null ? messageCount.toString() : null);
                 }
             });
         });
@@ -182,6 +182,136 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
                 }
             });
         });
+    }
+
+    @ReactMethod
+    public void getLastMessages(String channelSidOrUniqueName,final Integer count, final Promise promise) {
+        Log.d(LOG_TAG, "getMessages");
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages().getLastMessages(count, new MessageListPromiseCallbackListener(promise));
+        });
+    }
+
+    @ReactMethod
+    public void getMessagesBefore(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
+        Log.d(LOG_TAG, "getMessagesBefore");
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages().getMessagesBefore(index, count, new MessageListPromiseCallbackListener(promise));
+        });
+    }
+
+    @ReactMethod
+    public void getMessagesAfter(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
+        Log.d(LOG_TAG, "getMessagesAfter");
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages().getMessagesAfter(index, count, new MessageListPromiseCallbackListener(promise));
+        });
+    }
+
+    @ReactMethod
+    public void setNoMessagesConsumed(String channelSidOrUniqueName, final Promise promise) {
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages().setNoMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long messageCount) {
+                    promise.resolve(messageCount != null ? messageCount.toString() : null);
+                }
+            });
+        });
+    }
+
+    @ReactMethod
+    public void setAllMessageConsumed(String channelSidOrUniqueName, final Promise promise) {
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages().setAllMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long messageCount) {
+                    promise.resolve(messageCount != null ? messageCount.toString() : null);
+                }
+            });
+        });
+    }
+
+    @ReactMethod
+    public void setLastConsumedMessage(String channelSidOrUniqueName, Integer index, final Promise promise) {
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages().setLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long messageCount) {
+                    promise.resolve(messageCount != null ? messageCount.toString() : null);
+                }
+            });
+        });
+    }
+
+    @ReactMethod
+    public void advanceLastConsumedMessage(String channelSidOrUniqueName, Integer index, final Promise promise) {
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel.getMessages().advanceLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
+                @Override
+                public void onSuccess(Long messageIndex) {
+                    promise.resolve(messageIndex != null ? messageIndex.toString() : null);
+                }
+            });
+        });
+    }
+
+    @ReactMethod
+    public void getLastConsumedMessageIndex(String channelSidOrUniqueName, final Promise promise) {
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            Long index = channel.getMessages().getLastConsumedMessageIndex();
+            promise.resolve(index != null ? index.toString() : index);
+        });
+    }
+
+    @ReactMethod
+    public void sendMessage(String channelSidOrUniqueName, final String message, final Promise promise) {
+        Log.d(LOG_TAG, "sendMessage");
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            channel
+                    .getMessages()
+                    .sendMessage(
+                            Message.options().withBody(message),
+                            new PromiseCallbackListener<Message>(promise) {
+                                @Override
+                                public void onSuccess(Message message) {
+                                    try {
+                                        JSONObject json = Utils.messageToJsonObject(message);
+                                        promise.resolve(json);
+                                    } catch (JSONException e) {
+                                        promise.reject(e);
+                                    }
+                                }
+                            }
+                    );
+        });
+    }
+
+    private class MessageListPromiseCallbackListener extends PromiseCallbackListener<List<Message>> {
+
+        public MessageListPromiseCallbackListener(Promise promise) {
+            super(promise);
+        }
+
+        @Override
+        public void onSuccess(List<Message> messages) {
+            try {
+                JSONArray jsonArray = new JSONArray();
+
+                for (Message message : messages) {
+                    jsonArray.put(Utils.messageToJsonObject(message));
+                }
+
+                promise.resolve(Utils.convertJsonToArray(jsonArray));
+            } catch (JSONException je) {
+                promise.resolve(je);
+            }
+        }
+
     }
 
 }

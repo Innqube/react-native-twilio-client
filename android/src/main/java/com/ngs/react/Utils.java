@@ -1,13 +1,21 @@
 package com.ngs.react;
 
 import com.facebook.react.bridge.*;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.twilio.chat.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
 
-public class Converters {
+public class Utils {
+
+    public static void sendEvent(ReactContext reactContext, String eventName, WritableMap params) {
+        reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
+    }
 
     public static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
         WritableMap map = new WritableNativeMap();
@@ -113,4 +121,53 @@ public class Converters {
         }
         return array;
     }
+
+    public static JSONObject channelToJsonObject(Channel channel) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("uniqueName", channel.getUniqueName());
+        json.put("friendlyName", channel.getFriendlyName());
+        json.put("sid", channel.getSid());
+        json.put("lastMessageIndex", channel.getLastMessageIndex());
+        json.put("attributes", channel.getAttributes());
+        return json;
+    }
+
+    public static JSONObject messageToJsonObject(Message message) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("author", message.getAuthor());
+        json.put("channelSid", message.getChannelSid());
+        json.put("messageBody", message.getMessageBody());
+        json.put("messageIndex", message.getMessageIndex());
+        json.put("sid", message.getSid());
+        json.put("attributes", message.getAttributes());
+        json.put("dateCreated", message.getDateCreated());
+        return json;
+    }
+
+    public static JSONObject errorInfoToJsonObject(ErrorInfo errorInfo) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("code", errorInfo.getCode());
+        json.put("message", errorInfo.getMessage());
+        json.put("status", errorInfo.getStatus());
+        return json;
+    }
+
+    public static JSONObject userToJsonObject(User user) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("friendlyName", user.getFriendlyName());
+        json.put("identity", user.getIdentity());
+        json.put("attributes", user.getAttributes());
+        return json;
+    }
+
+    public static JSONObject memberToJsonObject(Member member) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("identity", member.getIdentity());
+        json.put("sid", member.getSid());
+        json.put("lastConsumedMessageIndex", member.getLastConsumedMessageIndex());
+        json.put("lastConsumptionTimestamp", member.getLastConsumptionTimestamp());
+        json.put("type", member.getType() != null ? member.getType().name() : null);
+        return json;
+    }
+
 }
