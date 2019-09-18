@@ -117,7 +117,7 @@ public class TwilioChatClientListener implements ChatClientListener {
             JSONObject synchronizationJson = new JSONObject();
             synchronizationJson.put("synchronizationStatus", synchronizationStatus.name());
             WritableMap syncronizationMap = Utils.convertJsonToMap(synchronizationJson);
-            Utils.sendEvent(reactApplicationContext, "synchronizationStatus", syncronizationMap);
+            Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", syncronizationMap);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -130,7 +130,7 @@ public class TwilioChatClientListener implements ChatClientListener {
             JSONObject stateJson = new JSONObject();
             stateJson.put("connectionState", connectionState.name());
             WritableMap syncronizationMap = Utils.convertJsonToMap(stateJson);
-            Utils.sendEvent(reactApplicationContext, "connectionStateChange", syncronizationMap);
+            Utils.sendEvent(reactApplicationContext, "connectionStateChanged", syncronizationMap);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
