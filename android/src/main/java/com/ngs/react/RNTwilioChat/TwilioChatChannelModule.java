@@ -48,6 +48,25 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void getChannel(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getChannel: " + channelSidOrUniqueName);
+        TwilioChatModule
+                .getChatClient()
+                .getChannels()
+                .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
+                    @Override
+                    public void onSuccess(Channel channel) {
+                        try {
+                            JSONObject json = Utils.channelToJsonObject(channel);
+                            promise.resolve(Utils.convertJsonToMap(json));
+                        } catch (JSONException e) {
+                            promise.reject(e);
+                        }
+                    }
+                });
+    }
+
+    @ReactMethod
     public void create(String friendlyName, String uniqueName, Integer type, ReadableMap attributes, final Promise promise) {
         Log.d(LOG_TAG, "createChannel");
         try {
@@ -164,7 +183,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getLastMessages(String channelSidOrUniqueName,final Integer count, final Promise promise) {
+    public void getLastMessages(String channelSidOrUniqueName, final Integer count, final Promise promise) {
         Log.d(LOG_TAG, "getMessages");
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
