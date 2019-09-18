@@ -119,7 +119,7 @@ public class TwilioChannelListener implements ChannelListener {
     @Override
     public void onSynchronizationChanged(Channel channel) {
         Log.d(LOG_TAG, "onSynchronizationChanged");
-        Utils.sendEvent(reactApplicationContext ,"synchronizationChanged", null);
+        Utils.sendEvent(reactApplicationContext ,"synchronizationChanged");
     }
 
 }
