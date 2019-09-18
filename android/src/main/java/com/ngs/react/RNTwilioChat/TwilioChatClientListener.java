@@ -21,26 +21,12 @@ public class TwilioChatClientListener implements ChatClientListener {
     // channel events
     @Override
     public void onChannelJoined(Channel channel) {
-        Log.d(LOG_TAG, "onChannelJoined: " + channel.getSid());
-        try {
-            JSONObject channelJson = Utils.channelToJsonObject(channel);
-            WritableMap channelMap = Utils.convertJsonToMap(channelJson);
-            Utils.sendEvent(reactApplicationContext, "channelJoined", channelMap);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Could not handle event", e);
-        }
+        Log.w(LOG_TAG, "onChannelJoined: " + channel.getSid() + ". No implementation provided. Use memberAdded?.");
     }
 
     @Override
     public void onChannelInvited(Channel channel) {
-        Log.d(LOG_TAG, "onChannelInvited: " + channel.getSid());
-        try {
-            JSONObject channelJson = Utils.channelToJsonObject(channel);
-            WritableMap channelMap = Utils.convertJsonToMap(channelJson);
-            Utils.sendEvent(reactApplicationContext, "channelInvited", channelMap);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Could not handle event", e);
-        }
+        Log.w(LOG_TAG, "onChannelInvited: " + channel.getSid() + ". No implementation provided. Use onInvitedToChannelNotification?.");
     }
 
     @Override
@@ -63,10 +49,10 @@ public class TwilioChatClientListener implements ChatClientListener {
             JSONObject channelJson = Utils.channelToJsonObject(channel);
 
             eventJson.put("channel", channelJson);
-            eventJson.put("updateReason", updateReason.name());
+            eventJson.put("reason", updateReason.name());
 
             WritableMap eventMap = Utils.convertJsonToMap(eventJson);
-            Utils.sendEvent(reactApplicationContext, "channelUpdate", eventMap);
+            Utils.sendEvent(reactApplicationContext, "channelUpdated", eventMap);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -90,7 +76,7 @@ public class TwilioChatClientListener implements ChatClientListener {
         try {
             JSONObject channelJson = Utils.channelToJsonObject(channel);
             WritableMap channelMap = Utils.convertJsonToMap(channelJson);
-            Utils.sendEvent(reactApplicationContext, "channelSynchronizationChange", channelMap);
+            Utils.sendEvent(reactApplicationContext, "channelSynchronizationUpdated", channelMap);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -113,27 +99,13 @@ public class TwilioChatClientListener implements ChatClientListener {
     @Override
     public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
         Log.d(LOG_TAG, "onClientSynchronization: " + synchronizationStatus);
-//        try {
-//            JSONObject synchronizationJson = new JSONObject();
-//            synchronizationJson.put("synchronizationStatus", synchronizationStatus.name());
-//            WritableMap syncronizationMap = Utils.convertJsonToMap(synchronizationJson);
-            Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", synchronizationStatus.name());
-//        } catch (JSONException e) {
-//            Log.e(LOG_TAG, "Could not handle event", e);
-//        }
+        Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", synchronizationStatus.name());
     }
 
     @Override
     public void onConnectionStateChange(ChatClient.ConnectionState connectionState) {
         Log.d(LOG_TAG, "onConnectionStateChange: " + connectionState);
-        try {
-            JSONObject stateJson = new JSONObject();
-            stateJson.put("connectionState", connectionState.name());
-            WritableMap syncronizationMap = Utils.convertJsonToMap(stateJson);
-            Utils.sendEvent(reactApplicationContext, "connectionStateChanged", syncronizationMap);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Could not handle event", e);
-        }
+        Utils.sendEvent(reactApplicationContext, "connectionStateUpdated", connectionState.name());
     }
 
     @Override
@@ -158,7 +130,7 @@ public class TwilioChatClientListener implements ChatClientListener {
             JSONObject userJson = Utils.userToJsonObject(user);
 
             eventJson.put("user", userJson);
-            eventJson.put("updateReason", updateReason.name());
+            eventJson.put("reason", updateReason.name());
 
             WritableMap eventMap = Utils.convertJsonToMap(eventJson);
             Utils.sendEvent(reactApplicationContext, "userUpdated", eventMap);
@@ -171,9 +143,9 @@ public class TwilioChatClientListener implements ChatClientListener {
     public void onUserSubscribed(User user) {
         Log.d(LOG_TAG, "onUserSubscribed: " + user.getIdentity());
         try {
-            JSONObject errorInfoJson = Utils.userToJsonObject(user);
-            WritableMap errorInfoMap = Utils.convertJsonToMap(errorInfoJson);
-            Utils.sendEvent(reactApplicationContext, "userSubscribed", errorInfoMap);
+            JSONObject userJson = Utils.userToJsonObject(user);
+            WritableMap userMap = Utils.convertJsonToMap(userJson);
+            Utils.sendEvent(reactApplicationContext, "userSubscribed", userMap);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -196,33 +168,29 @@ public class TwilioChatClientListener implements ChatClientListener {
     // Push notifications
     @Override
     public void onNewMessageNotification(String channelSid, String messageSid, long messageIndex) {
-        Log.e(LOG_TAG, "Not implemented: onNewMessageNotification. ChannelSid: " +
-                channelSid + ", messageSid: " + messageSid + ", messageIndex: " + messageSid);
+        WritableMap map = new WritableNativeMap();
+        map.putString("channelSid", channelSid);
+        map.putInt("messageIndex", Integer.parseInt(Long.valueOf(messageIndex).toString()));
+        Utils.sendEvent(reactApplicationContext, "newMessageNotification", map);
     }
 
 
     @Override
     public void onAddedToChannelNotification(String channelSid) {
         Log.d(LOG_TAG, "onAddedToChannelNotification: " + channelSid);
-        WritableMap map = new WritableNativeMap();
-        map.putString("channelSid", channelSid);
-        Utils.sendEvent(reactApplicationContext, "addedToChannelNotification", map);
+        Utils.sendEvent(reactApplicationContext, "addedToChannelNotification", channelSid);
     }
 
     @Override
     public void onInvitedToChannelNotification(String channelSid) {
         Log.d(LOG_TAG, "onInvitedToChannelNotification: " + channelSid);
-        WritableMap map = new WritableNativeMap();
-        map.putString("channelSid", channelSid);
-        Utils.sendEvent(reactApplicationContext, "invitedToChannelNotification", map);
+        Utils.sendEvent(reactApplicationContext, "invitedToChannelNotification", channelSid);
     }
 
     @Override
     public void onRemovedFromChannelNotification(String channelSid) {
         Log.d(LOG_TAG, "onRemovedFromChannelNotification: " + channelSid);
-        WritableMap map = new WritableNativeMap();
-        map.putString("channelSid", channelSid);
-        Utils.sendEvent(reactApplicationContext, "removedFromChannelNotification", map);
+        Utils.sendEvent(reactApplicationContext, "removedFromChannelNotification", channelSid);
     }
 
     @Override
