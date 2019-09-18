@@ -25,6 +25,10 @@ class TwilioChatChannel {
 
     onNewMessage = (message) => dispatchEvent(new CustomEvent('onNewMessage', message));
 
+    get = (uniqueName) => RNTwilioChatChannels.get(uniqueName);
+
+    create = (uniqueName, friendlyName, type) => RNTwilioChatChannels.create(uniqueName, friendlyName, type);
+
     join = () => RNTwilioChatChannels.join(this.uniqueName);
 
     leave = () => RNTwilioChatChannels.leave(this.uniqueName);
@@ -55,8 +59,6 @@ class TwilioChatChannel {
 
     sendMessage = (message) => RNTwilioChatChannels.sendMessage(message);
 
-    getChannelMembers = () => RNTwilioChatChannels.getChannelMembers(this.uniqueName);
-
     _initListeners = () => {
         EventEmitterHelper.addEventListener('typingStartedOnChannel', this._onTypingStartedOnChannel);
         EventEmitterHelper.addEventListener('typingEndedOnChannel', this._onTypingEndedOnChannel);
@@ -74,6 +76,6 @@ class TwilioChatChannel {
     _onTypingEndedOnChannel = (evt) => {
         dispatchEvent(new CustomEvent('typingEndedOnChannel', evt));
     };
-};
+}
 
 export default TwilioChatChannel;
