@@ -17,13 +17,15 @@ class TwilioChatClient {
         this.tokenCallback()
             .then(token => {
                 RNTwilioChatClient
-                    .createClient(token, null)
+                    .createClient(token)
                     .then(client => EventEmitterHelper.addEventListener(
                         'synchronizationStatusUpdated',
                         status => this._synchronizationListener(status, resolve, reject)
                         )
                     )
-            });
+                    .catch(error => reject(error))
+            })
+            .catch(error => reject(error));
     }));
 
     shutdown = () => {
