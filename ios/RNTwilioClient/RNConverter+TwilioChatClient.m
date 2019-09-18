@@ -38,12 +38,12 @@ RCT_ENUM_CONVERTER(TCHChannelType,(@{
                                      @"Private" : @(TCHChannelTypePrivate),
                                      }), TCHChannelTypePublic, integerValue)
 
-RCT_ENUM_CONVERTER(TCHUserInfoUpdate,(@{
-                                        @"FriendlyName" : @(TCHUserInfoUpdateFriendlyName),
-                                        @"Attributes" : @(TCHUserInfoUpdateAttributes),
-                                        @"ReachabilityOnline": @(TCHUserInfoUpdateReachabilityOnline),
-                                        @"ReachabilityNotifiable": @(TCHUserInfoUpdateReachabilityNotifiable),
-                                        }), TCHUserInfoUpdateFriendlyName, integerValue)
+RCT_ENUM_CONVERTER(TCHUserUpdate,(@{
+                                        @"FriendlyName" : @(TCHUserUpdateFriendlyName),
+                                        @"Attributes" : @(TCHUserUpdateAttributes),
+                                        @"ReachabilityOnline": @(TCHUserUpdateReachabilityOnline),
+                                        @"ReachabilityNotifiable": @(TCHUserUpdateReachabilityNotifiable),
+                                        }), TCHUserUpdateFriendlyName, integerValue)
 
 RCT_ENUM_CONVERTER(TCHClientSynchronizationStrategy,(@{
                                                        @"All" : @(TCHClientSynchronizationStrategyAll),
@@ -73,7 +73,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     return RCTNullIfNil(nil);
   }
   return @{
-           @"userInfo": [self TCHUserInfo:client.userInfo],
+           @"user": [self TCHUser:client.user],
            @"synchronizationStatus": @(client.synchronizationStatus),
            @"version": client.version,
            @"isReachabilityEnabled": @(client.isReachabilityEnabled)
@@ -81,16 +81,16 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
 }
 
 
-+ (NSDictionary *)TCHUserInfo:(TCHUserInfo *)userInfo {
-  if (!userInfo) {
++ (NSDictionary *)TCHUser:(TCHUser *)user {
+  if (!user) {
     return RCTNullIfNil(nil);
   }
   return @{
-           @"identity": userInfo.identity,
-           @"friendlyName": userInfo.friendlyName,
-           @"attributes": RCTNullIfNil(userInfo.attributes),
-           @"isOnline": @(userInfo.isOnline),
-           @"isNotifiable": @(userInfo.isNotifiable)
+           @"identity": user.identity,
+           @"friendlyName": user.friendlyName,
+           @"attributes": RCTNullIfNil(user.attributes),
+           @"isOnline": @(user.isOnline),
+           @"isNotifiable": @(user.isNotifiable)
            };
 }
 
@@ -117,7 +117,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     return RCTNullIfNil(nil);
   }
   return @{
-           @"userInfo": [RCTConvert TCHUserInfo:member.userInfo],
+           @"user": [RCTConvert TCHUser:member.user],
            @"lastConsumedMessageIndex": RCTNullIfNil(member.lastConsumedMessageIndex),
            @"lastConsumptionTimestamp": RCTNullIfNil(member.lastConsumptionTimestamp)
            };

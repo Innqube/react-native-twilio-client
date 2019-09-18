@@ -7,7 +7,7 @@
 //
 
 #import <TwilioChatClient/TwilioChatClient.h>
-#import <TwilioChatClient/TCHUserInfo.h>
+#import <TwilioChatClient/TCHUser.h>
 #import <TwilioAccessManager/TwilioAccessManager.h>
 #import <React/RCTConvert.h>
 
@@ -17,7 +17,7 @@
 + (TCHChannelSynchronizationStatus)TCHChannelSynchronizationStatus:(id)json;
 + (TCHChannelType)TCHChannelType:(id)json;
 + (TCHChannelStatus)TCHChannelStatus:(id)json;
-+ (TCHUserInfoUpdate)TCHUserInfoUpdate:(id)json;
++ (TCHUserUpdate)TCHUserUpdate:(id)json;
 + (TCHClientSynchronizationStrategy)TCHClientSynchronizationStrategy:(id)json;
 + (TCHLogLevel)TCHLogLevel:(id)json;
 + (TCHClientConnectionState)TCHClientConnectionState:(id)json;
@@ -26,7 +26,7 @@
 
 + (NSDictionary *)TCHChannel:(TCHChannel *)channel;
 + (NSDictionary *)TCHChannelDescriptor:(TCHChannelDescriptor *)channel;
-+ (NSDictionary *)TCHUserInfo:(TCHUserInfo *)userInfo;
++ (NSDictionary *)TCHUser:(TCHUser *)user;
 + (NSDictionary *)TCHMember:(TCHMember *)member;
 + (NSDictionary *)TCHMessage:(TCHMessage *)message;
 
