@@ -9,7 +9,7 @@
 #import "RNConverter+TwilioChatClient.h"
 #import <React/RCTUtils.h>
 
-@implementation RNConverter (TwilioChatClient)
+@implementation RCTonvert (TwilioChatClient)
 
 RCT_ENUM_CONVERTER(TCHClientSynchronizationStatus,(@{
                                                       @"Started" : @(TCHClientSynchronizationStatusStarted),

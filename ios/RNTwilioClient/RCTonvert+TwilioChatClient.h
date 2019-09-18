@@ -8,17 +8,15 @@
 
 #import <TwilioChatClient/TwilioChatClient.h>
 #import <TwilioChatClient/TCHUser.h>
-#import <TwilioAccessManager/TwilioAccessManager.h>
 #import <React/RCTConvert.h>
 
-@interface RNConverter (TwilioChatClient)
+@interface RCTConvert (TwilioChatClient)
 
 + (TCHClientSynchronizationStatus)TCHClientSynchronizationStatus:(id)json;
 + (TCHChannelSynchronizationStatus)TCHChannelSynchronizationStatus:(id)json;
 + (TCHChannelType)TCHChannelType:(id)json;
 + (TCHChannelStatus)TCHChannelStatus:(id)json;
 + (TCHUserUpdate)TCHUserUpdate:(id)json;
-+ (TCHClientSynchronizationStrategy)TCHClientSynchronizationStrategy:(id)json;
 + (TCHLogLevel)TCHLogLevel:(id)json;
 + (TCHClientConnectionState)TCHClientConnectionState:(id)json;
 
@@ -29,10 +27,6 @@
 + (NSDictionary *)TCHUser:(TCHUser *)user;
 + (NSDictionary *)TCHMember:(TCHMember *)member;
 + (NSDictionary *)TCHMessage:(TCHMessage *)message;
-
-+ (NSDictionary *)TCHMemberPaginator:(TCHMemberPaginator *)paginator;
-+ (NSDictionary *)TCHChannelPaginator:(TCHChannelPaginator *)paginator;
-+ (NSDictionary *)TCHChannelDescriptorPaginator:(TCHChannelDescriptorPaginator *)paginator;
 
 + (NSArray *)TCHChannels:(NSArray<TCHChannel *>*)channels;
 + (NSArray *)TCHChannelDescriptors:(NSArray<TCHChannelDescriptor *>*)channels;
