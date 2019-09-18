@@ -6,13 +6,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.ngs.react.PromiseCallbackListener;
-import com.ngs.react.Utils;
-import com.twilio.chat.Channel;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
 import com.twilio.chat.StatusListener;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class TwilioChatModule extends ReactContextBaseJavaModule {
 
@@ -84,22 +80,6 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
             @Override
             public void onError(ErrorInfo errorInfo) {
                 promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
-            }
-        });
-    }
-
-    @ReactMethod
-    public void getChannel(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "getChannel: " + channelSidOrUniqueName);
-        CHAT_CLIENT.getChannels().getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
-            @Override
-            public void onSuccess(Channel channel) {
-                try {
-                    JSONObject json = Utils.channelToJsonObject(channel);
-                    promise.resolve(Utils.convertJsonToMap(json));
-                } catch (JSONException e) {
-                    promise.reject(e);
-                }
             }
         });
     }

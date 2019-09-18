@@ -87,7 +87,7 @@ class TwilioChatClient {
         EventEmitterHelper.addEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         EventEmitterHelper.addEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
         EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        EventEmitterHelper.addEventListener('connectionStateChange', this._onConnectionStateChanged);
+        EventEmitterHelper.addEventListener('connectionStateChanged', this._onConnectionStateChanged);
     };
 
     _removeAllListeners = () => {
