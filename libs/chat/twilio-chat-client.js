@@ -64,13 +64,13 @@ class TwilioChatClient {
         }
     };
 
-    _messageFilter(message, channel) {
-        if (message.channel.sid === channel.sid) {
-            if (channel.onNewMessage) {
-                channel.onNewMessage(message);
-            }
-        }
-    }
+    // _messageFilter(message, channel) {
+    //     if (message.channel.sid === channel.sid) {
+    //         if (channel.onNewMessage) {
+    //             channel.onNewMessage(message);
+    //         }
+    //     }
+    // }
 
     _initEventListeners = () => {
         EventEmitterHelper.addEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
@@ -78,16 +78,28 @@ class TwilioChatClient {
         EventEmitterHelper.addEventListener('channelJoined', this._onChannelJoined);
         EventEmitterHelper.addEventListener('channelInvited', this._onChannelInvited);
         EventEmitterHelper.addEventListener('channelAdded', this._onChannelAdded);
-        EventEmitterHelper.addEventListener('channelUpdate', this._onChannelUpdate);
+        EventEmitterHelper.addEventListener('channelUpdated', this._onChannelUpdated);
         EventEmitterHelper.addEventListener('channelDeleted', this._onChannelDeleted);
         EventEmitterHelper.addEventListener('userUpdated', this._onUserUpdated);
         EventEmitterHelper.addEventListener('userSubscribed', this._onUserSubscribed);
         EventEmitterHelper.addEventListener('userUnsubscribed', this._onUserUnsubscribed);
+        EventEmitterHelper.addEventListener('newMessageNotification', this._onNewMessageNotification);
         EventEmitterHelper.addEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
         EventEmitterHelper.addEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         EventEmitterHelper.addEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
         EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        EventEmitterHelper.addEventListener('connectionStateChanged', this._onConnectionStateChanged);
+        EventEmitterHelper.addEventListener('connectionStateUpdated', this._onConnectionStateUpdated);
+        EventEmitterHelper.addEventListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
+
+        EventEmitterHelper.addEventListener('messageAdded', this._onMessageAdded);
+        EventEmitterHelper.addEventListener('messageUpdated', this._onMessageUpdated);
+        EventEmitterHelper.addEventListener('messageDeleted', this._onMessageRemoved);
+        EventEmitterHelper.addEventListener('memberAdded', this._onMemberAdded);
+        EventEmitterHelper.addEventListener('memberUpdated', this._onMemberUpdated);
+        EventEmitterHelper.addEventListener('memberDeleted', this._onMemberDeleted);
+        EventEmitterHelper.addEventListener('typingStarted', this._onTypingStarted);
+        EventEmitterHelper.addEventListener('typingEnded', this._onTypingEnded);
+        EventEmitterHelper.addEventListener('error', this._onError);
     };
 
     _removeAllListeners = () => {
@@ -97,45 +109,56 @@ class TwilioChatClient {
         EventEmitterHelper.removeEventListener('channelJoined', this._onChannelJoined);
         EventEmitterHelper.removeEventListener('channelInvited', this._onChannelInvited);
         EventEmitterHelper.removeEventListener('channelAdded', this._onChannelAdded);
-        EventEmitterHelper.removeEventListener('channelUpdate', this._onChannelUpdate);
+        EventEmitterHelper.removeEventListener('channelUpdated', this._onChannelUpdated);
         EventEmitterHelper.removeEventListener('channelDeleted', this._onChannelDeleted);
         EventEmitterHelper.removeEventListener('userUpdated', this._onUserUpdated);
         EventEmitterHelper.removeEventListener('userSubscribed', this._onUserSubscribed);
         EventEmitterHelper.removeEventListener('userUnsubscribed', this._onUserUnsubscribed);
+        EventEmitterHelper.removeEventListener('newMessageNotification', this._onNewMessageNotification);
         EventEmitterHelper.removeEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
         EventEmitterHelper.removeEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         EventEmitterHelper.removeEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
         EventEmitterHelper.removeEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        EventEmitterHelper.removeEventListener('connectionStateChanged', this._onConnectionStateChanged);
+        EventEmitterHelper.removeEventListener('connectionStateUpdated', this._onConnectionStateUpdated);
+        EventEmitterHelper.removeEventListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
+
+        EventEmitterHelper.removeEventListener('messageAdded', this._onMessageAdded);
+        EventEmitterHelper.removeEventListener('messageUpdated', this._onMessageUpdated);
+        EventEmitterHelper.removeEventListener('messageDeleted', this._onMessageRemoved);
+        EventEmitterHelper.removeEventListener('memberAdded', this._onMemberAdded);
+        EventEmitterHelper.removeEventListener('memberUpdated', this._onMemberUpdated);
+        EventEmitterHelper.removeEventListener('memberDeleted', this._onMemberDeleted);
+        EventEmitterHelper.removeEventListener('typingStarted', this._onTypingStarted);
+        EventEmitterHelper.removeEventListener('typingEnded', this._onTypingEnded);
+        EventEmitterHelper.removeEventListener('error', this._onError);
     };
 
     _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this.tokenCallback());
-
     _onChannelJoined = (payload) => dispatchEvent(new CustomEvent('channelJoined', {detail: payload}));
-
     _onChannelInvited = (payload) => dispatchEvent(new CustomEvent('channelInvited', {detail: payload}));
-
     _onChannelAdded = (payload) => dispatchEvent(new CustomEvent('channelAdded', {detail: payload}));
-
-    _onChannelUpdate = (payload) => dispatchEvent(new CustomEvent('channelUpdate', {detail: payload}));
-
+    _onChannelUpdated = (payload) => dispatchEvent(new CustomEvent('channelUpdated', {detail: payload}));
     _onChannelDeleted = (payload) => dispatchEvent(new CustomEvent('channelDeleted', {detail: payload}));
-
     _onUserUpdated = (payload) => dispatchEvent(new CustomEvent('userUpdated', {detail: payload}));
-
     _onUserSubscribed = (payload) => dispatchEvent(new CustomEvent('userSubscribed', {detail: payload}));
-
     _onUserUnsubscribed = (payload) => dispatchEvent(new CustomEvent('userUnsubscribed', {detail: payload}));
-
+    _onNewMessageNotification = (payload) => dispatchEvent(new CustomEvent('newMessageNotification', {detail: payload}));
     _onAddedToChannelNotification = (payload) => dispatchEvent(new CustomEvent('addedToChannelNotification', {detail: payload}));
-
     _onInvitedToChannelNotification = (payload) => dispatchEvent(new CustomEvent('invitedToChannelNotification', {detail: payload}));
-
     _onRemovedFromChannelNotification = (payload) => dispatchEvent(new CustomEvent('removedFromChannelNotification', {detail: payload}));
-
     _onNotificationSubscribed = (payload) => dispatchEvent(new CustomEvent('notificationSubscribed', {detail: payload}));
+    _onConnectionStateUpdated = (payload) => dispatchEvent(new CustomEvent('connectionStateUpdated', {detail: payload}));
+    _onChannelSynchronizationStatusUpdated = (payload) => dispatchEvent(new CustomEvent('channelSynchronizationStatusUpdated', {detail: payload}));
 
-    _onConnectionStateChanged = (payload) => dispatchEvent(new CustomEvent('connectionStateChanged', {detail: payload}));
+    _onMessageAdded = (payload) => dispatchEvent(new CustomEvent('messageAdded', {detail: payload}));
+    _onMessageUpdated = (payload) => dispatchEvent(new CustomEvent('messageUpdated', {detail: payload}));
+    _onMessageRemoved = (payload) => dispatchEvent(new CustomEvent('messageDeleted', {detail: payload}));
+    _onMemberAdded = (payload) => dispatchEvent(new CustomEvent('memberAdded', {detail: payload}));
+    _onMemberUpdated = (payload) => dispatchEvent(new CustomEvent('memberUpdated', {detail: payload}));
+    _onMemberDeleted = (payload) => dispatchEvent(new CustomEvent('memberDeleted', {detail: payload}));
+    _onTypingStarted = (payload) => dispatchEvent(new CustomEvent('typingStarted', {detail: payload}));
+    _onTypingEnded = (payload) => dispatchEvent(new CustomEvent('typingEnded', {detail: payload}));
+    _onError = (payload) => dispatchEvent(new CustomEvent('error', {detail: payload}));
 }
 
 export default TwilioChatClient;

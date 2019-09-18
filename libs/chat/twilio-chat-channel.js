@@ -20,7 +20,7 @@ class TwilioChatChannel {
         this.attributes = props.attributes;
         this.type = props.type;
 
-        this._initListeners();
+        // this._initListeners();
     }
 
     onNewMessage = (message) => dispatchEvent(new CustomEvent('onNewMessage', {detail: message}));
@@ -57,36 +57,36 @@ class TwilioChatChannel {
 
     sendMessage = (message) => RNTwilioChatChannels.sendMessage(message);
 
-    _initListeners = () => {
-        EventEmitterHelper.addEventListener('messageAdded', this._onMessageAdded);
-        EventEmitterHelper.addEventListener('messageUpdated', this._onMessageUpdated);
-        EventEmitterHelper.addEventListener('messageRemoved', this._onMessageRemoved);
-        EventEmitterHelper.addEventListener('memberAdded', this._onMemberAdded);
-        EventEmitterHelper.addEventListener('memberUpdated', this._onMemberUpdated);
-        EventEmitterHelper.addEventListener('memberRemoved', this._onMemberRemoved);
-        EventEmitterHelper.addEventListener('typingStarted', this._onTypingStarted);
-        EventEmitterHelper.addEventListener('typingEnded', this._onTypingEnded);
-    };
-
-    _removeListeners = () => {
-        EventEmitterHelper.removeEventListener('messageAdded', this._onMessageAdded);
-        EventEmitterHelper.removeEventListener('messageUpdated', this._onMessageUpdated);
-        EventEmitterHelper.removeEventListener('messageRemoved', this._onMessageRemoved);
-        EventEmitterHelper.removeEventListener('memberAdded', this._onMemberAdded);
-        EventEmitterHelper.removeEventListener('memberUpdated', this._onMemberUpdated);
-        EventEmitterHelper.removeEventListener('memberRemoved', this._onMemberRemoved);
-        EventEmitterHelper.removeEventListener('typingStarted', this._onTypingStarted);
-        EventEmitterHelper.removeEventListener('typingEnded', this._onTypingEnded);
-    };
-
-    _onMessageAdded = (payload) => dispatchEvent(new CustomEvent('messageAdded', {detail: payload}));
-    _onMessageUpdated = (payload) => dispatchEvent(new CustomEvent('messageUpdated', {detail: payload}));
-    _onMessageRemoved = (payload) => dispatchEvent(new CustomEvent('messageRemoved', {detail: payload}));
-    _onMemberAdded = (payload) => dispatchEvent(new CustomEvent('memberAdded', {detail: payload}));
-    _onMemberUpdated = (payload) => dispatchEvent(new CustomEvent('memberUpdated', {detail: payload}));
-    _onMemberRemoved = (payload) => dispatchEvent(new CustomEvent('memberRemoved', {detail: payload}));
-    _onTypingStarted = (payload) => dispatchEvent(new CustomEvent('typingStarted', {detail: payload}));
-    _onTypingEnded = (payload) => dispatchEvent(new CustomEvent('typingEnded', {detail: payload}));
+    // _initListeners = () => {
+    //     EventEmitterHelper.addEventListener('messageAdded', this._onMessageAdded);
+    //     EventEmitterHelper.addEventListener('messageUpdated', this._onMessageUpdated);
+    //     EventEmitterHelper.addEventListener('messageRemoved', this._onMessageRemoved);
+    //     EventEmitterHelper.addEventListener('memberAdded', this._onMemberAdded);
+    //     EventEmitterHelper.addEventListener('memberUpdated', this._onMemberUpdated);
+    //     EventEmitterHelper.addEventListener('memberRemoved', this._onMemberDeleted);
+    //     EventEmitterHelper.addEventListener('typingStarted', this._onTypingStarted);
+    //     EventEmitterHelper.addEventListener('typingEnded', this._onTypingEnded);
+    // };
+    //
+    // _removeListeners = () => {
+    //     EventEmitterHelper.removeEventListener('messageAdded', this._onMessageAdded);
+    //     EventEmitterHelper.removeEventListener('messageUpdated', this._onMessageUpdated);
+    //     EventEmitterHelper.removeEventListener('messageRemoved', this._onMessageRemoved);
+    //     EventEmitterHelper.removeEventListener('memberAdded', this._onMemberAdded);
+    //     EventEmitterHelper.removeEventListener('memberUpdated', this._onMemberUpdated);
+    //     EventEmitterHelper.removeEventListener('memberRemoved', this._onMemberDeleted);
+    //     EventEmitterHelper.removeEventListener('typingStarted', this._onTypingStarted);
+    //     EventEmitterHelper.removeEventListener('typingEnded', this._onTypingEnded);
+    // };
+    //
+    // _onMessageAdded = (payload) => dispatchEvent(new CustomEvent('messageAdded', {detail: payload}));
+    // _onMessageUpdated = (payload) => dispatchEvent(new CustomEvent('messageUpdated', {detail: payload}));
+    // _onMessageRemoved = (payload) => dispatchEvent(new CustomEvent('messageRemoved', {detail: payload}));
+    // _onMemberAdded = (payload) => dispatchEvent(new CustomEvent('memberAdded', {detail: payload}));
+    // _onMemberUpdated = (payload) => dispatchEvent(new CustomEvent('memberUpdated', {detail: payload}));
+    // _onMemberDeleted = (payload) => dispatchEvent(new CustomEvent('memberRemoved', {detail: payload}));
+    // _onTypingStarted = (payload) => dispatchEvent(new CustomEvent('typingStarted', {detail: payload}));
+    // _onTypingEnded = (payload) => dispatchEvent(new CustomEvent('typingEnded', {detail: payload}));
 }
 
 export default TwilioChatChannel;

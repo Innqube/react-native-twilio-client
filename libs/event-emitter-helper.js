@@ -22,34 +22,36 @@ const _eventHandlers = {
     voipRemoteNotificationsRegistered: new Map(),
 
     // ChatClient events
-    synchronizationStatusUpdated: new Map(),
-    connectionStateChanged: new Map(),
-    messageAdded: new Map(),
-
-    tokenAboutToExpire: new Map(),
+    connectionStateUpdated: new Map(),
     tokenExpired: new Map(),
-    channelJoined: new Map(),
-    channelInvited: new Map(),
+    tokenAboutToExpire: new Map(),
+    synchronizationStatusUpdated: new Map(),
     channelAdded: new Map(),
-    channelUpdate: new Map(),
+    channelUpdated: new Map(),
+    channelSynchronizationUpdated: new Map(),
     channelDeleted: new Map(),
-    userUpdated: new Map(),
-    userSubscribed: new Map(),
-    userUnsubscribed: new Map(),
+    error: new Map(),
+    newMessageNotification: new Map(),
     addedToChannelNotification: new Map(),
     invitedToChannelNotification: new Map(),
     removedFromChannelNotification: new Map(),
-    notificationSubscribed: new Map(),
-
-    // ChatChannel events
-    typingStartedOnChannel: new Map(),
-    typingEndedOnChannel: new Map(),
+    userUpdated: new Map(),
+    userSubscribed: new Map(),
+    userUnsubscribed: new Map(),
+    channelSynchronizationStatusUpdated: new Map(),
+    memberAdded: new Map(),
+    memberUpdated: new Map(),
+    memberDeleted: new Map(),
+    messageAdded: new Map(),
+    messageUpdated: new Map(),
+    messageDeleted: new Map(),
+    typingStarted: new Map(),
+    typingEnded: new Map()
 };
 
-//             sendEvent(getReactApplicationContext() ,"channelSynchronizationChange", channel);
-//             sendEvent(getReactApplicationContext() ,"error", {code: string, message: string, status: string}});
-//             sendEvent(getReactApplicationContext() ,"synchronizationStatus", string);
-//             sendEvent(getReactApplicationContext() ,"error", {code: string, message: string, status: string});
+
+
+
 
 const EventEmitterHelper = {
     addEventListener(type, handler) {
