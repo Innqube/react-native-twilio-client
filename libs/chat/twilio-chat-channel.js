@@ -60,7 +60,7 @@ class TwilioChatChannel {
     // _initListeners = () => {
     //     EventEmitterHelper.addEventListener('messageAdded', this._onMessageAdded);
     //     EventEmitterHelper.addEventListener('messageUpdated', this._onMessageUpdated);
-    //     EventEmitterHelper.addEventListener('messageRemoved', this._onMessageRemoved);
+    //     EventEmitterHelper.addEventListener('messageRemoved', this._onMessageDeleted);
     //     EventEmitterHelper.addEventListener('memberAdded', this._onMemberAdded);
     //     EventEmitterHelper.addEventListener('memberUpdated', this._onMemberUpdated);
     //     EventEmitterHelper.addEventListener('memberRemoved', this._onMemberDeleted);
@@ -71,7 +71,7 @@ class TwilioChatChannel {
     // _removeListeners = () => {
     //     EventEmitterHelper.removeEventListener('messageAdded', this._onMessageAdded);
     //     EventEmitterHelper.removeEventListener('messageUpdated', this._onMessageUpdated);
-    //     EventEmitterHelper.removeEventListener('messageRemoved', this._onMessageRemoved);
+    //     EventEmitterHelper.removeEventListener('messageRemoved', this._onMessageDeleted);
     //     EventEmitterHelper.removeEventListener('memberAdded', this._onMemberAdded);
     //     EventEmitterHelper.removeEventListener('memberUpdated', this._onMemberUpdated);
     //     EventEmitterHelper.removeEventListener('memberRemoved', this._onMemberDeleted);
@@ -81,7 +81,7 @@ class TwilioChatChannel {
     //
     // _onMessageAdded = (payload) => dispatchEvent(new CustomEvent('messageAdded', {detail: payload}));
     // _onMessageUpdated = (payload) => dispatchEvent(new CustomEvent('messageUpdated', {detail: payload}));
-    // _onMessageRemoved = (payload) => dispatchEvent(new CustomEvent('messageRemoved', {detail: payload}));
+    // _onMessageDeleted = (payload) => dispatchEvent(new CustomEvent('messageRemoved', {detail: payload}));
     // _onMemberAdded = (payload) => dispatchEvent(new CustomEvent('memberAdded', {detail: payload}));
     // _onMemberUpdated = (payload) => dispatchEvent(new CustomEvent('memberUpdated', {detail: payload}));
     // _onMemberDeleted = (payload) => dispatchEvent(new CustomEvent('memberRemoved', {detail: payload}));
