@@ -1,7 +1,10 @@
 package com.ngs.react.RNTwilioChat;
 
 import android.util.Log;
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.ngs.react.PromiseCallbackListener;
 import com.ngs.react.Utils;
 import com.twilio.chat.*;
@@ -62,59 +65,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
                     promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
                 }
             });
-            channel.addListener(new ChannelListener() {
-                @Override
-                public void onMessageAdded(Message message) {
-                    Log.d(LOG_TAG, "onMessageAdded: " + message.getSid());
-                    try {
-                        JSONObject channelJson = Utils.channelToJsonObject(channel);
-                        WritableMap channelMap = Utils.convertJsonToMap(channelJson);
-                        Utils.sendEvent(getReactApplicationContext() ,"messageAdded", channelMap);
-                    } catch (JSONException e) {
-                        Log.e(LOG_TAG, "Could not handle event", e);
-                    }
-                }
-
-                @Override
-                public void onMessageUpdated(Message message, Message.UpdateReason updateReason) {
-
-                }
-
-                @Override
-                public void onMessageDeleted(Message message) {
-
-                }
-
-                @Override
-                public void onMemberAdded(Member member) {
-
-                }
-
-                @Override
-                public void onMemberUpdated(Member member, Member.UpdateReason updateReason) {
-
-                }
-
-                @Override
-                public void onMemberDeleted(Member member) {
-
-                }
-
-                @Override
-                public void onTypingStarted(Channel channel, Member member) {
-
-                }
-
-                @Override
-                public void onTypingEnded(Channel channel, Member member) {
-
-                }
-
-                @Override
-                public void onSynchronizationChanged(Channel channel) {
-
-                }
-            });
+            channel.addListener(new TwilioChannelListener(getReactApplicationContext()));
         });
     }
 
