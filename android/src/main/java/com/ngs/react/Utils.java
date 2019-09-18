@@ -11,6 +11,12 @@ import java.util.Iterator;
 
 public class Utils {
 
+    public static void sendEvent(ReactContext reactContext, String eventName) {
+        reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, null);
+    }
+
     public static void sendEvent(ReactContext reactContext, String eventName, String value) {
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)

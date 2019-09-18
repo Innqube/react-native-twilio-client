@@ -139,13 +139,13 @@ public class TwilioChatClientListener implements ChatClientListener {
     @Override
     public void onTokenExpired() {
         Log.d(LOG_TAG, "tokenExpired");
-        Utils.sendEvent(reactApplicationContext, "tokenExpired", null);
+        Utils.sendEvent(reactApplicationContext, "tokenExpired");
     }
 
     @Override
     public void onTokenAboutToExpire() {
         Log.d(LOG_TAG, "tokenAboutToExpire");
-        Utils.sendEvent(reactApplicationContext, "tokenAboutToExpire", null);
+        Utils.sendEvent(reactApplicationContext, "tokenAboutToExpire");
     }
     // end of chat client events
 
@@ -228,7 +228,7 @@ public class TwilioChatClientListener implements ChatClientListener {
     @Override
     public void onNotificationSubscribed() {
         Log.d(LOG_TAG, "onNotificationSubscribed");
-        Utils.sendEvent(reactApplicationContext, "notificationSubscribed", null);
+        Utils.sendEvent(reactApplicationContext, "notificationSubscribed");
     }
 
     @Override
