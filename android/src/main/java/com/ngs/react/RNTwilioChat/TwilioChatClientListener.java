@@ -113,14 +113,14 @@ public class TwilioChatClientListener implements ChatClientListener {
     @Override
     public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
         Log.d(LOG_TAG, "onClientSynchronization: " + synchronizationStatus);
-        try {
-            JSONObject synchronizationJson = new JSONObject();
-            synchronizationJson.put("synchronizationStatus", synchronizationStatus.name());
-            WritableMap syncronizationMap = Utils.convertJsonToMap(synchronizationJson);
-            Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", syncronizationMap);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Could not handle event", e);
-        }
+//        try {
+//            JSONObject synchronizationJson = new JSONObject();
+//            synchronizationJson.put("synchronizationStatus", synchronizationStatus.name());
+//            WritableMap syncronizationMap = Utils.convertJsonToMap(synchronizationJson);
+            Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", synchronizationStatus.name());
+//        } catch (JSONException e) {
+//            Log.e(LOG_TAG, "Could not handle event", e);
+//        }
     }
 
     @Override
