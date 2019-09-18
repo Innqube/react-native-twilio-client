@@ -1,10 +1,7 @@
 package com.ngs.react.RNTwilioChat;
 
 import android.util.Log;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
 import com.ngs.react.Utils;
 import com.twilio.chat.*;
@@ -24,7 +21,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RNTwilioChatChannel";
+        return "RNTwilioChatChannels";
     }
 
     interface GotChannel {
@@ -48,6 +45,37 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule {
                                 "Status: " + errorInfo.getStatus());
                     }
                 });
+    }
+
+    @ReactMethod
+    public void create(String friendlyName, String uniqueName, Integer type, ReadableMap attributes, final Promise promise) {
+        Log.d(LOG_TAG, "createChannel");
+        try {
+            JSONObject attr = Utils.convertMapToJson(attributes);
+            TwilioChatModule
+                    .getChatClient()
+                    .getChannels()
+                    .channelBuilder()
+                    .withFriendlyName(friendlyName)
+                    .withUniqueName(uniqueName)
+                    .withAttributes(attr)
+                    .withType(Channel.ChannelType.fromInt(type))
+                    .build(new PromiseCallbackListener<Channel>(promise) {
+                        @Override
+                        public void onSuccess(Channel channel) {
+                            try {
+                                channel.removeAllListeners();
+                                channel.addListener(new TwilioChannelListener(getReactApplicationContext()));
+                                JSONObject json = Utils.channelToJsonObject(channel);
+                                promise.resolve(Utils.convertJsonToMap(json));
+                            } catch (JSONException e) {
+                                promise.reject(e);
+                            }
+                        }
+                    });
+        } catch (JSONException e) {
+            promise.reject(e);
+        }
     }
 
     @ReactMethod

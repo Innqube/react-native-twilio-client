@@ -1,5 +1,4 @@
 import {NativeModules,} from 'react-native';
-import TwilioChatChannel from './twilio-chat-channel';
 import EventEmitterHelper from '../event-emitter-helper';
 import SynchronizationStatus from '../domain/synchronization-status';
 
@@ -36,35 +35,13 @@ class TwilioChatClient {
 
     unRegister = (token) => RNTwilioChatClient.unRegister(token);
 
-    createChannel = (uniqueName, friendlyName, type) => RNTwilioChatChannels.create(uniqueName, friendlyName, type);
+    createChannel = (uniqueName, friendlyName, type = 0, attributes = {}) => RNTwilioChatChannels.create(uniqueName, friendlyName, type, attributes);
 
     getPublicChannels = () => RNTwilioChatClient.getPublicChannels();
 
     getUserChannels = () => RNTwilioChatClient.getUserChannels();
 
-    getChannel = (channelSidOrUniqueName, friendlyName, type) => {
-        return RNTwilioChatChannels
-            .getChannel(channelSidOrUniqueName)
-            .then(channel => Promise.resolve(new TwilioChatChannel(channel)))
-            .catch(async error =>
-                Promise.resolve(
-                    new TwilioChatChannel(
-                        await RNTwilioChatChannels
-                            .create(channelSidOrUniqueName, friendlyName, type)
-                    )
-                )
-            );
-    };
-
-    // getChannel = (channelSidOrUniqueName) => {
-    //     return RNTwilioChatChannels
-    //         .getChannel(channelSidOrUniqueName)
-    //         .then(channel => {
-    //             const chatChannel = new TwilioChatChannel(channel);
-    //             EventEmitterHelper.addEventListener('messageAdded', message => this._messageFilter(message, chatChannel));
-    //             return Promise.resolve(chatChannel);
-    //         });
-    // };
+    getChannel = (channelSidOrUniqueName) => RNTwilioChatChannels.getChannel(channelSidOrUniqueName);
 
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {

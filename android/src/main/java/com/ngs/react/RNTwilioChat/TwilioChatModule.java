@@ -1,7 +1,10 @@
 package com.ngs.react.RNTwilioChat;
 
 import android.util.Log;
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 import com.ngs.react.PromiseCallbackListener;
 import com.ngs.react.Utils;
 import com.twilio.chat.Channel;
@@ -83,36 +86,6 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                 promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
             }
         });
-    }
-
-    // FIXME
-    @ReactMethod
-    public void createChannel(String friendlyName, String uniqueName, ReadableMap attributes, final Promise promise) {
-        Log.d(LOG_TAG, "createChannel");
-        try {
-            JSONObject attr = Utils.convertMapToJson(attributes);
-            CHAT_CLIENT
-                    .getChannels()
-                    .channelBuilder()
-                    .withFriendlyName(friendlyName)
-                    .withUniqueName(uniqueName)
-                    .withAttributes(attr)
-                    .build(new PromiseCallbackListener<Channel>(promise) {
-                        @Override
-                        public void onSuccess(Channel channel) {
-                            try {
-                                channel.removeAllListeners();
-                                channel.addListener(new TwilioChannelListener(getReactApplicationContext()));
-                                JSONObject json = Utils.channelToJsonObject(channel);
-                                promise.resolve(Utils.convertJsonToMap(json));
-                            } catch (JSONException e) {
-                                promise.reject(e);
-                            }
-                        }
-                    });
-        } catch (JSONException e) {
-            promise.reject(e);
-        }
     }
 
     @ReactMethod
