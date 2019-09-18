@@ -12,6 +12,7 @@
 #import "RNEventEmitterHelper.h"
 #import <React/RCTBridgeModule.h>
 #import "RNTwilioChatClient.h"
+#import "RNConverter+TwilioChatClient.h"
 
 @import AVFoundation;
 @import TwilioChatClient;
@@ -114,106 +115,260 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
     }];
 }
 
-- (NSDictionary*) buildMessageJson:(TCHMessage *)message withChannel:(TCHChannel *) channel {
-    return @{
-             @"sid": message.sid,
-             @"index": message.index,
-             @"author": message.author,
-             @"timeStamp": message.timestamp,
-             @"body": message.body ?  message.body : @"",
-             @"channelUniqueName": channel.uniqueName
-             };
-}
-
-- (NSMutableArray*) buildMessageJsonArray:(NSArray<TCHMessage *> *)messages {
-    NSMutableArray *jsonArray = [[NSMutableArray alloc] init];
-    for (TCHMessage *message in messages) {
-        NSDictionary *jsonMessage = [self buildMessageJson:message withChannel: self.channel];
-            [jsonArray addObject: jsonMessage];
-    }
-    return jsonArray;
-}
-
-
-- (NSString*) convertSyncStatusToString:(TCHClientSynchronizationStatus) status {
-    NSString *result = nil;
-
-    switch(status) {
-            case TCHClientSynchronizationStatusStarted:
-            result = @"TCHClientSynchronizationStatusStarted";
-            break;
-            case TCHClientSynchronizationStatusChannelsListCompleted:
-            result = @"TCHClientSynchronizationStatusChannelsListCompleted";
-            break;
-            case TCHClientSynchronizationStatusCompleted:
-            result = @"TCHClientSynchronizationStatusCompleted";
-            break;
-            case TCHClientSynchronizationStatusFailed:
-            result = @"TCHClientSynchronizationStatusFailed";
-            break;
-    }
-    return result;
-}
-
 #pragma mark RNTwilioChatClient Delegates
 
-- (void)chatClient:(TwilioChatClient *)client connectionStateChanged:(TCHClientConnectionState)state {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:connectionStateChanged with status: %@", @(state));
-    [RNEventEmitterHelper emitEventWithName:@"connectionStateChanged" andPayload:@(state)];
+- (void)chatClient:(TwilioChatClient *)client connectionStateUpdated:(TCHClientConnectionState)state {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:connectionStateUpdated with status: %@", @(state));
+    [RNEventEmitterHelper emitEventWithName:@"connectionStateUpdated"
+                                 andPayload:@(state)];
+}
+
+- (void)chatClientTokenWillExpire:(TwilioChatClient *)chatClient {
+    [RNEventEmitterHelper emitEventWithName:@"tokenAboutToExpire"
+                                 andPayload:nil];
+}
+
+- (void)chatClientTokenExpired:(nonnull TwilioChatClient *)client {
+    [RNEventEmitterHelper emitEventWithName:@"tokenExpired"
+                                 andPayload:nil];
 }
 
 - (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:synchronizationStatusUpdated with status: %@", [self convertSyncStatusToString:status]);
-    [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusUpdated" andPayload:@{@"status": [self convertSyncStatusToString:status]}];
-}
-
-- (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel messageAdded:(TCHMessage *)message {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:messageAdded with body: %@", message.body);
-    NSDictionary *messageJson = [self buildMessageJson:message withChannel:channel];
-    [RNEventEmitterHelper emitEventWithName:@"messageAdded" andPayload:messageJson];
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:synchronizationStatusUpdated with status: %@", @(state));
+    [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusUpdated"
+                                 andPayload:@(status)];
 }
 
 - (void)chatClient:(TwilioChatClient *)client channelAdded:(TCHChannel *)channel {
     NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelAdded with sid: %@", channel.sid);
-    [RNEventEmitterHelper emitEventWithName:@"channelAdded" andPayload:[RNTConvert TCHChannel:channel]];
+    [RNEventEmitterHelper emitEventWithName:@"channelAdded"
+                                 andPayload:[RNConverter TCHChannel:channel]];
 }
 
-- (void)chatClient:(TwilioChatClient *)client channelChanged:(TCHChannel *)channel {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelChanged with sid: %@", channel.sid);
-    [RNEventEmitterHelper emitEventWithName:@"channelChanged" andPayload:[RNTConvert TCHChannel:channel]];
+- (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel updated:(TCHChannelUpdate)updated {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelUpdated with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"channelUpdated"
+                                 andPayload:@{
+                                              @"channel": [RNConverter TCHChannel:channel],
+                                              @"reason": @(updated)]
+                                              }];
 }
 
 - (void)chatClient:(TwilioChatClient *)client channelDeleted:(TCHChannel *)channel {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelRemoved with sid: %@", channel.sid);
-    [RNEventEmitterHelper emitEventWithName:@"channelRemoved" andPayload:[RNTConvert TCHChannel:channel]];
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelDeleted with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"channelDeleted"
+                                 andPayload:[RNConverter TCHChannel:channel]];
 }
 
-- (void)chatClient:(nonnull TwilioChatClient *)client typingStartedOnChannel:(nonnull TCHChannel *)channel member:(nonnull TCHMember *)member {
+- (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel synchronizationStatusUpdated:(TCHChannelSynchronizationStatus)status {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelSynchronizationStatusUpdated with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"channelSynchronizationStatusUpdated"
+                                 andPayload:@{
+                                              @"channel": [RNConverter TCHChannel:channel],
+                                              @"status": @(status)
+                                              }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel memberJoined:(nonnull TCHMember *)member {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:memberJoined with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"memberAdded"
+                                 andPayload:@{
+                                              @"member": [RNConverter TCHMember:member],
+                                              @"channelSid": channel.sid
+                                              }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel member:(nonnull TCHMember *)member updated:(TCHMemberUpdate)updated {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:memberUpdated with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"memberUpdated"
+                                 andPayload:@{
+                                              @"member": [RNConverter TCHMember:member],
+                                              @"channelSid": channel.sid,
+                                              @"reason": @(updated)
+                                              }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel memberLeft:(nonnull TCHMember *)member {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:memberLeft with sid: %@", channel.sid);
+        [RNEventEmitterHelper emitEventWithName:@"memberDeleted"
+                                     andPayload:@{
+                                                  @"member": [RNConverter TCHMember:member],
+                                                  @"channelSid": channel.sid
+                                                  }];
+}
+
+- (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel messageAdded:(TCHMessage *)message {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:messageAdded with body: %@", message.body);
+    [RNEventEmitterHelper emitEventWithName:@"messageAdded"
+                                 andPayload:@{
+                                            @"channelSid": channel.sid,
+                                            @"member": [RNConverter TCHMessage:message]
+                                            }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel message:(nonnull TCHMessage *)message updated:(TCHMessageUpdate)updated {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:messageUpdated with body: %@", message.body);
+    [RNEventEmitterHelper emitEventWithName:@"messageUpdated"
+                                 andPayload:@{
+                                            @"channelSid": channel.sid,
+                                            @"member": [RNConverter TCHMessage:message],
+                                            @"reason": @(updated)
+                                            }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel messageDeleted:(nonnull TCHMessage *)message {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:messageDeleted with body: %@", message.body);
+        [RNEventEmitterHelper emitEventWithName:@"messageDeleted"
+                                     andPayload:@{
+                                                @"channelSid": channel.sid,
+                                                @"member": [RNConverter TCHMessage:message]
+                                                }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client errorReceived:(nonnull TCHError *)error {
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:errorReceived with sid: %@", channel.sid);
+    [RNEventEmitterHelper emitEventWithName:@"error"
+                                 andPayload:@{
+                                              @"code": error.code,
+                                              @"message": error.userInfo,
+                                              }];
+}
+
+- (void)chatClient:(TwilioChatClient *)client typingStartedOnChannel:(TCHChannel *)channel member:(TCHMember *)member {
     NSLog(@"[IIMobile - RNTwilioChatClient] typingStartedOnChannel");
-    NSDictionary *payload = @{@"uniqueName": channel.uniqueName,
-                              @"identity": member.identity
-                              };
-    [RNEventEmitterHelper emitEventWithName:@"typingStartedOnChannel" andPayload:payload];
+    [RNEventEmitterHelper emitEventWithName:@"typingStartedOnChannel"
+                                 andPayload:@{
+                                              @"channelSid": channel.sid,
+                                              @"member": [RNConverter TCHMember:member]
+                                              }];
 }
 
-- (void)chatClient:(nonnull TwilioChatClient *)client typingEndedOnChannel:(nonnull TCHChannel *)channel member:(nonnull TCHMember *)member {
+- (void)chatClient:(TwilioChatClient *)client typingEndedOnChannel:(TCHChannel *)channel member:(TCHMember *)member {
     NSLog(@"[IIMobile - RNTwilioChatClient] typingEndedOnChannel");
-    NSDictionary *payload = @{@"uniqueName": channel.uniqueName,
-                              @"identity": member.identity
-                              };
-    [RNEventEmitterHelper emitEventWithName:@"typingEndedOnChannel" andPayload:payload];
+    [RNEventEmitterHelper emitEventWithName:@"typingEndedOnChannel"
+                                 andPayload:@{
+                                              @"channelSid": channel.sid,
+                                              @"member": [RNConverter TCHMember:member]
+                                              }];
 }
 
-- (void)chatClientTokenWillExpire:(TwilioChatClient *)chatClient {
-    [RNEventEmitterHelper emitEventWithName:@"tokenAboutToExpire" andPayload:nil];
+- (void)chatClient:(nonnull TwilioChatClient *)client notificationNewMessageReceivedForChannelSid:(nonnull NSString *)channelSid messageIndex:(NSUInteger)messageIndex {
+    NSLog(@"[IIMobile - RNTwilioChatClient] notificationNewMessageReceivedForChannelSid");
+    [RNEventEmitterHelper emitEventWithName:@"newMessageNotification"
+                                 andPayload:@{
+                                              @"channelSid": channelSid,
+                                              @"messageIndex": messageIndex
+                                              }];
 }
 
-- (void)chatClientTokenExpired:(nonnull TwilioChatClient *)client {
-    [RNEventEmitterHelper emitEventWithName:@"tokenExpired" andPayload:nil];
+- (void)chatClient:(nonnull TwilioChatClient *)client notificationAddedToChannelWithSid:(nonnull NSString *)channelSid {
+    NSLog(@"[IIMobile - RNTwilioChatClient] notificationAddedToChannelWithSid");
+    [RNEventEmitterHelper emitEventWithName:@"addedToChannelNotification"
+                                 andPayload:@{
+                                              @"channelSid": channelSid
+                                              }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client notificationInvitedToChannelWithSid:(nonnull NSString *)channelSid {
+    NSLog(@"[IIMobile - RNTwilioChatClient] notificationInvitedToChannelWithSid");
+    [RNEventEmitterHelper emitEventWithName:@"invitedToChannelNotification"
+                                 andPayload:@{
+                                              @"channelSid": channelSid
+                                              }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client notificationRemovedFromChannelWithSid:(nonnull NSString *)channelSid {
+    NSLog(@"[IIMobile - RNTwilioChatClient] notificationRemovedFromChannelWithSid");
+    [RNEventEmitterHelper emitEventWithName:@"removedFromChannelNotification"
+                                 andPayload:@{
+                                              @"channelSid": channelSid
+                                              }];
+}
+
+- (void)chatClient:(TwilioChatClient *)client user:(TCHUser *)user updated:(TCHUserUpdate)updated {
+    NSLog(@"[IIMobile - RNTwilioChatClient] userUpdated");
+    [RNEventEmitterHelper emitEventWithName:@"userUpdated"
+                                 andPayload:@{@"reason": @(updated),
+                                              @"user": [RNConverter TCHUser:user]
+                                              }];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client userSubscribed:(nonnull TCHUser *)user {
+    NSLog(@"[IIMobile - RNTwilioChatClient] userSubscribed");
+    [RNEventEmitterHelper emitEventWithName:@"userSubscribed"
+                                 andPayload:@{[RNConverter TCHUser:user]];
+}
+
+- (void)chatClient:(nonnull TwilioChatClient *)client userUnsubscribed:(nonnull TCHUser *)user {
+    NSLog(@"[IIMobile - RNTwilioChatClient] userUnsubscribed");
+            [RNEventEmitterHelper emitEventWithName:@"userUnsubscribed"
+                                         andPayload:@{[RNConverter TCHUser:user]];
 }
 
 +(BOOL)requiresMainQueueSetup {
     return NO;
 }
+
+#pragma mark Enums
+
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"Constants": @{
+                @"TCHClientSynchronizationStatus": @{
+                    @"Started" : @(TCHClientSynchronizationStatusStarted),
+                    @"ChannelsListCompleted" : @(TCHClientSynchronizationStatusChannelsListCompleted),
+                    @"Completed" : @(TCHClientSynchronizationStatusCompleted),
+                    @"Failed" : @(TCHClientSynchronizationStatusFailed)
+                    },
+                @"TCHChannelSynchronizationStatus": @{
+                    @"None" : @(TCHChannelSynchronizationStatusNone),
+                    @"Identifier" : @(TCHChannelSynchronizationStatusIdentifier),
+                    @"Metadata" : @(TCHChannelSynchronizationStatusMetadata),
+                    @"All" : @(TCHChannelSynchronizationStatusAll),
+                    @"Failed" : @(TCHChannelSynchronizationStatusFailed)
+                    },
+                @"TCHChannelStatus": @{
+                    @"Invited": @(TCHChannelStatusInvited),
+                    @"Joined": @(TCHChannelStatusJoined),
+                    @"NotParticipating": @(TCHChannelStatusNotParticipating)
+                    },
+                @"TCHChannelType": @{
+                    @"Public": @(TCHChannelTypePublic),
+                    @"Private": @(TCHChannelTypePrivate)
+                    },
+                @"TCHClientSynchronizationStrategy": @{
+                    @"All": @(TCHClientSynchronizationStrategyAll),
+                    @"ChannelsList": @(TCHClientSynchronizationStrategyChannelsList)
+                    },
+                @"TCHUserInfoUpdate": @{
+                    @"FriendlyName": @(TCHUserInfoUpdateFriendlyName),
+                    @"Attributes": @(TCHUserInfoUpdateAttributes),
+                    @"ReachabilityOnline": @(TCHUserInfoUpdateReachabilityOnline),
+                    @"ReachabilityNotifiable": @(TCHUserInfoUpdateReachabilityNotifiable)
+                    },
+                @"TCHLogLevel": @{
+                    @"Fatal" : @(TCHLogLevelFatal),
+                    @"Critical" : @(TCHLogLevelCritical),
+                    @"Warning" : @(TCHLogLevelWarning),
+                    @"Info" : @(TCHLogLevelInfo),
+                    @"Debug" : @(TCHLogLevelDebug)
+                    },
+                @"TCHChannelOption": @{
+                        @"FriendlyName" : TCHChannelOptionFriendlyName,
+                        @"UniqueName" : TCHChannelOptionUniqueName,
+                        @"Type" : TCHChannelOptionType,
+                        @"Attributes" : TCHChannelOptionAttributes
+                        },
+                @"TCHClientConnectionState": @{
+                        @"Unknown" : @(TCHClientConnectionStateUnknown),
+                        @"Disconnected" : @(TCHClientConnectionStateDisconnected),
+                        @"Connected" : @(TCHClientConnectionStateConnected),
+                        @"Connecting" : @(TCHClientConnectionStateConnecting),
+                        @"Denied" : @(TCHClientConnectionStateDenied),
+                        @"Error" : @(TCHClientConnectionStateError)
+                        }
+                }
+            };
+};
 
 @end

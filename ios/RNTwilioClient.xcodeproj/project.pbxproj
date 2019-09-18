@@ -15,7 +15,7 @@
 		F3EA400122A6F3D40038903A /* RNLogHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F3EA3FFD22A6F3D30038903A /* RNLogHelper.m */; };
 		F3EA400222A6F3D40038903A /* RNTwilioChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F3EA3FFE22A6F3D30038903A /* RNTwilioChatClient.m */; };
 		F3EA400322A6F3D40038903A /* RNEventEmitterHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F3EA400022A6F3D40038903A /* RNEventEmitterHelper.m */; };
-		F3EA400522A6F49C0038903A /* TwilioChatClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3EA400422A6F49C0038903A /* TwilioChatClient.framework */; };
+		F3F8DCE22332BF9B00729E0C /* TwilioChatClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3F8DCE12332BF9B00729E0C /* TwilioChatClient.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,7 +44,7 @@
 		F3EA3FFE22A6F3D30038903A /* RNTwilioChatClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTwilioChatClient.m; sourceTree = "<group>"; };
 		F3EA3FFF22A6F3D40038903A /* RNTwilioChatClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNTwilioChatClient.h; sourceTree = "<group>"; };
 		F3EA400022A6F3D40038903A /* RNEventEmitterHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEventEmitterHelper.m; sourceTree = "<group>"; };
-		F3EA400422A6F49C0038903A /* TwilioChatClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioChatClient.framework; path = ../../../ios/Pods/TwilioChatClient/TwilioChatClient.framework; sourceTree = "<group>"; };
+		F3F8DCE12332BF9B00729E0C /* TwilioChatClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioChatClient.framework; path = "../../interpreter-intelligence/mobile-interpreter-direct/ios/Pods/TwilioChatClient/TwilioChatClient.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,8 +53,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F35FCCCC2110E0EF00F77262 /* Intents.framework in Frameworks */,
-				F3EA400522A6F49C0038903A /* TwilioChatClient.framework in Frameworks */,
 				F35FCCCA2110E0C200F77262 /* PushKit.framework in Frameworks */,
+				F3F8DCE22332BF9B00729E0C /* TwilioChatClient.framework in Frameworks */,
 				F3885BC82121F18A00E097C4 /* TwilioVoice.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -65,7 +65,7 @@
 		016DD9801ECC9B4B00315CD4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F3EA400422A6F49C0038903A /* TwilioChatClient.framework */,
+				F3F8DCE12332BF9B00729E0C /* TwilioChatClient.framework */,
 				F3885BC72121F18900E097C4 /* TwilioVoice.framework */,
 				F35FCCCB2110E0EF00F77262 /* Intents.framework */,
 				F35FCCC92110E0C200F77262 /* PushKit.framework */,
