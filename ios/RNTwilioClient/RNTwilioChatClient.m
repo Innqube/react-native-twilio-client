@@ -12,7 +12,7 @@
 #import "RNEventEmitterHelper.h"
 #import <React/RCTBridgeModule.h>
 #import "RNTwilioChatClient.h"
-#import "RCTonvert+TwilioChatClient.h"
+#import "RCTConvert+TwilioChatClient.h"
 
 @import AVFoundation;
 @import TwilioChatClient;
