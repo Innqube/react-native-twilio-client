@@ -202,7 +202,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void getMessagesBefore(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
+    public void getMessagesBefore(String channelSidOrUniqueName, final Integer index, final Integer count, final Promise promise) {
         Log.d(LOG_TAG, "getMessagesBefore");
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
@@ -211,7 +211,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void getMessagesAfter(String channelSidOrUniqueName, final Long index, final Integer count, final Promise promise) {
+    public void getMessagesAfter(String channelSidOrUniqueName, final Integer index, final Integer count, final Promise promise) {
         Log.d(LOG_TAG, "getMessagesAfter");
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
@@ -271,7 +271,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     public void getLastConsumedMessageIndex(String channelSidOrUniqueName, final Promise promise) {
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             Long index = channel.getMessages().getLastConsumedMessageIndex();
-            promise.resolve(index != null ? index.toString() : index);
+            promise.resolve(index != null ? index.toString() : null);
         });
     }
 
