@@ -20,6 +20,7 @@ class TwilioChatClient {
     }
 
     create = (tokenCallback) => {
+        this._initEventListeners();
         this._tokenCallback = tokenCallback;
         return new Promise(((resolve, reject) => {
             tokenCallback()
@@ -69,7 +70,6 @@ class TwilioChatClient {
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
             case SynchronizationStatus.COMPLETED:
-                this._initEventListeners();
                 dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.COMPLETED}));
                 resolve(this);
                 break;
