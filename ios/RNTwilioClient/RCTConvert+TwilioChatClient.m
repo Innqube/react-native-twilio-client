@@ -45,6 +45,26 @@ RCT_ENUM_CONVERTER(TCHUserUpdate,(@{
                                         @"ReachabilityNotifiable": @(TCHUserUpdateReachabilityNotifiable),
                                         }), TCHUserUpdateFriendlyName, integerValue)
 
+RCT_ENUM_CONVERTER(TCHMessageUpdate,(@{
+                                    @"Body" : @(TCHMessageUpdateBody),
+                                    @"Attributes" : @(TCHMessageUpdateAttributes),
+                                    }), TCHMessageUpdateBody, integerValue)
+
+RCT_ENUM_CONVERTER(TCHMemberUpdate,(@{
+                                       @"LastConsumedMessageIndex" : @(TCHMemberUpdateLastConsumedMessageIndex),
+                                       @"Attributes" : @(TCHMemberUpdateAttributes),
+                                       }), TCHMemberUpdateLastConsumedMessageIndex, integerValue)
+
+RCT_ENUM_CONVERTER(TCHChannelUpdate,(@{
+                                      @"Status" : @(TCHChannelUpdateStatus),
+                                      @"LastConsumedMessageIndex" : @(TCHChannelUpdateLastConsumedMessageIndex),
+                                      @"UniqueName" : @(TCHChannelUpdateUniqueName),
+                                      @"FriendlyName" : @(TCHChannelUpdateFriendlyName),
+                                      @"Attributes" : @(TCHChannelUpdateAttributes),
+                                      @"LastMessage" : @(TCHChannelUpdateLastMessage),
+                                      @"UserNotificationLevel" : @(TCHChannelUpdateUserNotificationLevel),
+                                      }), TCHChannelUpdateStatus, integerValue)
+
 RCT_ENUM_CONVERTER(TCHLogLevel,(@{
                                   @"Fatal" : @(TCHLogLevelFatal),
                                   @"Critical" : @(TCHLogLevelCritical),
@@ -62,6 +82,128 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
                                   @"Error" : @(TCHClientConnectionStateError)
                                   }), TCHClientConnectionStateUnknown, integerValue)
 
++ (NSString *)TCHClientConnectionStateToString:(TCHClientConnectionState)state {
+    if (!state) {
+        return RCTNullIfNil(nil);
+    }
+
+    switch(state) {
+        case TCHClientConnectionStateUnknown:
+            return @"Unknown";
+        case TCHClientConnectionStateDisconnected:
+            return @"Disconnected";
+        case TCHClientConnectionStateConnected:
+            return @"Completed";
+        case TCHClientConnectionStateConnecting:
+            return @"Connecting";
+        case TCHClientConnectionStateDenied:
+            return @"Denied";
+        case TCHClientConnectionStateError:
+            return @"TCHClientSynchronizationStatusFailed";
+    }
+}
+
++ (NSString *)TCHClientSynchronizationStatusToString:(TCHClientSynchronizationStatus)status {
+    if (!status) {
+        return RCTNullIfNil(nil);
+    }
+    
+    switch(status) {
+        case TCHClientSynchronizationStatusStarted:
+            return @"Started";
+        case TCHClientSynchronizationStatusChannelsListCompleted:
+            return @"ChannelsListCompleted";
+        case TCHClientSynchronizationStatusCompleted:
+            return @"Completed";
+        case TCHClientSynchronizationStatusFailed:
+            return @"Failed";
+    }
+}
+
++ (NSString *)TCHChannelSynchronizationStatusToString:(TCHChannelSynchronizationStatus)status {
+    if (!status) {
+        return RCTNullIfNil(nil);
+    }
+    
+    switch(status) {
+        case TCHChannelSynchronizationStatusNone:
+            return @"None";
+        case TCHChannelSynchronizationStatusIdentifier:
+            return @"Identifier";
+        case TCHChannelSynchronizationStatusMetadata:
+            return @"Metadata";
+        case TCHChannelSynchronizationStatusAll:
+            return @"All";
+        case TCHChannelSynchronizationStatusFailed:
+            return @"Failed";
+    }
+}
+
++ (NSString *)TCHChannelUpdateToString:(TCHChannelUpdate)update {
+    if (!update) {
+        return RCTNullIfNil(nil);
+    }
+    
+    switch(update) {
+        case TCHChannelUpdateStatus:
+            return @"Status";
+        case TCHChannelUpdateLastConsumedMessageIndex:
+            return @"LastConsumedMessageIndex";
+        case TCHChannelUpdateUniqueName:
+            return @"UniqueName";
+        case TCHChannelUpdateFriendlyName:
+            return @"FriendlyName";
+        case TCHChannelUpdateAttributes:
+            return @"Attributes";
+        case TCHChannelUpdateLastMessage:
+            return @"LastMessage";
+        case TCHChannelUpdateUserNotificationLevel:
+            return @"UserNotificationLevel";
+    }
+}
+
++ (NSString *)TCHMessageUpdateToString:(TCHMessageUpdate)update {
+    if (!update) {
+        return RCTNullIfNil(nil);
+    }
+
+    switch(update) {
+        case TCHMessageUpdateBody:
+            return @"Body";
+        case TCHMessageUpdateAttributes:
+            return @"Attributes";
+    }
+}
+
++ (NSString *)TCHUserUpdateToString:(TCHUserUpdate)update {
+    if (!update) {
+        return RCTNullIfNil(nil);
+    }
+    
+    switch(update) {
+        case TCHUserUpdateFriendlyName:
+            return @"FriendlyName";
+        case TCHUserUpdateAttributes:
+            return @"Attributes";
+        case TCHUserUpdateReachabilityOnline:
+            return @"ReachabilityOnline";
+        case TCHUserUpdateReachabilityNotifiable:
+            return @"ReachabilityNotifiable";
+    }
+}
+
++ (NSString *)TCHMemberUpdateToString:(TCHMemberUpdate)update {
+    if (!update) {
+        return RCTNullIfNil(nil);
+    }
+
+    switch(update) {
+        case TCHMemberUpdateLastConsumedMessageIndex:
+            return @"LastConsumedMessageIndex";
+        case TCHMemberUpdateAttributes:
+            return @"Attributes";
+    }
+}
 
 + (NSDictionary *)TwilioChatClient:(TwilioChatClient *)client {
   if (!client) {
@@ -83,7 +225,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
   return @{
            @"identity": user.identity,
            @"friendlyName": user.friendlyName,
-           @"attributes": RCTNullIfNil(user.attributes),
+           @"attributes": user.attributes,
            @"isOnline": @(user.isOnline),
            @"isNotifiable": @(user.isNotifiable)
            };
