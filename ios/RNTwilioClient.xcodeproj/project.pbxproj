@@ -16,6 +16,7 @@
 		F3EA400222A6F3D40038903A /* RNTwilioChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F3EA3FFE22A6F3D30038903A /* RNTwilioChatClient.m */; };
 		F3EA400322A6F3D40038903A /* RNEventEmitterHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F3EA400022A6F3D40038903A /* RNEventEmitterHelper.m */; };
 		F3F8DCE22332BF9B00729E0C /* TwilioChatClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3F8DCE12332BF9B00729E0C /* TwilioChatClient.framework */; };
+		F3F8DCFD2332E87100729E0C /* RCTonvert+TwilioChatClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F3F8DCFB2332E87100729E0C /* RCTonvert+TwilioChatClient.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,6 +46,8 @@
 		F3EA3FFF22A6F3D40038903A /* RNTwilioChatClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNTwilioChatClient.h; sourceTree = "<group>"; };
 		F3EA400022A6F3D40038903A /* RNEventEmitterHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNEventEmitterHelper.m; sourceTree = "<group>"; };
 		F3F8DCE12332BF9B00729E0C /* TwilioChatClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TwilioChatClient.framework; path = "../../interpreter-intelligence/mobile-interpreter-direct/ios/Pods/TwilioChatClient/TwilioChatClient.framework"; sourceTree = "<group>"; };
+		F3F8DCFB2332E87100729E0C /* RCTonvert+TwilioChatClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTonvert+TwilioChatClient.m"; sourceTree = "<group>"; };
+		F3F8DCFC2332E87100729E0C /* RCTonvert+TwilioChatClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTonvert+TwilioChatClient.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +96,8 @@
 		38F71DF71E9C333F0067E86F /* RNTwilioClient */ = {
 			isa = PBXGroup;
 			children = (
+				F3F8DCFC2332E87100729E0C /* RCTonvert+TwilioChatClient.h */,
+				F3F8DCFB2332E87100729E0C /* RCTonvert+TwilioChatClient.m */,
 				F3EA3FFC22A6F3D30038903A /* RNEventEmitterHelper.h */,
 				F3EA400022A6F3D40038903A /* RNEventEmitterHelper.m */,
 				F3EA3FFB22A6F3D30038903A /* RNLogHelper.h */,
@@ -167,6 +172,7 @@
 				F3EA400322A6F3D40038903A /* RNEventEmitterHelper.m in Sources */,
 				F3EA400122A6F3D40038903A /* RNLogHelper.m in Sources */,
 				38F71DFA1E9C333F0067E86F /* RNTwilioClient.m in Sources */,
+				F3F8DCFD2332E87100729E0C /* RCTonvert+TwilioChatClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

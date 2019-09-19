@@ -9,24 +9,30 @@ const {
 
 class TwilioChatClient {
 
-    constructor(props) {
-        this.tokenCallback = props.tokenCallback;
+    static getInstance() {
+        if (!this._instance) {
+            this._instance = new TwilioChatClient();
+        }
+        return this._instance;
     }
 
-    create = () => new Promise(((resolve, reject) => {
-        this.tokenCallback()
-            .then(token => {
-                RNTwilioChatClient
-                    .createClient(token)
-                    .then(client => EventEmitterHelper.addEventListener(
-                        'synchronizationStatusUpdated',
-                        status => this._synchronizationListener(status, resolve, reject)
+    create = (tokenCallback) => {
+        this._tokenCallback = tokenCallback;
+        return new Promise(((resolve, reject) => {
+            tokenCallback()
+                .then(token => {
+                    RNTwilioChatClient
+                        .createClient(token.jwt, null)
+                        .then(client => EventEmitterHelper.addEventListener(
+                            'synchronizationStatusUpdated',
+                            status => this._synchronizationListener(status, tokenCallback, resolve, reject)
+                            )
                         )
-                    )
-                    .catch(error => reject(error))
-            })
-            .catch(error => reject(error));
-    }));
+                        .catch(error => reject(error))
+                })
+                .catch(error => reject(error));
+        }));
+    }
 
     shutdown = () => {
         this._removeAllListeners();
@@ -48,7 +54,7 @@ class TwilioChatClient {
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
             case SynchronizationStatus.COMPLETED:
-                this._initEventListeners();
+                this._initEventListeners(tokenCallback);
                 dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.COMPLETED}));
                 resolve(this);
                 break;
@@ -64,13 +70,13 @@ class TwilioChatClient {
         }
     };
 
-    // _messageFilter(message, channel) {
-    //     if (message.channel.sid === channel.sid) {
-    //         if (channel.onNewMessage) {
-    //             channel.onNewMessage(message);
-    //         }
-    //     }
-    // }
+// _messageFilter(message, channel) {
+//     if (message.channel.sid === channel.sid) {
+//         if (channel.onNewMessage) {
+//             channel.onNewMessage(message);
+//         }
+//     }
+// }
 
     _initEventListeners = () => {
         EventEmitterHelper.addEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
@@ -133,7 +139,7 @@ class TwilioChatClient {
         EventEmitterHelper.removeEventListener('error', this._onError);
     };
 
-    _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this.tokenCallback());
+    _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this._tokenCallback().jwt);
     _onChannelJoined = (payload) => dispatchEvent(new CustomEvent('channelJoined', {detail: payload}));
     _onChannelInvited = (payload) => dispatchEvent(new CustomEvent('channelInvited', {detail: payload}));
     _onChannelAdded = (payload) => dispatchEvent(new CustomEvent('channelAdded', {detail: payload}));

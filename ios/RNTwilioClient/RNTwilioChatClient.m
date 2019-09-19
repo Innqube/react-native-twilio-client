@@ -49,7 +49,7 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_METHOD(createClient, token:(NSString*)token properties:(NSDictionary *)properties create_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     NSLog(@"[IIMobile - RNTwilioChatClient] createClient with token: %@", token);
-    [TwilioChatClient chatClientWithToken:token properties:nil delegate:self completion:^(TCHResult * _Nonnull result, TwilioChatClient * _Nullable chatClient) {
+    [TwilioChatClient chatClientWithToken:token properties:properties delegate:self completion:^(TCHResult * _Nonnull result, TwilioChatClient * _Nullable chatClient) {
         if (chatClient) {
             self.client = chatClient;
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -293,13 +293,14 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
                                               }];
 }
 
-- (void)chatClient:(nonnull TwilioChatClient *)client userSubscribed:(nonnull TCHUser *)user {
+- (void)chatClient:(TwilioChatClient *)client userSubscribed:(TCHUser *)user {
     NSLog(@"[IIMobile - RNTwilioChatClient] userSubscribed");
     [RNEventEmitterHelper emitEventWithName:@"userSubscribed"
-                                 andPayload:[RCTConvert TCHUser:user]];
+                                 andPayload:@{@"user": user.identity}];
+                                 //andPayload:[RCTConvert TCHUser:user]];
 }
 
-- (void)chatClient:(nonnull TwilioChatClient *)client userUnsubscribed:(nonnull TCHUser *)user {
+- (void)chatClient:(TwilioChatClient *)client userUnsubscribed:(TCHUser *)user {
     NSLog(@"[IIMobile - RNTwilioChatClient] userUnsubscribed");
             [RNEventEmitterHelper emitEventWithName:@"userUnsubscribed"
                                          andPayload:[RCTConvert TCHUser:user]];
