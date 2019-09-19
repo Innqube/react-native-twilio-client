@@ -32,7 +32,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void createClient(String token, ReadableMap props, final Promise promise) {
-        Log.d(LOG_TAG, "create");
+        Log.d(LOG_TAG, "creating client. Current instance is null?: " + (CHAT_CLIENT == null));
 
         ChatClient.Properties.Builder builder = new ChatClient.Properties.Builder();
 

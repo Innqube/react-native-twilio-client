@@ -54,7 +54,7 @@ class TwilioChatClient {
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
             case SynchronizationStatus.COMPLETED:
-                this._initEventListeners(tokenCallback);
+                this._initEventListeners();
                 dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.COMPLETED}));
                 resolve(this);
                 break;
@@ -81,8 +81,8 @@ class TwilioChatClient {
     _initEventListeners = () => {
         EventEmitterHelper.addEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
         EventEmitterHelper.addEventListener('tokenExpired', this._onTokenAboutToExpire);
-        EventEmitterHelper.addEventListener('channelJoined', this._onChannelJoined);
-        EventEmitterHelper.addEventListener('channelInvited', this._onChannelInvited);
+        // EventEmitterHelper.addEventListener('channelJoined', this._onChannelJoined);
+        // EventEmitterHelper.addEventListener('channelInvited', this._onChannelInvited);
         EventEmitterHelper.addEventListener('channelAdded', this._onChannelAdded);
         EventEmitterHelper.addEventListener('channelUpdated', this._onChannelUpdated);
         EventEmitterHelper.addEventListener('channelDeleted', this._onChannelDeleted);
@@ -93,7 +93,7 @@ class TwilioChatClient {
         EventEmitterHelper.addEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
         EventEmitterHelper.addEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         EventEmitterHelper.addEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
-        EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
+        // EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
         EventEmitterHelper.addEventListener('connectionStateUpdated', this._onConnectionStateUpdated);
         EventEmitterHelper.addEventListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
 
@@ -112,8 +112,8 @@ class TwilioChatClient {
         EventEmitterHelper.removeEventListener('synchronizationStatusUpdated', this._synchronizationListener);
         EventEmitterHelper.removeEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
         EventEmitterHelper.removeEventListener('tokenExpired', this._onTokenAboutToExpire);
-        EventEmitterHelper.removeEventListener('channelJoined', this._onChannelJoined);
-        EventEmitterHelper.removeEventListener('channelInvited', this._onChannelInvited);
+        // EventEmitterHelper.removeEventListener('channelJoined', this._onChannelJoined);
+        // EventEmitterHelper.removeEventListener('channelInvited', this._onChannelInvited);
         EventEmitterHelper.removeEventListener('channelAdded', this._onChannelAdded);
         EventEmitterHelper.removeEventListener('channelUpdated', this._onChannelUpdated);
         EventEmitterHelper.removeEventListener('channelDeleted', this._onChannelDeleted);
@@ -124,7 +124,7 @@ class TwilioChatClient {
         EventEmitterHelper.removeEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
         EventEmitterHelper.removeEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         EventEmitterHelper.removeEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
-        EventEmitterHelper.removeEventListener('notificationSubscribed', this._onNotificationSubscribed);
+        // EventEmitterHelper.removeEventListener('notificationSubscribed', this._onNotificationSubscribed);
         EventEmitterHelper.removeEventListener('connectionStateUpdated', this._onConnectionStateUpdated);
         EventEmitterHelper.removeEventListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
 
