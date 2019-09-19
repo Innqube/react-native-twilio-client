@@ -89,17 +89,17 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
 
     switch(state) {
         case TCHClientConnectionStateUnknown:
-            return @"Unknown";
+            return @"UNKNOWN";
         case TCHClientConnectionStateDisconnected:
-            return @"Disconnected";
+            return @"DISCONNECTED";
         case TCHClientConnectionStateConnected:
-            return @"Completed";
+            return @"COMPLETES";
         case TCHClientConnectionStateConnecting:
-            return @"Connecting";
+            return @"CONNECTING";
         case TCHClientConnectionStateDenied:
-            return @"Denied";
+            return @"DENIED";
         case TCHClientConnectionStateError:
-            return @"TCHClientSynchronizationStatusFailed";
+            return @"FAILED";
     }
 }
 
@@ -110,13 +110,13 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     
     switch(status) {
         case TCHClientSynchronizationStatusStarted:
-            return @"Started";
+            return @"STARTED";
         case TCHClientSynchronizationStatusChannelsListCompleted:
-            return @"ChannelsListCompleted";
+            return @"CHANNELS_COMPLETED";
         case TCHClientSynchronizationStatusCompleted:
-            return @"Completed";
+            return @"COMPLETED";
         case TCHClientSynchronizationStatusFailed:
-            return @"Failed";
+            return @"FAILED";
     }
 }
 
@@ -224,10 +224,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
   }
   return @{
            @"identity": user.identity,
-           @"friendlyName": user.friendlyName,
-           @"attributes": user.attributes,
-           @"isOnline": @(user.isOnline),
-           @"isNotifiable": @(user.isNotifiable)
+           @"friendlyName": RCTNullIfNil(user.friendlyName)
            };
 }
 
