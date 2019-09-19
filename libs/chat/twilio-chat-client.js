@@ -10,6 +10,8 @@ const {
 
 class TwilioChatClient {
 
+    _channels = {};
+
     static getInstance() {
         if (!this._instance) {
             this._instance = new TwilioChatClient();
@@ -48,15 +50,21 @@ class TwilioChatClient {
 
     getPublicChannels = () => RNTwilioChatClient
         .getPublicChannels()
-        .then(channels => Promise.resolve(channels.map(c => new TwilioChatChannel(c))));;
+        .then(channels => Promise.resolve(channels.map(c => this._buildChatChannel(c))));
 
     getUserChannels = () => RNTwilioChatClient
         .getUserChannels()
-        .then(channels => Promise.resolve(channels.map(c => new TwilioChatChannel(c))));
+        .then(channels => Promise.resolve(channels.map(c => this._buildChatChannel(c))));
 
     getChannel = (channelSidOrUniqueName) => RNTwilioChatChannels
         .getChannel(channelSidOrUniqueName)
-        .then(channel => Promise.resolve(new TwilioChatChannel(channel)));
+        .then(channel => Promise.resolve(this._buildChatChannel(channel)));
+
+    _buildChatChannel = (channel) => {
+        const twilioChatChannel = new TwilioChatChannel(channel);
+        this._channels[twilioChatChannel.sid] = twilioChatChannel;
+        return twilioChatChannel;
+    };
 
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
@@ -163,14 +171,15 @@ class TwilioChatClient {
     _onConnectionStateUpdated = (payload) => dispatchEvent(new CustomEvent('connectionStateUpdated', {detail: payload}));
     _onChannelSynchronizationStatusUpdated = (payload) => dispatchEvent(new CustomEvent('channelSynchronizationStatusUpdated', {detail: payload}));
 
-    _onMessageAdded = (payload) => dispatchEvent(new CustomEvent('messageAdded', {detail: payload}));
-    _onMessageUpdated = (payload) => dispatchEvent(new CustomEvent('messageUpdated', {detail: payload}));
-    _onMessageDeleted = (payload) => dispatchEvent(new CustomEvent('messageDeleted', {detail: payload}));
-    _onMemberAdded = (payload) => dispatchEvent(new CustomEvent('memberAdded', {detail: payload}));
-    _onMemberUpdated = (payload) => dispatchEvent(new CustomEvent('memberUpdated', {detail: payload}));
-    _onMemberDeleted = (payload) => dispatchEvent(new CustomEvent('memberDeleted', {detail: payload}));
-    _onTypingStarted = (payload) => dispatchEvent(new CustomEvent('typingStarted', {detail: payload}));
-    _onTypingEnded = (payload) => dispatchEvent(new CustomEvent('typingEnded', {detail: payload}));
+    _onMessageAdded = (payload) => this._channels[payload.channelSid]._onMessageAdded(payload.message);
+    _onMessageDeleted = (payload) => this._channels[payload.channelSid]._onMessageDeleted(payload.message);
+    _onMessageUpdated = (payload) => this._channels[payload.channelSid]._onMessageUpdated(payload.message);
+    _onMemberAdded = (payload) => this._channels[payload.channelSid]._onMemberAdded(payload.message);
+    _onMemberUpdated = (payload) => this._channels[payload.channelSid]._onMemberUpdated(payload.message);
+    _onMemberDeleted = (payload) => this._channels[payload.channelSid]._onMemberDeleted(payload.message);
+    _onTypingStarted = (payload) => this._channels[payload.channelSid]._onTypingStarted(payload.member);
+    _onTypingEnded = (payload) => this._channels[payload.channelSid]._onTypingEnded(payload.member);
+
     _onError = (payload) => dispatchEvent(new CustomEvent('error', {detail: payload}));
 }
 

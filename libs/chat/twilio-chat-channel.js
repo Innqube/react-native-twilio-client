@@ -1,5 +1,4 @@
 import {NativeModules} from 'react-native';
-import EventEmitterHelper from '../event-emitter-helper';
 
 /**
  * @author Enrique Viard.
@@ -56,6 +55,20 @@ class TwilioChatChannel {
     getLastConsumedMessageIndex = () => RNTwilioChatChannels.getLastConsumedMessageIndex(this.uniqueName, );
 
     sendMessage = (message) => RNTwilioChatChannels.sendMessage(message);
+
+
+    _onMessageAdded = (message) => dispatchEvent(new CustomEvent('messageAdded', {detail: message}));
+    _onMessageUpdated = (message) => dispatchEvent(new CustomEvent('messageUpdated', {detail: message}));
+    _onMessageDeleted = (message) => dispatchEvent(new CustomEvent('messageDeleted', {detail: message}));
+
+    _onMemberAdded = (member) => dispatchEvent(new CustomEvent('memberAdded', {detail: member}));
+    _onMemberUpdated = (member) => dispatchEvent(new CustomEvent('memberUpdated', {detail: member}));
+    _onMemberDeleted = (member) => dispatchEvent(new CustomEvent('memberDeleted', {detail: member}));
+
+    _onTypingStarted = (member) => dispatchEvent(new CustomEvent('typingStarted', {detail: member}));
+    _onTypingEnded = (member) => dispatchEvent(new CustomEvent('typingEnded', {detail: member}));
+
+    _channelSynchronizationStatusUpdated = () => dispatchEvent(new CustomEvent('channelSynchronizationStatusUpdated'));
 
     // _initListeners = () => {
     //     EventEmitterHelper.addEventListener('messageAdded', this._onMessageAdded);
