@@ -1,10 +1,7 @@
 package com.ngs.react.RNTwilioChat;
 
 import android.util.Log;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
@@ -12,14 +9,14 @@ import com.twilio.chat.StatusListener;
 
 public class TwilioChatModule extends ReactContextBaseJavaModule {
 
-    private static final String LOG_TAG = "[IIMobile-Chat]";
+    private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient CHAT_CLIENT;
 
-    public static ChatClient getChatClient() {
+    static ChatClient getChatClient() {
         return CHAT_CLIENT;
     }
 
-    public TwilioChatModule(ReactApplicationContext context) {
+    TwilioChatModule(ReactApplicationContext context) {
         super(context);
     }
 
@@ -34,10 +31,21 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createClient(String token, final Promise promise) {
+    public void createClient(String token, ReadableMap props, final Promise promise) {
         Log.d(LOG_TAG, "create");
-        ChatClient.Properties properties = new ChatClient.Properties.Builder().createProperties();
-        ChatClient.create(getReactApplicationContext(), token, properties, new PromiseCallbackListener<ChatClient>(promise) {
+
+        ChatClient.Properties.Builder builder = new ChatClient.Properties.Builder();
+
+        if (props != null) {
+            if (props.hasKey("region")) {
+                builder.setRegion(props.getString("region"));
+            }
+            if (props.hasKey("defer")) {
+                builder.setDeferCertificateTrustToPlatform(props.getBoolean("defer"));
+            }
+        }
+
+        ChatClient.create(getReactApplicationContext(), token, builder.createProperties(), new PromiseCallbackListener<ChatClient>(promise) {
             @Override
             public void onSuccess(ChatClient chatClient) {
                 Log.d(LOG_TAG, "Chat client created");

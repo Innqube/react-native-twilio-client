@@ -7,7 +7,7 @@ import com.twilio.chat.ErrorInfo;
 
 public abstract class PromiseCallbackListener<T> extends CallbackListener<T> {
 
-    private static final String LOG_TAG = "[IIMobile]";
+    private static final String LOG_TAG = "[Twi-Chat]";
     protected Promise promise;
 
     public PromiseCallbackListener(Promise promise) {
