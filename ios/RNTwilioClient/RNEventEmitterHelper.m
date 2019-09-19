@@ -32,7 +32,7 @@ RCT_EXPORT_MODULE();
            @"tokenAboutToExpire",
            @"synchronizationStatusUpdated",
            @"channelAdded",
-           @"channelUpdated"
+           @"channelUpdated",
            @"channelDeleted",
            @"error",
            @"newMessageNotification",
