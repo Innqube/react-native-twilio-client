@@ -16,8 +16,19 @@
 + (TCHChannelType)TCHChannelType:(id)json;
 + (TCHChannelStatus)TCHChannelStatus:(id)json;
 + (TCHUserUpdate)TCHUserUpdate:(id)json;
++ (TCHMessageUpdate)TCHMessageUpdate:(id)json;
++ (TCHMemberUpdate)TCHMemberUpdate:(id)json;
++ (TCHChannelUpdate)TCHChannelUpdate:(id)json;
 + (TCHLogLevel)TCHLogLevel:(id)json;
 + (TCHClientConnectionState)TCHClientConnectionState:(id)json;
+
++ (NSString *)TCHClientConnectionStateToString:(TCHClientConnectionState)state;
++ (NSString *)TCHClientSynchronizationStatusToString:(TCHClientSynchronizationStatus)status;
++ (NSString *)TCHChannelSynchronizationStatusToString:(TCHChannelSynchronizationStatus)status;
++ (NSString *)TCHChannelUpdateToString:(TCHChannelUpdate)update;
++ (NSString *)TCHMessageUpdateToString:(TCHMessageUpdate)update;
++ (NSString *)TCHUserUpdateToString:(TCHUserUpdate)update;
++ (NSString *)TCHMemberUpdateToString:(TCHMemberUpdate)update;
 
 + (NSDictionary *)TwilioChatClient:(TwilioChatClient *)client;
 

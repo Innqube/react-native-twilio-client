@@ -118,9 +118,9 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 #pragma mark RNTwilioChatClient Delegates
 
 - (void)chatClient:(TwilioChatClient *)client connectionStateUpdated:(TCHClientConnectionState)state {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:connectionStateUpdated with status: %@", @(state));
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:connectionStateUpdated with status: %@", [RCTConvert TCHClientConnectionStateToString: state]);
     [RNEventEmitterHelper emitEventWithName:@"connectionStateUpdated"
-                                 andPayload:@(state)];
+                                 andPayload:@{@"state": [RCTConvert TCHClientConnectionStateToString: state]}];
 }
 
 - (void)chatClientTokenWillExpire:(TwilioChatClient *)chatClient {
@@ -134,9 +134,9 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 }
 
 - (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:synchronizationStatusUpdated with status: %@", @(status));
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:synchronizationStatusUpdated with status: %@", [RCTConvert TCHClientSynchronizationStatusToString:status]);
     [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusUpdated"
-                                 andPayload:@(status)];
+                                 andPayload:@{@"status": [RCTConvert TCHClientSynchronizationStatusToString:status]}];
 }
 
 - (void)chatClient:(TwilioChatClient *)client channelAdded:(TCHChannel *)channel {
@@ -146,11 +146,11 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 }
 
 - (void)chatClient:(TwilioChatClient *)client channel:(TCHChannel *)channel updated:(TCHChannelUpdate)updated {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelUpdated with sid: %@", channel.sid);
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelUpdated with reason: %@", [RCTConvert TCHChannelUpdateToString:updated]);
     [RNEventEmitterHelper emitEventWithName:@"channelUpdated"
                                  andPayload:@{
                                               @"channel": [RCTConvert TCHChannel:channel],
-                                              @"reason": @(updated)
+                                              @"reason": [RCTConvert TCHChannelUpdateToString:updated]
                                               }];
 }
 
@@ -161,11 +161,11 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 }
 
 - (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel synchronizationStatusUpdated:(TCHChannelSynchronizationStatus)status {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelSynchronizationStatusUpdated with sid: %@", channel.sid);
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:channelSynchronizationStatusUpdated with status: %@", [RCTConvert TCHChannelSynchronizationStatusToString:status]);
     [RNEventEmitterHelper emitEventWithName:@"channelSynchronizationStatusUpdated"
                                  andPayload:@{
                                               @"channel": [RCTConvert TCHChannel:channel],
-                                              @"status": @(status)
+                                              @"status": [RCTConvert TCHChannelSynchronizationStatusToString:status]
                                               }];
 }
 
@@ -179,12 +179,12 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 }
 
 - (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel member:(nonnull TCHMember *)member updated:(TCHMemberUpdate)updated {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:memberUpdated with sid: %@", channel.sid);
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:memberUpdated with reason: %@", [RCTConvert TCHMemberUpdateToString:updated]);
     [RNEventEmitterHelper emitEventWithName:@"memberUpdated"
                                  andPayload:@{
                                               @"member": [RCTConvert TCHMember:member],
                                               @"channelSid": channel.sid,
-                                              @"reason": @(updated)
+                                              @"reason": [RCTConvert TCHMemberUpdateToString:updated]
                                               }];
 }
 
@@ -207,12 +207,12 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 }
 
 - (void)chatClient:(nonnull TwilioChatClient *)client channel:(nonnull TCHChannel *)channel message:(nonnull TCHMessage *)message updated:(TCHMessageUpdate)updated {
-    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:messageUpdated with body: %@", message.body);
+    NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:messageUpdated with reason: %@ ", [RCTConvert TCHMessageUpdateToString:updated]);
     [RNEventEmitterHelper emitEventWithName:@"messageUpdated"
                                  andPayload:@{
                                             @"channelSid": channel.sid,
-                                            @"member": [RCTConvert TCHMessage:message],
-                                            @"reason": @(updated)
+                                            @"message": [RCTConvert TCHMessage:message],
+                                            @"reason": [RCTConvert TCHMessageUpdateToString:updated]
                                             }];
 }
 
@@ -288,7 +288,7 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 - (void)chatClient:(TwilioChatClient *)client user:(TCHUser *)user updated:(TCHUserUpdate)updated {
     NSLog(@"[IIMobile - RNTwilioChatClient] userUpdated");
     [RNEventEmitterHelper emitEventWithName:@"userUpdated"
-                                 andPayload:@{@"reason": @(updated),
+                                 andPayload:@{@"reason": [RCTConvert TCHUserUpdateToString:updated],
                                               @"user": [RCTConvert TCHUser:user]
                                               }];
 }
@@ -296,8 +296,7 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 - (void)chatClient:(TwilioChatClient *)client userSubscribed:(TCHUser *)user {
     NSLog(@"[IIMobile - RNTwilioChatClient] userSubscribed");
     [RNEventEmitterHelper emitEventWithName:@"userSubscribed"
-                                 andPayload:@{@"user": user.identity}];
-                                 //andPayload:[RCTConvert TCHUser:user]];
+                                 andPayload:[RCTConvert TCHUser:user]];
 }
 
 - (void)chatClient:(TwilioChatClient *)client userUnsubscribed:(TCHUser *)user {
