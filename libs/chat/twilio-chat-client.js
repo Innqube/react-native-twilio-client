@@ -1,6 +1,7 @@
 import {NativeModules,} from 'react-native';
 import EventEmitterHelper from '../event-emitter-helper';
 import SynchronizationStatus from '../domain/synchronization-status';
+import TwilioChatChannel from "./twilio-chat-channel";
 
 const {
     RNTwilioChatClient,
@@ -32,7 +33,7 @@ class TwilioChatClient {
                 })
                 .catch(error => reject(error));
         }));
-    }
+    };
 
     shutdown = () => {
         this._removeAllListeners();
@@ -45,11 +46,17 @@ class TwilioChatClient {
 
     createChannel = (uniqueName, friendlyName, type = 0, attributes = {}) => RNTwilioChatChannels.create(uniqueName, friendlyName, type, attributes);
 
-    getPublicChannels = () => RNTwilioChatClient.getPublicChannels();
+    getPublicChannels = () => RNTwilioChatClient
+        .getPublicChannels()
+        .then(channels => Promise.resolve(channels.map(c => new TwilioChatChannel(c))));;
 
-    getUserChannels = () => RNTwilioChatClient.getUserChannels();
+    getUserChannels = () => RNTwilioChatClient
+        .getUserChannels()
+        .then(channels => Promise.resolve(channels.map(c => new TwilioChatChannel(c))));
 
-    getChannel = (channelSidOrUniqueName) => RNTwilioChatChannels.getChannel(channelSidOrUniqueName);
+    getChannel = (channelSidOrUniqueName) => RNTwilioChatChannels
+        .getChannel(channelSidOrUniqueName)
+        .then(channel => Promise.resolve(new TwilioChatChannel(channel)));
 
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
