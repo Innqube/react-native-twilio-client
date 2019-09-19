@@ -6,7 +6,7 @@
 //  Copyright © 2019 No Good Software Inc. All rights reserved.
 //
 
-#import "RNConverter+TwilioChatClient.h"
+#import "RCTConvert+TwilioChatClient.h"
 #import <React/RCTUtils.h>
 
 @implementation RCTonvert (TwilioChatClient)
