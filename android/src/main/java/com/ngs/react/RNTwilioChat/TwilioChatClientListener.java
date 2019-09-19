@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 public class TwilioChatClientListener implements ChatClientListener {
 
-    private static final String LOG_TAG = "[IIMobile-ChatListener]";
+    private static final String LOG_TAG = "[Twi-ChatListener]";
     private ReactApplicationContext reactApplicationContext;
 
     public TwilioChatClientListener(ReactApplicationContext reactApplicationContext) {

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class TwilioChatChannelModule extends ReactContextBaseJavaModule implements ChannelListener {
 
-    private static final String LOG_TAG = "[IIMobile-Channel]";
+    private static final String LOG_TAG = "[Twi-ChatChannel]";
     private List<String> channelListeners = new ArrayList<>();
 
     public TwilioChatChannelModule(ReactApplicationContext reactContext) {
