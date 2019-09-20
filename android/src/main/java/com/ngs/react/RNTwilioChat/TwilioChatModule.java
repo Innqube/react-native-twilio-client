@@ -3,6 +3,7 @@ package com.ngs.react.RNTwilioChat;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
+import com.ngs.react.Utils;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
 import com.twilio.chat.StatusListener;
@@ -70,6 +71,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
             WritableMap json = new WritableNativeMap();
             json.putString("synchronizationStatus", SYNCHRONIZATION_STATUS != null ? SYNCHRONIZATION_STATUS.name() : null);
             promise.resolve(json);
+            Utils.sendEvent(getReactApplicationContext(), "synchronizationStatusUpdated", SYNCHRONIZATION_STATUS.name());
         }
     }
 
