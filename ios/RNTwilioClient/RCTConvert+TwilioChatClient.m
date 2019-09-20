@@ -124,18 +124,18 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     if (!status) {
         return RCTNullIfNil(nil);
     }
-    
+    INVITED, JOINED, NOT_PARTICIPATING, UNKNOWN
     switch(status) {
         case TCHChannelSynchronizationStatusNone:
-            return @"None";
+            return @"NONE";
         case TCHChannelSynchronizationStatusIdentifier:
-            return @"Identifier";
+            return @"IDENTIFIER";
         case TCHChannelSynchronizationStatusMetadata:
-            return @"Metadata";
+            return @"METADATA";
         case TCHChannelSynchronizationStatusAll:
-            return @"All";
+            return @"ALL";
         case TCHChannelSynchronizationStatusFailed:
-            return @"Failed";
+            return @"FAILED";
     }
 }
 
@@ -143,22 +143,22 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     if (!update) {
         return RCTNullIfNil(nil);
     }
-    
+
     switch(update) {
         case TCHChannelUpdateStatus:
-            return @"Status";
+            return @"STATUS";
         case TCHChannelUpdateLastConsumedMessageIndex:
-            return @"LastConsumedMessageIndex";
+            return @"LAST_CONSUMED_MESSAGE_INDEX";
         case TCHChannelUpdateUniqueName:
-            return @"UniqueName";
+            return @"UNIQUE_NAME";
         case TCHChannelUpdateFriendlyName:
-            return @"FriendlyName";
+            return @"FRIENDLY_NAME";
         case TCHChannelUpdateAttributes:
-            return @"Attributes";
+            return @"ATTRIBUTES";
         case TCHChannelUpdateLastMessage:
-            return @"LastMessage";
+            return @"LAST_MESSAGE";
         case TCHChannelUpdateUserNotificationLevel:
-            return @"UserNotificationLevel";
+            return @"NOTIFICATION_LEVEL";
     }
 }
 
@@ -169,9 +169,9 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
 
     switch(update) {
         case TCHMessageUpdateBody:
-            return @"Body";
+            return @"BODY";
         case TCHMessageUpdateAttributes:
-            return @"Attributes";
+            return @"ATTRIBUTES";
     }
 }
 
@@ -179,16 +179,16 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     if (!update) {
         return RCTNullIfNil(nil);
     }
-    
+
     switch(update) {
         case TCHUserUpdateFriendlyName:
-            return @"FriendlyName";
+            return @"FRIENDLY_NAME";
         case TCHUserUpdateAttributes:
-            return @"Attributes";
+            return @"REACHABILITY_ONLINE";
         case TCHUserUpdateReachabilityOnline:
-            return @"ReachabilityOnline";
+            return @"ATTRIBUTES";
         case TCHUserUpdateReachabilityNotifiable:
-            return @"ReachabilityNotifiable";
+            return @"REACHABILITY_NOTIFIABLE";
     }
 }
 
@@ -199,9 +199,9 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
 
     switch(update) {
         case TCHMemberUpdateLastConsumedMessageIndex:
-            return @"LastConsumedMessageIndex";
+            return @"LAST_CONSUMED_MESSAGE_INDEX";
         case TCHMemberUpdateAttributes:
-            return @"Attributes";
+            return @"ATTRIBUTES";
     }
 }
 

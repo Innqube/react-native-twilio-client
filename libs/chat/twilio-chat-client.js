@@ -58,7 +58,7 @@ class TwilioChatClient {
         .then(channels => Promise.resolve(channels.map(c => this._buildChatChannel(c))));
 
     getChannel = (channelSidOrUniqueName) => RNTwilioChatChannels
-        .getChannel(channelSidOrUniqueName)
+        .get(channelSidOrUniqueName)
         .then(channel => Promise.resolve(this._buildChatChannel(channel)));
 
     _buildChatChannel = (channel) => {
