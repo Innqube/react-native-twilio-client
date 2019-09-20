@@ -92,7 +92,7 @@ public class Utils {
                     object.put(key, readableMap.getBoolean(key));
                     break;
                 case Number:
-                    object.put(key, readableMap.getDouble(key));
+//                    object.put(key, readableMap.getDouble(key));
                     break;
                 case String:
                     object.put(key, readableMap.getString(key));
@@ -149,7 +149,7 @@ public class Utils {
         json.put("author", message.getAuthor());
         json.put("channelSid", message.getChannelSid());
         json.put("body", message.getMessageBody());
-        json.put("index", message.getMessageIndex());
+        json.put("index", Long.valueOf(message.getMessageIndex()).toString());
         json.put("sid", message.getSid());
         json.put("attributes", message.getAttributes());
         json.put("dateCreated", message.getDateCreated());
