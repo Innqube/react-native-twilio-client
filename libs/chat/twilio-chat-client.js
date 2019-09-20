@@ -1,6 +1,7 @@
 import {NativeModules,} from 'react-native';
 import SynchronizationStatus from '../domain/synchronization-status';
 import TwilioChatChannel from "./twilio-chat-channel";
+import EventEmitter from '../event-emitter';
 
 const {
     RNTwilioChatClient,
