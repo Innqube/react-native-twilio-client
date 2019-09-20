@@ -1,7 +1,7 @@
-import {NativeModules,} from 'react-native';
-import EventEmitterHelper from '../event-emitter-helper';
+import {NativeEventEmitter, NativeModules} from 'react-native';
 import SynchronizationStatus from '../domain/synchronization-status';
 import TwilioChatChannel from "./twilio-chat-channel";
+import EventEmitter from '../event-emitter';
 
 const {
     RNTwilioChatClient,
@@ -11,12 +11,17 @@ const {
 class TwilioChatClient {
 
     _channels = {};
+    _eventEmitter;
 
     static getInstance() {
-        if (!this._instance) {
+        if (!this._instance) {
             this._instance = new TwilioChatClient();
         }
         return this._instance;
+    }
+
+    constructor() {
+        this._eventEmitter = new EventEmitter();
     }
 
     create = (tokenCallback) => {
@@ -27,7 +32,7 @@ class TwilioChatClient {
                 .then(token => {
                     RNTwilioChatClient
                         .createClient(token, null)
-                        .then(client => EventEmitterHelper.addEventListener(
+                        .then(client => this.addListener(
                             'synchronizationStatusUpdated',
                             status => this._synchronizationListener(status, tokenCallback, resolve, reject)
                             )
@@ -39,7 +44,7 @@ class TwilioChatClient {
     };
 
     shutdown = () => {
-        this._removeAllListeners();
+        this.removeAllListeners();
         RNTwilioChatClient.shutdown();
     };
 
@@ -70,106 +75,101 @@ class TwilioChatClient {
     _synchronizationListener = (status, resolve, reject) => {
         switch (status) {
             case SynchronizationStatus.COMPLETED:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.COMPLETED}));
+                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.COMPLETED);
                 resolve(this);
                 break;
             case SynchronizationStatus.STARTED:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.STARTED}));
+                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.STARTED);
                 break;
             case SynchronizationStatus.CHANNELS_COMPLETED:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.CHANNELS_COMPLETED}));
+                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.CHANNELS_COMPLETED);
                 break;
             case SynchronizationStatus.FAILED:
-                dispatchEvent(new CustomEvent('synchronizationStatusUpdated', {detail: SynchronizationStatus.FAILED}));
+                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.FAILED);
                 reject('Synchronization failed');
         }
     };
 
-// _messageFilter(message, channel) {
-//     if (message.channel.sid === channel.sid) {
-//         if (channel.onNewMessage) {
-//             channel.onNewMessage(message);
-//         }
-//     }
-// }
+    // Events delegation
+    addListener = (name, handler) => this._eventEmitter.addListener(name, handler);
+    removeAllListeners = (name) => this._eventEmitter.removeAllListeners(name);
 
     _initEventListeners = () => {
-        EventEmitterHelper.addEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
-        EventEmitterHelper.addEventListener('tokenExpired', this._onTokenAboutToExpire);
+        NativeEventEmitter.addListener('tokenAboutToExpire', this._onTokenAboutToExpire);
+        NativeEventEmitter.addListener('tokenExpired', this._onTokenAboutToExpire);
         // EventEmitterHelper.addEventListener('channelJoined', this._onChannelJoined);
         // EventEmitterHelper.addEventListener('channelInvited', this._onChannelInvited);
-        EventEmitterHelper.addEventListener('channelAdded', this._onChannelAdded);
-        EventEmitterHelper.addEventListener('channelUpdated', this._onChannelUpdated);
-        EventEmitterHelper.addEventListener('channelDeleted', this._onChannelDeleted);
-        EventEmitterHelper.addEventListener('userUpdated', this._onUserUpdated);
-        EventEmitterHelper.addEventListener('userSubscribed', this._onUserSubscribed);
-        EventEmitterHelper.addEventListener('userUnsubscribed', this._onUserUnsubscribed);
-        EventEmitterHelper.addEventListener('newMessageNotification', this._onNewMessageNotification);
-        EventEmitterHelper.addEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
-        EventEmitterHelper.addEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
-        EventEmitterHelper.addEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
+        NativeEventEmitter.addListener('channelAdded', this._onChannelAdded);
+        NativeEventEmitter.addListener('channelUpdated', this._onChannelUpdated);
+        NativeEventEmitter.addListener('channelDeleted', this._onChannelDeleted);
+        NativeEventEmitter.addListener('userUpdated', this._onUserUpdated);
+        NativeEventEmitter.addListener('userSubscribed', this._onUserSubscribed);
+        NativeEventEmitter.addListener('userUnsubscribed', this._onUserUnsubscribed);
+        NativeEventEmitter.addListener('newMessageNotification', this._onNewMessageNotification);
+        NativeEventEmitter.addListener('addedToChannelNotification', this._onAddedToChannelNotification);
+        NativeEventEmitter.addListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
+        NativeEventEmitter.addListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
         // EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        EventEmitterHelper.addEventListener('connectionStateUpdated', this._onConnectionStateUpdated);
-        EventEmitterHelper.addEventListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
+        NativeEventEmitter.addListener('connectionStateUpdated', this._onConnectionStateUpdated);
+        NativeEventEmitter.addListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
 
-        EventEmitterHelper.addEventListener('messageAdded', this._onMessageAdded);
-        EventEmitterHelper.addEventListener('messageUpdated', this._onMessageUpdated);
-        EventEmitterHelper.addEventListener('messageDeleted', this._onMessageDeleted);
-        EventEmitterHelper.addEventListener('memberAdded', this._onMemberAdded);
-        EventEmitterHelper.addEventListener('memberUpdated', this._onMemberUpdated);
-        EventEmitterHelper.addEventListener('memberDeleted', this._onMemberDeleted);
-        EventEmitterHelper.addEventListener('typingStarted', this._onTypingStarted);
-        EventEmitterHelper.addEventListener('typingEnded', this._onTypingEnded);
-        EventEmitterHelper.addEventListener('error', this._onError);
+        NativeEventEmitter.addListener('messageAdded', this._onMessageAdded);
+        NativeEventEmitter.addListener('messageUpdated', this._onMessageUpdated);
+        NativeEventEmitter.addListener('messageDeleted', this._onMessageDeleted);
+        NativeEventEmitter.addListener('memberAdded', this._onMemberAdded);
+        NativeEventEmitter.addListener('memberUpdated', this._onMemberUpdated);
+        NativeEventEmitter.addListener('memberDeleted', this._onMemberDeleted);
+        NativeEventEmitter.addListener('typingStarted', this._onTypingStarted);
+        NativeEventEmitter.addListener('typingEnded', this._onTypingEnded);
+        NativeEventEmitter.addListener('error', this._onError);
     };
 
     _removeAllListeners = () => {
-        EventEmitterHelper.removeEventListener('synchronizationStatusUpdated', this._synchronizationListener);
-        EventEmitterHelper.removeEventListener('tokenAboutToExpire', this._onTokenAboutToExpire);
-        EventEmitterHelper.removeEventListener('tokenExpired', this._onTokenAboutToExpire);
+        this.removeAllListeners('synchronizationStatusUpdated');
+        this.removeAllListeners('tokenAboutToExpire');
+        this.removeAllListeners('tokenExpired');
         // EventEmitterHelper.removeEventListener('channelJoined', this._onChannelJoined);
         // EventEmitterHelper.removeEventListener('channelInvited', this._onChannelInvited);
-        EventEmitterHelper.removeEventListener('channelAdded', this._onChannelAdded);
-        EventEmitterHelper.removeEventListener('channelUpdated', this._onChannelUpdated);
-        EventEmitterHelper.removeEventListener('channelDeleted', this._onChannelDeleted);
-        EventEmitterHelper.removeEventListener('userUpdated', this._onUserUpdated);
-        EventEmitterHelper.removeEventListener('userSubscribed', this._onUserSubscribed);
-        EventEmitterHelper.removeEventListener('userUnsubscribed', this._onUserUnsubscribed);
-        EventEmitterHelper.removeEventListener('newMessageNotification', this._onNewMessageNotification);
-        EventEmitterHelper.removeEventListener('addedToChannelNotification', this._onAddedToChannelNotification);
-        EventEmitterHelper.removeEventListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
-        EventEmitterHelper.removeEventListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
-        // EventEmitterHelper.removeEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        EventEmitterHelper.removeEventListener('connectionStateUpdated', this._onConnectionStateUpdated);
-        EventEmitterHelper.removeEventListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
-
-        EventEmitterHelper.removeEventListener('messageAdded', this._onMessageAdded);
-        EventEmitterHelper.removeEventListener('messageUpdated', this._onMessageUpdated);
-        EventEmitterHelper.removeEventListener('messageDeleted', this._onMessageDeleted);
-        EventEmitterHelper.removeEventListener('memberAdded', this._onMemberAdded);
-        EventEmitterHelper.removeEventListener('memberUpdated', this._onMemberUpdated);
-        EventEmitterHelper.removeEventListener('memberDeleted', this._onMemberDeleted);
-        EventEmitterHelper.removeEventListener('typingStarted', this._onTypingStarted);
-        EventEmitterHelper.removeEventListener('typingEnded', this._onTypingEnded);
-        EventEmitterHelper.removeEventListener('error', this._onError);
+        this.removeAllListeners('channelAdded');
+        this.removeAllListeners('channelUpdated');
+        this.removeAllListeners('channelDeleted');
+        this.removeAllListeners('userUpdated');
+        this.removeAllListeners('userSubscribed');
+        this.removeAllListeners('userUnsubscribed');
+        this.removeAllListeners('newMessageNotification');
+        this.removeAllListeners('addedToChannelNotification');
+        this.removeAllListeners('invitedToChannelNotification');
+        this.removeAllListeners('removedFromChannelNotification');
+        this.removeAllListeners('notificationSubscribed');
+        this.removeAllListeners('connectionStateUpdated');
+        this.removeAllListeners('channelSynchronizationStatusUpdated');
+        this.removeAllListeners('messageAdded');
+        this.removeAllListeners('messageUpdated');
+        this.removeAllListeners('messageDeleted');
+        this.removeAllListeners('memberAdded');
+        this.removeAllListeners('memberUpdated');
+        this.removeAllListeners('memberDeleted');
+        this.removeAllListeners('typingStarted');
+        this.removeAllListeners('typingEnded');
+        this.removeAllListeners('error');
     };
 
     _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this._tokenCallback().jwt);
-    _onChannelJoined = (payload) => dispatchEvent(new CustomEvent('channelJoined', {detail: payload}));
-    _onChannelInvited = (payload) => dispatchEvent(new CustomEvent('channelInvited', {detail: payload}));
-    _onChannelAdded = (payload) => dispatchEvent(new CustomEvent('channelAdded', {detail: payload}));
-    _onChannelUpdated = (payload) => dispatchEvent(new CustomEvent('channelUpdated', {detail: payload}));
-    _onChannelDeleted = (payload) => dispatchEvent(new CustomEvent('channelDeleted', {detail: payload}));
-    _onUserUpdated = (payload) => dispatchEvent(new CustomEvent('userUpdated', {detail: payload}));
-    _onUserSubscribed = (payload) => dispatchEvent(new CustomEvent('userSubscribed', {detail: payload}));
-    _onUserUnsubscribed = (payload) => dispatchEvent(new CustomEvent('userUnsubscribed', {detail: payload}));
-    _onNewMessageNotification = (payload) => dispatchEvent(new CustomEvent('newMessageNotification', {detail: payload}));
-    _onAddedToChannelNotification = (payload) => dispatchEvent(new CustomEvent('addedToChannelNotification', {detail: payload}));
-    _onInvitedToChannelNotification = (payload) => dispatchEvent(new CustomEvent('invitedToChannelNotification', {detail: payload}));
-    _onRemovedFromChannelNotification = (payload) => dispatchEvent(new CustomEvent('removedFromChannelNotification', {detail: payload}));
-    _onNotificationSubscribed = (payload) => dispatchEvent(new CustomEvent('notificationSubscribed', {detail: payload}));
-    _onConnectionStateUpdated = (payload) => dispatchEvent(new CustomEvent('connectionStateUpdated', {detail: payload}));
-    _onChannelSynchronizationStatusUpdated = (payload) => dispatchEvent(new CustomEvent('channelSynchronizationStatusUpdated', {detail: payload}));
+    _onChannelJoined = (payload) => this._eventEmitter.emit('channelJoined', payload);
+    _onChannelInvited = (payload) => this._eventEmitter.emit('channelInvited', payload);
+    _onChannelAdded = (payload) => this._eventEmitter.emit('channelAdded', payload);
+    _onChannelUpdated = (payload) => this._eventEmitter.emit('channelUpdated', payload);
+    _onChannelDeleted = (payload) => this._eventEmitter.emit('channelDeleted', payload);
+    _onUserUpdated = (payload) => this._eventEmitter.emit('userUpdated', payload);
+    _onUserSubscribed = (payload) => this._eventEmitter.emit('userSubscribed', payload);
+    _onUserUnsubscribed = (payload) => this._eventEmitter.emit('userUnsubscribed', payload);
+    _onNewMessageNotification = (payload) => this._eventEmitter.emit('newMessageNotification', payload);
+    _onAddedToChannelNotification = (payload) => this._eventEmitter.emit('addedToChannelNotification', payload);
+    _onInvitedToChannelNotification = (payload) => this._eventEmitter.emit('invitedToChannelNotification', payload);
+    _onRemovedFromChannelNotification = (payload) => this._eventEmitter.emit('removedFromChannelNotification', payload);
+    _onNotificationSubscribed = (payload) => this._eventEmitter.emit('notificationSubscribed', payload);
+    _onConnectionStateUpdated = (payload) => this._eventEmitter.emit('connectionStateUpdated', payload);
+    _onChannelSynchronizationStatusUpdated = (payload) => this._eventEmitter.emit('channelSynchronizationStatusUpdated', payload);
 
     _onMessageAdded = (payload) => this._channels[payload.channelSid]._onMessageAdded(payload.message);
     _onMessageDeleted = (payload) => this._channels[payload.channelSid]._onMessageDeleted(payload.message);
