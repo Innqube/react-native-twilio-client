@@ -73,7 +73,7 @@ RCT_REMAP_METHOD(create, sidOrUniqueName:(NSString *)sidOrUniqueName friendlyNam
     }
 }
 
-RCT_REMAP_METHOD(join, sidOrUniqueName:(NSString *)sidOrUniqueName friendlyName:(NSString *)friendlyName type:(NSString *)type join_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(join, sidOrUniqueName:(NSString *)sidOrUniqueName join_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioChatChannels] join channel called with sidOrUniqueName: %@", sidOrUniqueName);
 
     [RNTwilioChatChannels loadChannelFromSidOrUniqueName:sidOrUniqueName :^(TCHResult *result, TCHChannel *channel) {
