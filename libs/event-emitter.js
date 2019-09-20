@@ -15,7 +15,7 @@ class EventEmitter {
         // Expand the array with this handler
         this._events[name] = [
             ...this._events[name],
-            NativeAppEventEmitter
+            handler
         ]
 
     };

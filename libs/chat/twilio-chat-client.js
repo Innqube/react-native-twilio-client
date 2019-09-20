@@ -1,4 +1,4 @@
-import {NativeEventEmitter, NativeModules} from 'react-native';
+import {NativeAppEventEmitter, NativeModules} from 'react-native';
 import SynchronizationStatus from '../domain/synchronization-status';
 import TwilioChatChannel from "./twilio-chat-channel";
 import EventEmitter from '../event-emitter';
@@ -95,33 +95,33 @@ class TwilioChatClient {
     removeAllListeners = (name) => this._eventEmitter.removeAllListeners(name);
 
     _initEventListeners = () => {
-        NativeEventEmitter.addListener('tokenAboutToExpire', this._onTokenAboutToExpire);
-        NativeEventEmitter.addListener('tokenExpired', this._onTokenAboutToExpire);
+        NativeAppEventEmitter.addListener('tokenAboutToExpire', this._onTokenAboutToExpire);
+        NativeAppEventEmitter.addListener('tokenExpired', this._onTokenAboutToExpire);
         // EventEmitterHelper.addEventListener('channelJoined', this._onChannelJoined);
         // EventEmitterHelper.addEventListener('channelInvited', this._onChannelInvited);
-        NativeEventEmitter.addListener('channelAdded', this._onChannelAdded);
-        NativeEventEmitter.addListener('channelUpdated', this._onChannelUpdated);
-        NativeEventEmitter.addListener('channelDeleted', this._onChannelDeleted);
-        NativeEventEmitter.addListener('userUpdated', this._onUserUpdated);
-        NativeEventEmitter.addListener('userSubscribed', this._onUserSubscribed);
-        NativeEventEmitter.addListener('userUnsubscribed', this._onUserUnsubscribed);
-        NativeEventEmitter.addListener('newMessageNotification', this._onNewMessageNotification);
-        NativeEventEmitter.addListener('addedToChannelNotification', this._onAddedToChannelNotification);
-        NativeEventEmitter.addListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
-        NativeEventEmitter.addListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
+        NativeAppEventEmitter.addListener('channelAdded', this._onChannelAdded);
+        NativeAppEventEmitter.addListener('channelUpdated', this._onChannelUpdated);
+        NativeAppEventEmitter.addListener('channelDeleted', this._onChannelDeleted);
+        NativeAppEventEmitter.addListener('userUpdated', this._onUserUpdated);
+        NativeAppEventEmitter.addListener('userSubscribed', this._onUserSubscribed);
+        NativeAppEventEmitter.addListener('userUnsubscribed', this._onUserUnsubscribed);
+        NativeAppEventEmitter.addListener('newMessageNotification', this._onNewMessageNotification);
+        NativeAppEventEmitter.addListener('addedToChannelNotification', this._onAddedToChannelNotification);
+        NativeAppEventEmitter.addListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
+        NativeAppEventEmitter.addListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
         // EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
-        NativeEventEmitter.addListener('connectionStateUpdated', this._onConnectionStateUpdated);
-        NativeEventEmitter.addListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
+        NativeAppEventEmitter.addListener('connectionStateUpdated', this._onConnectionStateUpdated);
+        NativeAppEventEmitter.addListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
 
-        NativeEventEmitter.addListener('messageAdded', this._onMessageAdded);
-        NativeEventEmitter.addListener('messageUpdated', this._onMessageUpdated);
-        NativeEventEmitter.addListener('messageDeleted', this._onMessageDeleted);
-        NativeEventEmitter.addListener('memberAdded', this._onMemberAdded);
-        NativeEventEmitter.addListener('memberUpdated', this._onMemberUpdated);
-        NativeEventEmitter.addListener('memberDeleted', this._onMemberDeleted);
-        NativeEventEmitter.addListener('typingStarted', this._onTypingStarted);
-        NativeEventEmitter.addListener('typingEnded', this._onTypingEnded);
-        NativeEventEmitter.addListener('error', this._onError);
+        NativeAppEventEmitter.addListener('messageAdded', this._onMessageAdded);
+        NativeAppEventEmitter.addListener('messageUpdated', this._onMessageUpdated);
+        NativeAppEventEmitter.addListener('messageDeleted', this._onMessageDeleted);
+        NativeAppEventEmitter.addListener('memberAdded', this._onMemberAdded);
+        NativeAppEventEmitter.addListener('memberUpdated', this._onMemberUpdated);
+        NativeAppEventEmitter.addListener('memberDeleted', this._onMemberDeleted);
+        NativeAppEventEmitter.addListener('typingStarted', this._onTypingStarted);
+        NativeAppEventEmitter.addListener('typingEnded', this._onTypingEnded);
+        NativeAppEventEmitter.addListener('error', this._onError);
     };
 
     _removeAllListeners = () => {
