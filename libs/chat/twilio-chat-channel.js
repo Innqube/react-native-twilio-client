@@ -24,8 +24,8 @@ class TwilioChatChannel {
     }
 
     // Events delegation
-    addListener = this._eventEmitter.addListener;
-    removeAllListeners = this._eventEmitter.removeAllListeners;
+    addListener = (name, handler) => this._eventEmitter.addListener(name, handler);
+    removeAllListeners = (name) => this._eventEmitter.removeAllListeners(name);
 
     onNewMessage = (message) => dispatchEvent(new CustomEvent('onNewMessage', {detail: message}));
 

@@ -67,7 +67,6 @@ class TwilioChatClient {
 
     _buildChatChannel = (channel) => {
         const twilioChatChannel = new TwilioChatChannel(channel);
-        this._eventEmitter.add();
         this._channels[twilioChatChannel.sid] = twilioChatChannel;
         return twilioChatChannel;
     };
@@ -91,8 +90,8 @@ class TwilioChatClient {
     };
 
     // Events delegation
-    addListener = this._eventEmitter.addListener;
-    removeAllListeners = this._eventEmitter.removeAllListeners;
+    addListener = (name, handler) => this._eventEmitter.addListener(name, handler);
+    removeAllListeners = (name) => this._eventEmitter.removeAllListeners(name);
 
     _initEventListeners = () => {
         this.addListener('tokenAboutToExpire', this._onTokenAboutToExpire);
