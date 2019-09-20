@@ -92,7 +92,7 @@ public class Utils {
                     object.put(key, readableMap.getBoolean(key));
                     break;
                 case Number:
-//                    object.put(key, readableMap.getDouble(key));
+                    object.put(key, readableMap.getDouble(key));
                     break;
                 case String:
                     object.put(key, readableMap.getString(key));
