@@ -1,5 +1,4 @@
 import {NativeModules} from 'react-native';
-import EventEmitter from 'events';
 
 /**
  * @author Enrique Viard.
