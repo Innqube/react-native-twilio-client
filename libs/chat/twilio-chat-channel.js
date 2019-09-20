@@ -58,10 +58,9 @@ class TwilioChatChannel {
 
     advanceLastConsumedMessage = (index) => RNTwilioChatChannels.advanceLastConsumedMessage(this.uniqueName, index);
 
-    getLastConsumedMessageIndex = () => RNTwilioChatChannels.getLastConsumedMessageIndex(this.uniqueName, );
+    getLastConsumedMessageIndex = () => RNTwilioChatChannels.getLastConsumedMessageIndex(this.uniqueName);
 
-    sendMessage = (message) => RNTwilioChatChannels.sendMessage(message);
-
+    sendMessage = (message) => RNTwilioChatChannels.sendMessage(this.uniqueName, message);
 
     _onMessageAdded = (message) => this._eventEmitter.emit('messageAdded', message);
     _onMessageUpdated = (message) => this._eventEmitter.emit('messageUpdated', message);
