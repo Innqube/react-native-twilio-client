@@ -154,7 +154,7 @@ class TwilioChatClient {
         this.removeAllListeners('error');
     };
 
-    _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this._tokenCallback().jwt);
+    _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this._tokenCallback());
     _onChannelJoined = (payload) => this._eventEmitter.emit('channelJoined', payload);
     _onChannelInvited = (payload) => this._eventEmitter.emit('channelInvited', payload);
     _onChannelAdded = (payload) => this._eventEmitter.emit('channelAdded', payload);
