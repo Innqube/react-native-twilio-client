@@ -296,13 +296,19 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 - (void)chatClient:(TwilioChatClient *)client userSubscribed:(TCHUser *)user {
     NSLog(@"[IIMobile - RNTwilioChatClient] userSubscribed");
     [RNEventEmitterHelper emitEventWithName:@"userSubscribed"
-                                 andPayload:[RCTConvert TCHUser:user]];
+                                 andPayload:@{
+                                              @"identity": user.identity,
+                                              @"friendlyName": RCTNullIfNil(user.friendlyName)
+                                              }];
 }
 
 - (void)chatClient:(TwilioChatClient *)client userUnsubscribed:(TCHUser *)user {
     NSLog(@"[IIMobile - RNTwilioChatClient] userUnsubscribed");
             [RNEventEmitterHelper emitEventWithName:@"userUnsubscribed"
-                                         andPayload:[RCTConvert TCHUser:user]];
+                                         andPayload:@{
+                                                      @"identity": user.identity,
+                                                      @"friendlyName": RCTNullIfNil(user.friendlyName)
+                                                      }];
 }
 
 +(BOOL)requiresMainQueueSetup {
