@@ -236,7 +236,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
            @"sid": message.sid,
            @"index": message.index,
            @"author": message.author,
-           @"body": message.body,
+           @"body": RCTNullIfNil(message.body),
            @"timestamp": message.timestamp,
            @"timestampAsDate": @(message.timestampAsDate.timeIntervalSince1970 * 1000),
            @"dateUpdated": message.dateUpdated,
@@ -263,7 +263,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
   }
   return @{
            @"sid": channel.sid,
-           @"friendlyName": channel.friendlyName,
+           @"friendlyName": RCTNullIfNil(channel.friendlyName),
            @"uniqueName": channel.uniqueName,
            @"status": @(channel.status),
            @"type": @(channel.type),
@@ -281,7 +281,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     }
     return @{
              @"sid": channel.sid,
-             @"friendlyName": channel.friendlyName,
+             @"friendlyName": RCTNullIfNil(channel.friendlyName),
              @"uniqueName": channel.uniqueName,
              @"attributes": RCTNullIfNil(channel.attributes),
              @"messageCount": @(channel.messagesCount),

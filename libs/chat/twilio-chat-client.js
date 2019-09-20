@@ -32,7 +32,7 @@ class TwilioChatClient {
                 .then(token => {
                     RNTwilioChatClient
                         .createClient(token, null)
-                        .then(client => this.addListener(
+                        .then(client => NativeAppEventEmitter.addListener(
                             'synchronizationStatusUpdated',
                             status => this._synchronizationListener(status, tokenCallback, resolve, reject)
                             )
