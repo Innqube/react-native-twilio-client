@@ -148,8 +148,8 @@ public class Utils {
         JSONObject json = new JSONObject();
         json.put("author", message.getAuthor());
         json.put("channelSid", message.getChannelSid());
-        json.put("messageBody", message.getMessageBody());
-        json.put("messageIndex", message.getMessageIndex());
+        json.put("body", message.getMessageBody());
+        json.put("index", message.getMessageIndex());
         json.put("sid", message.getSid());
         json.put("attributes", message.getAttributes());
         json.put("dateCreated", message.getDateCreated());
