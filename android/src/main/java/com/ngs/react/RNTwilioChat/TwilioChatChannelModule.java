@@ -57,7 +57,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void getChannel(String channelSidOrUniqueName, final Promise promise) {
+    public void get(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "getChannel: " + channelSidOrUniqueName);
         TwilioChatModule
                 .getChatClient()
