@@ -124,7 +124,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
     if (!status) {
         return RCTNullIfNil(nil);
     }
-    INVITED, JOINED, NOT_PARTICIPATING, UNKNOWN
+
     switch(status) {
         case TCHChannelSynchronizationStatusNone:
             return @"NONE";
