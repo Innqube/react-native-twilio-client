@@ -30,6 +30,25 @@ class TwilioChatClient {
         return new Promise(((resolve, reject) => {
             tokenCallback()
                 .then(token => {
+
+                    const _firstSynchronizationListener = (status) => {
+                        switch (status) {
+                            case SynchronizationStatus.COMPLETED:
+                                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.COMPLETED);
+                                resolve(this);
+                                break;
+                            case SynchronizationStatus.STARTED:
+                                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.STARTED);
+                                break;
+                            case SynchronizationStatus.CHANNELS_COMPLETED:
+                                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.CHANNELS_COMPLETED);
+                                break;
+                            case SynchronizationStatus.FAILED:
+                                this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.FAILED);
+                                reject('Synchronization failed');
+                        }
+                    };
+
                     RNTwilioChatClient
                         .createClient(token, null)
                         .then(payload => {
@@ -38,11 +57,13 @@ class TwilioChatClient {
                             } else {
                                 NativeAppEventEmitter.addListener(
                                     'synchronizationStatusUpdated',
-                                    status => this._synchronizationListener(status, tokenCallback, resolve, reject)
+                                    _firstSynchronizationListener
                                 )
                             }
                         })
+                        .then(() => NativeAppEventEmitter.addListener('synchronizationStatusUpdated', this._synchronizationListener))
                         .catch(error => reject(error))
+                        .finally(() => NativeAppEventEmitter.removeListener('synchronizationStatusUpdated', _firstSynchronizationListener))
                 })
                 .catch(error => reject(error));
         }));
@@ -77,11 +98,10 @@ class TwilioChatClient {
         return twilioChatChannel;
     };
 
-    _synchronizationListener = (status, resolve, reject) => {
+    _synchronizationListener = (status) => {
         switch (status) {
             case SynchronizationStatus.COMPLETED:
                 this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.COMPLETED);
-                resolve(this);
                 break;
             case SynchronizationStatus.STARTED:
                 this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.STARTED);
@@ -91,7 +111,6 @@ class TwilioChatClient {
                 break;
             case SynchronizationStatus.FAILED:
                 this._eventEmitter.emit('synchronizationStatusUpdated', SynchronizationStatus.FAILED);
-                reject('Synchronization failed');
         }
     };
 
