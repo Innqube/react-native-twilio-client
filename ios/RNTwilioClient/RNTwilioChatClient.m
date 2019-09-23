@@ -19,9 +19,7 @@
 
 @interface RNTwilioChatClient() <TwilioChatClientDelegate>
 #pragma mark - Twilio Chat Members
-@property (strong, nonatomic) NSString *identity;
-@property (strong, nonatomic) NSMutableOrderedSet *messages;
-@property (strong, nonatomic) TCHChannel *channel;
+@property (strong, nonatomic) TCHClientSynchronizationStatus *synchronizationStatus;
 @end
 
 @implementation RNTwilioChatClient
@@ -49,18 +47,24 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_METHOD(createClient, token:(NSString*)token properties:(NSDictionary *)properties create_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     NSLog(@"[IIMobile - RNTwilioChatClient] createClient with token: %@", token);
-    [TwilioChatClient chatClientWithToken:token properties:properties delegate:self completion:^(TCHResult * _Nonnull result, TwilioChatClient * _Nullable chatClient) {
-        if (chatClient) {
-            self.client = chatClient;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"[IIMobile - RNTwilioChatClient] ChatClient successfully created");
-                resolve(chatClient);
-            });
-        } else {
-            NSLog(@"[IIMobile - RNTwilioChatClient] createClient failed with error %@", result.error);
-            reject(@"create-client-error", @"Create ChatClient failed", nil);
-        }
-    }];
+
+    if (self.client != nil) {
+         NSLog(@"[IIMobile - RNTwilioChatClient] Found existing ChatClient instance");
+         resolve(@{@"status": self.synchronizationStatus == nil ? @"null" : [RCTConvert TCHClientSynchronizationStatusToString:self.synchronizationStatus]});
+    } else {
+        [TwilioChatClient chatClientWithToken:token properties:properties delegate:self completion:^(TCHResult * _Nonnull result, TwilioChatClient * _Nullable chatClient) {
+            if (chatClient) {
+                self.client = chatClient;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSLog(@"[IIMobile - RNTwilioChatClient] ChatClient successfully created");
+                    resolve(@{@"status": @"null"});
+                });
+            } else {
+                NSLog(@"[IIMobile - RNTwilioChatClient] createClient failed with error %@", result.error);
+                reject(@"create-client-error", @"Create ChatClient failed", nil);
+            }
+        }];
+    }
 }
 
 RCT_REMAP_METHOD(updateClient, updatedToken:(NSString*)token update_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -139,6 +143,7 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
 }
 
 - (void)chatClient:(TwilioChatClient *)client synchronizationStatusUpdated:(TCHClientSynchronizationStatus)status {
+    self.synchronizationStatus = status;
     NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:synchronizationStatusUpdated with status: %@", [RCTConvert TCHClientSynchronizationStatusToString:status]);
     [RNEventEmitterHelper emitEventWithName:@"synchronizationStatusUpdated"
                                  andPayload:@{@"status": [RCTConvert TCHClientSynchronizationStatusToString:status]}];
