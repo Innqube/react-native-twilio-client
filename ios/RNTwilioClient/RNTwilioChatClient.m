@@ -19,7 +19,7 @@
 
 @interface RNTwilioChatClient() <TwilioChatClientDelegate>
 #pragma mark - Twilio Chat Members
-@property (strong, nonatomic) TCHClientSynchronizationStatus *synchronizationStatus;
+@property (nonatomic) TCHClientSynchronizationStatus *synchronizationStatus;
 @end
 
 @implementation RNTwilioChatClient
