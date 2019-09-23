@@ -278,14 +278,13 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
         return RCTNullIfNil(nil);
     }
     return @{
-             @"sid": message.sid,
-             @"index": message.index,
-             @"author": message.author,
-             @"body": RCTNullIfNil(message.body),
-             @"timestamp": RCTNullIfNil(message.timestamp),
-             @"dateUpdated": RCTNullIfNil(message.dateUpdated),
-             @"lastUpdatedBy": RCTNullIfNil(message.lastUpdatedBy),
-             @"attributes": RCTNullIfNil(message.attributes)
+             @"sid": channel.sid,
+             @"friendlyName": RCTNullIfNil(channel.friendlyName),
+             @"uniqueName": channel.uniqueName,
+             @"attributes": RCTNullIfNil(channel.attributes),
+             @"messageCount": @(channel.messagesCount),
+             @"membersCount": @(channel.membersCount),
+             @"createdBy": RCTNullIfNil(channel.createdBy)
              };
 }
 
