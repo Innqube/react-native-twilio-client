@@ -153,6 +153,7 @@ public class Utils {
         json.put("sid", message.getSid());
         json.put("attributes", message.getAttributes());
         json.put("dateCreated", message.getDateCreated());
+        json.put("timestamp", message.getDateCreatedAsDate().getTime());
         return json;
     }
 
