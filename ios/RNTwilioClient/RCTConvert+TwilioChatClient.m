@@ -235,13 +235,11 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
   return @{
            @"sid": message.sid,
            @"index": message.index,
-           @"author": message.author,
+           @"author": RCTNullIfNil(message.author),
            @"body": RCTNullIfNil(message.body),
-           @"timestamp": message.timestamp,
-           @"timestampAsDate": @(message.timestampAsDate.timeIntervalSince1970 * 1000),
-           @"dateUpdated": message.dateUpdated,
-           @"dateUpdatedDate": @(message.dateUpdatedAsDate.timeIntervalSince1970 * 1000),
-           @"lastUpdatedBy": message.lastUpdatedBy,
+           @"timestamp": RCTNullIfNil(message.timestamp),
+           @"dateUpdated": RCTNullIfNil(message.dateUpdated),
+           @"lastUpdatedBy": RCTNullIfNil(message.lastUpdatedBy),
            @"attributes": RCTNullIfNil(message.attributes)
            };
 }
@@ -269,9 +267,9 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
            @"type": @(channel.type),
            @"attributes": RCTNullIfNil(channel.attributes),
            @"synchronizationStatus": @(channel.synchronizationStatus),
-           @"dateCreated": channel.dateCreated,
-           @"dateUpdated": channel.dateUpdated,
-           @"createdBy": channel.createdBy
+           @"dateCreated": RCTNullIfNil(channel.dateCreated),
+           @"dateUpdated": RCTNullIfNil(channel.dateUpdated),
+           @"createdBy": RCTNullIfNil(channel.createdBy)
            };
 }
 
@@ -280,15 +278,14 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
         return RCTNullIfNil(nil);
     }
     return @{
-             @"sid": channel.sid,
-             @"friendlyName": RCTNullIfNil(channel.friendlyName),
-             @"uniqueName": channel.uniqueName,
-             @"attributes": RCTNullIfNil(channel.attributes),
-             @"messageCount": @(channel.messagesCount),
-             @"membersCount": @(channel.membersCount),
-             @"dateCreated": @(channel.dateCreated.timeIntervalSince1970 * 1000),
-             @"dateUpdated": @(channel.dateUpdated.timeIntervalSince1970 * 1000),
-             @"createdBy": channel.createdBy
+             @"sid": message.sid,
+             @"index": message.index,
+             @"author": message.author,
+             @"body": RCTNullIfNil(message.body),
+             @"timestamp": RCTNullIfNil(message.timestamp),
+             @"dateUpdated": RCTNullIfNil(message.dateUpdated),
+             @"lastUpdatedBy": RCTNullIfNil(message.lastUpdatedBy),
+             @"attributes": RCTNullIfNil(message.attributes)
              };
 }
 
