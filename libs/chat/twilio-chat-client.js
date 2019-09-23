@@ -187,8 +187,8 @@ class TwilioChatClient {
     _onRemovedFromChannelNotification = (payload) => this._eventEmitter.emit('removedFromChannelNotification', payload);
     _onNotificationSubscribed = (payload) => this._eventEmitter.emit('notificationSubscribed', payload);
     _onConnectionStateUpdated = (payload) => this._eventEmitter.emit('connectionStateUpdated', payload);
-    _onChannelSynchronizationStatusUpdated = (payload) => this._eventEmitter.emit('channelSynchronizationStatusUpdated', payload);
 
+    _onChannelSynchronizationStatusUpdated = (payload) => this._channels[payload.channelSid]._onChannelSynchronizationStatusUpdated(payload.status);
     _onMessageAdded = (payload) => this._channels[payload.channelSid]._onMessageAdded(payload.message);
     _onMessageDeleted = (payload) => this._channels[payload.channelSid]._onMessageDeleted(payload.message);
     _onMessageUpdated = (payload) => this._channels[payload.channelSid]._onMessageUpdated(payload.message);

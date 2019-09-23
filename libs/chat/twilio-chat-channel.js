@@ -73,7 +73,7 @@ class TwilioChatChannel {
     _onTypingStarted = (member) => this._eventEmitter.emit('typingStarted', member);
     _onTypingEnded = (member) => this._eventEmitter.emit('typingEnded', member);
 
-    _channelSynchronizationStatusUpdated = () => this._eventEmitter('channelSynchronizationStatusUpdated');
+    _onChannelSynchronizationStatusUpdated = (status) => this._eventEmitter.emit('channelSynchronizationStatusUpdated', status);
 
 }
 

@@ -99,13 +99,17 @@ public class TwilioChatClientListener implements ChatClientListener {
     @Override
     public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
         Log.d(LOG_TAG, "onClientSynchronization: " + synchronizationStatus);
-        Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", synchronizationStatus.name());
+        WritableMap json = new WritableNativeMap();
+        json.putString("status", synchronizationStatus.name());
+        Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", json);
     }
 
     @Override
     public void onConnectionStateChange(ChatClient.ConnectionState connectionState) {
         Log.d(LOG_TAG, "onConnectionStateChange: " + connectionState);
-        Utils.sendEvent(reactApplicationContext, "connectionStateUpdated", connectionState.name());
+        WritableMap json = new WritableNativeMap();
+        json.putString("state", connectionState.name());
+        Utils.sendEvent(reactApplicationContext, "connectionStateUpdated", json);
     }
 
     @Override

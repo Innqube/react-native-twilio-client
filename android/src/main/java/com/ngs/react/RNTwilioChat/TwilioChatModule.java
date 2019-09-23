@@ -61,14 +61,14 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                         }
                     });
                     WritableMap json = new WritableNativeMap();
-                    json.putString("synchronizationStatus", null);
+                    json.putString("status", null);
                     promise.resolve(json);
                 }
             });
         } else {
             Log.d(LOG_TAG, "Found existent client instance");
             WritableMap json = new WritableNativeMap();
-            json.putString("synchronizationStatus", SYNCHRONIZATION_STATUS != null ? SYNCHRONIZATION_STATUS.name() : null);
+            json.putString("status", SYNCHRONIZATION_STATUS != null ? SYNCHRONIZATION_STATUS.name() : null);
             promise.resolve(json);
         }
     }
