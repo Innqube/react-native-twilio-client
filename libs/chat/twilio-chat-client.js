@@ -31,8 +31,8 @@ class TwilioChatClient {
             tokenCallback()
                 .then(token => {
 
-                    const _firstSynchronizationListener = (status) => {
-                        switch (status) {
+                    const _firstSynchronizationListener = (payload) => {
+                        switch (payload.status) {
                             case SynchronizationStatus.COMPLETED:
                                 NativeAppEventEmitter.removeListener('synchronizationStatusUpdated', _firstSynchronizationListener);
                                 resolve(this);
