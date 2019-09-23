@@ -47,7 +47,7 @@ class TwilioChatClient {
                     RNTwilioChatClient
                         .createClient(token, null)
                         .then(payload => {
-                            if (payload.synchronizationStatus === 'COMPLETED') {
+                            if (payload.status === 'COMPLETED') {
                                 resolve(this);
                             } else {
                                 NativeAppEventEmitter.addListener(
@@ -188,7 +188,16 @@ class TwilioChatClient {
     _onNotificationSubscribed = (payload) => this._eventEmitter.emit('notificationSubscribed', payload);
     _onConnectionStateUpdated = (payload) => this._eventEmitter.emit('connectionStateUpdated', payload);
 
-    _onChannelSynchronizationStatusUpdated = (payload) => this._channels[payload.channelSid]._onChannelSynchronizationStatusUpdated(payload.status);
+    _onChannelSynchronizationStatusUpdated = (payload) => {
+        let channel = this._channels[payload.channelSid];
+
+        // Some channels events may arrive before the JS counterpart is created
+        if (channel) {
+            channel._onChannelSynchronizationStatusUpdated(payload.status);
+        }
+
+        this._eventEmitter.emit('channelSynchronizationStatusUpdated', payload);
+    };
     _onMessageAdded = (payload) => this._channels[payload.channelSid]._onMessageAdded(payload.message);
     _onMessageDeleted = (payload) => this._channels[payload.channelSid]._onMessageDeleted(payload.message);
     _onMessageUpdated = (payload) => this._channels[payload.channelSid]._onMessageUpdated(payload.message);
