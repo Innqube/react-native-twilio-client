@@ -261,7 +261,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             channel.getMessages().advanceLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
                 @Override
                 public void onSuccess(Long messageIndex) {
-                    promise.resolve(messageIndex != null ? messageIndex.toString() : null);
+                    promise.resolve(messageIndex != null ? messageIndex.intValue() : null);
                 }
             });
         });
