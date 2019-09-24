@@ -196,8 +196,8 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
     NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:memberLeft with sid: %@", channel.sid);
         [RNEventEmitterHelper emitEventWithName:@"memberDeleted"
                                      andPayload:@{
-                                                  @"member": [RCTConvert TCHMember:member],
-                                                  @"channelSid": channel.sid
+                                                  @"channelSid": channel.sid,
+                                                  @"member": [RCTConvert TCHMember:member]
                                                   }];
 }
 
@@ -206,7 +206,7 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
     [RNEventEmitterHelper emitEventWithName:@"messageAdded"
                                  andPayload:@{
                                             @"channelSid": channel.sid,
-                                            @"member": [RCTConvert TCHMessage:message]
+                                            @"message": [RCTConvert TCHMessage:message]
                                             }];
 }
 
