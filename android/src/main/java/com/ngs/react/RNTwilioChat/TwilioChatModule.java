@@ -9,8 +9,8 @@ import com.twilio.chat.StatusListener;
 
 public class TwilioChatModule extends ReactContextBaseJavaModule {
 
+    public static ChatClient CHAT_CLIENT;
     private static final String LOG_TAG = "[Twi-Chat]";
-    private static ChatClient CHAT_CLIENT;
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
 
     static ChatClient getChatClient() {
