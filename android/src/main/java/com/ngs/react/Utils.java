@@ -149,10 +149,11 @@ public class Utils {
         json.put("author", message.getAuthor());
         json.put("channelSid", message.getChannelSid());
         json.put("body", message.getMessageBody());
-        json.put("index", Long.valueOf(message.getMessageIndex()).toString());
+        json.put("index", message.getMessageIndex());
         json.put("sid", message.getSid());
         json.put("attributes", message.getAttributes());
         json.put("dateCreated", message.getDateCreated());
+        json.put("timestamp", message.getDateCreatedAsDate().getTime());
         return json;
     }
 

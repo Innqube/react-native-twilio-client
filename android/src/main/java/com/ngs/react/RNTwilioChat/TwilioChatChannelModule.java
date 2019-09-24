@@ -289,7 +289,8 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                                 public void onSuccess(Message message) {
                                     try {
                                         JSONObject json = Utils.messageToJsonObject(message);
-                                        promise.resolve(json);
+                                        WritableMap map = Utils.convertJsonToMap(json);
+                                        promise.resolve(map);
                                     } catch (JSONException e) {
                                         promise.reject(e);
                                     }
