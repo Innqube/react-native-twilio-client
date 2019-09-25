@@ -1,16 +1,13 @@
 package com.ngs.react;
 
 import android.util.Log;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.ngs.react.RNNotifications.NotificationsModule;
 
 public class FCMListenerService extends FirebaseMessagingService {
 
     private static final String LOG_TAG = "[Twi-Push]";
-    private ReactContext reactContext;
+//    private ReactContext reactContext;
 
     public FCMListenerService() {
         Log.d(LOG_TAG, "FCM Listener service instantiated");
@@ -20,8 +17,8 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onCreate() {
         super.onCreate();
 
-        final ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-        mReactInstanceManager.addReactInstanceEventListener(validContext -> reactContext = validContext);
+//        final ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+//        mReactInstanceManager.addReactInstanceEventListener(validContext -> reactContext = validContext);
     }
 
     @Override
@@ -37,8 +34,8 @@ public class FCMListenerService extends FirebaseMessagingService {
 
         Log.d(LOG_TAG, "Received push notification: " + remoteMessageToString(remoteMessage));
 
-        NotificationsModule notificationsModule = reactContext.getNativeModule(NotificationsModule.class);
-        notificationsModule.sendNotification(remoteMessage);
+//        NotificationsModule notificationsModule = reactContext.getNativeModule(NotificationsModule.class);
+//        notificationsModule.sendNotification(remoteMessage);
     }
 
     private String remoteMessageToString(RemoteMessage msg) {
