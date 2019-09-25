@@ -81,14 +81,17 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void register(String token, final Promise promise) {
+        Log.d(LOG_TAG, "Registering FCM token: " + token);
         CHAT_CLIENT.registerFCMToken(token, new StatusListener() {
             @Override
             public void onSuccess() {
+                Log.d(LOG_TAG, "FCM token registered");
                 promise.resolve(null);
             }
 
             @Override
             public void onError(ErrorInfo errorInfo) {
+                Log.d(LOG_TAG, "Could not register FCM token");
                 promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
             }
         });
@@ -96,14 +99,17 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void unregister(String token, final Promise promise) {
+        Log.d(LOG_TAG, "Unregistering FCM token: " + token);
         CHAT_CLIENT.unregisterFCMToken(token, new StatusListener() {
             @Override
             public void onSuccess() {
+                Log.d(LOG_TAG, "FCM token unregistered");
                 promise.resolve(null);
             }
 
             @Override
             public void onError(ErrorInfo errorInfo) {
+                Log.d(LOG_TAG, "Could not unregister FCM token");
                 promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
             }
         });
