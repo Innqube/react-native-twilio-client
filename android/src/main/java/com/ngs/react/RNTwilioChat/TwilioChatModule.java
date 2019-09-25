@@ -3,6 +3,7 @@ package com.ngs.react.RNTwilioChat;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
+import com.ngs.react.TokenHolder;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
 import com.twilio.chat.StatusListener;
@@ -12,7 +13,6 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     private static ChatClient CHAT_CLIENT;
     private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
-    private static String fcmToken;
     private static TwilioChatModule INSTANCE;
 
     static ChatClient getChatClient() {
@@ -70,8 +70,8 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                         }
                     });
 
-                    if (fcmToken != null) {
-                        register(fcmToken, promise);
+                    if (TokenHolder.get().getToken() != null) {
+                        register(TokenHolder.get().getToken(), promise);
                     } else {
                         WritableMap json = new WritableNativeMap();
                         json.putString("status", null);
@@ -97,7 +97,6 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     public void register(String token, final Promise promise) {
         if (CHAT_CLIENT == null) {
             Log.d(LOG_TAG, "Setting FCM token for later registration: " + token);
-            fcmToken = token;
             promise.resolve(null);
         } else {
             Log.d(LOG_TAG, "Registering FCM token: " + token);
@@ -105,7 +104,6 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                 @Override
                 public void onSuccess() {
                     Log.d(LOG_TAG, "FCM token registered");
-                    fcmToken = null;
                     promise.resolve(null);
                 }
 
