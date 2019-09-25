@@ -13,6 +13,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
     private static String fcmToken;
+    private static TwilioChatModule INSTANCE;
 
     static ChatClient getChatClient() {
         return CHAT_CLIENT;
@@ -20,6 +21,12 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     TwilioChatModule(ReactApplicationContext context) {
         super(context);
+        Log.i(LOG_TAG, "TwilioChatModule instantiated");
+        TwilioChatModule.INSTANCE = this;
+    }
+
+    public static TwilioChatModule get() {
+        return TwilioChatModule.INSTANCE;
     }
 
     @Override
