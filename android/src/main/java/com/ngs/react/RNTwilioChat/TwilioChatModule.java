@@ -9,9 +9,10 @@ import com.twilio.chat.StatusListener;
 
 public class TwilioChatModule extends ReactContextBaseJavaModule {
 
-    public static ChatClient CHAT_CLIENT;
+    private static ChatClient CHAT_CLIENT;
     private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
+    private static String fcmToken;
 
     static ChatClient getChatClient() {
         return CHAT_CLIENT;
@@ -53,6 +54,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                 public void onSuccess(ChatClient chatClient) {
                     Log.d(LOG_TAG, "Chat client created");
                     CHAT_CLIENT = chatClient;
+
                     chatClient.setListener(new TwilioChatClientListener(getReactApplicationContext()) {
                         @Override
                         public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
@@ -60,9 +62,14 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                             SYNCHRONIZATION_STATUS = synchronizationStatus;
                         }
                     });
-                    WritableMap json = new WritableNativeMap();
-                    json.putString("status", null);
-                    promise.resolve(json);
+
+                    if (fcmToken != null) {
+                        register(fcmToken, promise);
+                    } else {
+                        WritableMap json = new WritableNativeMap();
+                        json.putString("status", null);
+                        promise.resolve(json);
+                    }
                 }
             });
         } else {
@@ -81,20 +88,27 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void register(String token, final Promise promise) {
-        Log.d(LOG_TAG, "Registering FCM token: " + token);
-        CHAT_CLIENT.registerFCMToken(token, new StatusListener() {
-            @Override
-            public void onSuccess() {
-                Log.d(LOG_TAG, "FCM token registered");
-                promise.resolve(null);
-            }
+        if (CHAT_CLIENT == null) {
+            Log.d(LOG_TAG, "Setting FCM token for later registration: " + token);
+            fcmToken = token;
+            promise.resolve(null);
+        } else {
+            Log.d(LOG_TAG, "Registering FCM token: " + token);
+            CHAT_CLIENT.registerFCMToken(token, new StatusListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(LOG_TAG, "FCM token registered");
+                    fcmToken = null;
+                    promise.resolve(null);
+                }
 
-            @Override
-            public void onError(ErrorInfo errorInfo) {
-                Log.d(LOG_TAG, "Could not register FCM token");
-                promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
-            }
-        });
+                @Override
+                public void onError(ErrorInfo errorInfo) {
+                    Log.d(LOG_TAG, "Could not register FCM token");
+                    promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
+                }
+            });
+        }
     }
 
     @ReactMethod
