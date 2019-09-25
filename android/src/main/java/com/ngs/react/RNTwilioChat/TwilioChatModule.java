@@ -72,7 +72,14 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
                     Log.d(LOG_TAG, "TokenHolder.get().getToken(): " + TokenHolder.get().getToken());
                     if (TokenHolder.get().getToken() != null) {
-                        register(TokenHolder.get().getToken(), promise);
+                        register(TokenHolder.get().getToken(), new PromiseImpl(
+                                attrs -> {
+                                    WritableMap json = new WritableNativeMap();
+                                    json.putString("status", null);
+                                    promise.resolve(json);
+                                },
+                                attrs -> promise.reject("Could not register FCM token")
+                        ));
                     } else {
                         WritableMap json = new WritableNativeMap();
                         json.putString("status", null);
