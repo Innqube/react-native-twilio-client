@@ -70,6 +70,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                         }
                     });
 
+                    Log.d(LOG_TAG, "TokenHolder.get().getToken(): " + TokenHolder.get().getToken());
                     if (TokenHolder.get().getToken() != null) {
                         register(TokenHolder.get().getToken(), promise);
                     } else {
