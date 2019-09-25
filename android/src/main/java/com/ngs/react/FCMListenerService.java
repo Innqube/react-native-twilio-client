@@ -15,6 +15,11 @@ public class FCMListenerService extends FirebaseMessagingService {
 
     public FCMListenerService() {
         Log.d(LOG_TAG, "FCM Listener service instantiated");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
         final ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
         mReactInstanceManager.addReactInstanceEventListener(validContext -> reactContext = validContext);
