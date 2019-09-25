@@ -1,8 +1,10 @@
 package com.ngs.react;
 
 import android.util.Log;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.ngs.react.RNNotifications.NotificationsModule;
 
 public class FCMListenerService extends FirebaseMessagingService {
 
@@ -24,6 +26,10 @@ public class FCMListenerService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         Log.d(LOG_TAG, "Received push notification: " + remoteMessageToString(remoteMessage));
+
+        ReactApplicationContext rac = (ReactApplicationContext) getApplicationContext();
+        NotificationsModule notificationsModule = rac.getNativeModule(NotificationsModule.class);
+        notificationsModule.sendNotification(remoteMessage);
     }
 
     private String remoteMessageToString(RemoteMessage msg) {

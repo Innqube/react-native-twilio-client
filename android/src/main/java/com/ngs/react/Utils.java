@@ -2,6 +2,7 @@ package com.ngs.react;
 
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.firebase.messaging.RemoteMessage;
 import com.twilio.chat.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +78,25 @@ public class Utils {
             }
         }
         return array;
+    }
+
+    public static WritableMap convertRemoteMessageDataToMap(RemoteMessage msg) {
+        WritableMap data = new WritableNativeMap();
+        msg.getData().forEach(data::putString);
+
+        WritableMap map = new WritableNativeMap();
+        map.putString("collapseKey", msg.getCollapseKey());
+        map.putString("from", msg.getFrom());
+        map.putString("messageId", msg.getMessageId());
+        map.putString("messageType", msg.getMessageType());
+        map.putString("to", msg.getTo());
+        map.putInt("originalPriority", msg.getOriginalPriority());
+        map.putInt("priority", msg.getPriority());
+        map.putInt("ttl", msg.getTtl());
+        map.putInt("sentTime", Long.valueOf(msg.getSentTime()).intValue());
+        map.putMap("data", data);
+
+        return map;
     }
 
     public static JSONObject convertMapToJson(ReadableMap readableMap) throws JSONException {
