@@ -116,6 +116,34 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
     }];
 }
 
+RCT_REMAP_METHOD(register, token:(NSData*)token register_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    NSLog(@"[IIMobile - RNTwilioChatClient] register with token: %@", token);
+
+    [self.client registerWithNotificationToken:token completion:^(TCHResult * _Nonnull result) {
+        if (result.isSuccessful) {
+            NSLog(@"[IIMobile - RNTwilioChatClient] register with token successfully");
+            resolve(@{@"status": @"registered"});
+        } else {
+            NSLog(@"[IIMobile - RNTwilioChatClient] register with token failed with error %@", result.error);
+             reject(@"register-error", @"register with token failed", nil);
+        }
+    }];
+}
+
+RCT_REMAP_METHOD(unRegister, token:(NSData*)token deregister_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token: %@", token);
+
+    [self.client deregisterWithNotificationToken:token completion:^(TCHResult * _Nonnull result) {
+        if (result.isSuccessful) {
+            NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token successfully");
+            resolve(@{@"status": @"registered"});
+        } else {
+            NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token failed with error %@", result.error);
+             reject(@"deregister-error", @"deregister with token failed", nil);
+        }
+    }];
+}
+
 #pragma mark RNTwilioChatClient Delegates
 
 - (void)chatClient:(TwilioChatClient *)client connectionStateUpdated:(TCHClientConnectionState)state {
