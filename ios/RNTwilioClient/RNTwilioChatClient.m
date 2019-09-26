@@ -116,10 +116,10 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
     }];
 }
 
-RCT_REMAP_METHOD(register, token:(NSData*)token register_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    NSLog(@"[IIMobile - RNTwilioChatClient] register with token: %@", token);
+RCT_REMAP_METHOD(register, register_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    NSLog(@"[IIMobile - RNTwilioChatClient] register with token: %@", self.deviceToken);
 
-    [self.client registerWithNotificationToken:token completion:^(TCHResult * _Nonnull result) {
+    [self.client registerWithNotificationToken:self.deviceToken completion:^(TCHResult * _Nonnull result) {
         if (result.isSuccessful) {
             NSLog(@"[IIMobile - RNTwilioChatClient] register with token successfully");
             resolve(@{@"status": @"registered"});
@@ -130,10 +130,10 @@ RCT_REMAP_METHOD(register, token:(NSData*)token register_resolver:(RCTPromiseRes
     }];
 }
 
-RCT_REMAP_METHOD(unRegister, token:(NSData*)token deregister_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token: %@", token);
+RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token: %@", self.deviceToken);
 
-    [self.client deregisterWithNotificationToken:token completion:^(TCHResult * _Nonnull result) {
+    [self.client deregisterWithNotificationToken:self.deviceToken completion:^(TCHResult * _Nonnull result) {
         if (result.isSuccessful) {
             NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token successfully");
             resolve(@{@"status": @"registered"});

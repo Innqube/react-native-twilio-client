@@ -15,6 +15,7 @@
 }
 
 @property (nonatomic, retain) TwilioChatClient *client;
+@property (nonatomic, retain) NSData *deviceToken;
 
 + (id)sharedInstance;
 
