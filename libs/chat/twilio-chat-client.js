@@ -1,4 +1,4 @@
-import {NativeAppEventEmitter, NativeModules} from 'react-native';
+import {NativeAppEventEmitter, NativeModules, Platform} from 'react-native';
 import SynchronizationStatus from '../domain/synchronization-status';
 import TwilioChatChannel from "./twilio-chat-channel";
 import EventEmitter from '../event-emitter';
@@ -68,9 +68,9 @@ class TwilioChatClient {
         RNTwilioChatClient.shutdown();
     };
 
-    register = (token) => RNTwilioChatClient.register(token);
+    register = (token) => Platform.OS === 'ios' ? RNTwilioChatClient.register() : RNTwilioChatClient.register(token);
 
-    unRegister = (token) => RNTwilioChatClient.unRegister(token);
+    unRegister = (token) => Platform.OS === 'ios' ? RNTwilioChatClient.unRegister() : RNTwilioChatClient.unRegister(token);
 
     createChannel = (uniqueName, friendlyName, type = 0, attributes = {}) => RNTwilioChatChannels.create(uniqueName, friendlyName, type, attributes);
 

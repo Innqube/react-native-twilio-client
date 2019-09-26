@@ -267,7 +267,7 @@ RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve
 
 - (void)chatClient:(TwilioChatClient *)client typingStartedOnChannel:(TCHChannel *)channel member:(TCHMember *)member {
     NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:typingStartedOnChannel");
-    [RNEventEmitterHelper emitEventWithName:@"typingStartedOnChannel"
+    [RNEventEmitterHelper emitEventWithName:@"typingStarted"
                                  andPayload:@{
                                               @"channelSid": channel.sid,
                                               @"member": [RCTConvert TCHMember:member]
@@ -276,7 +276,7 @@ RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve
 
 - (void)chatClient:(TwilioChatClient *)client typingEndedOnChannel:(TCHChannel *)channel member:(TCHMember *)member {
     NSLog(@"[IIMobile - RNTwilioChatClient] Delegates:typingEndedOnChannel");
-    [RNEventEmitterHelper emitEventWithName:@"typingEndedOnChannel"
+    [RNEventEmitterHelper emitEventWithName:@"typingEnded"
                                  andPayload:@{
                                               @"channelSid": channel.sid,
                                               @"member": [RCTConvert TCHMember:member]
