@@ -3,15 +3,17 @@ package com.ngs.react.RNTwilioChat;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
+import com.ngs.react.TokenHolder;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
 import com.twilio.chat.StatusListener;
 
 public class TwilioChatModule extends ReactContextBaseJavaModule {
 
-    private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient CHAT_CLIENT;
+    private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
+    private static TwilioChatModule INSTANCE;
 
     static ChatClient getChatClient() {
         return CHAT_CLIENT;
@@ -19,6 +21,12 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     TwilioChatModule(ReactApplicationContext context) {
         super(context);
+        Log.i(LOG_TAG, "TwilioChatModule instantiated");
+        TwilioChatModule.INSTANCE = this;
+    }
+
+    public static TwilioChatModule get() {
+        return TwilioChatModule.INSTANCE;
     }
 
     @Override
@@ -53,6 +61,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                 public void onSuccess(ChatClient chatClient) {
                     Log.d(LOG_TAG, "Chat client created");
                     CHAT_CLIENT = chatClient;
+
                     chatClient.setListener(new TwilioChatClientListener(getReactApplicationContext()) {
                         @Override
                         public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
@@ -60,9 +69,22 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                             SYNCHRONIZATION_STATUS = synchronizationStatus;
                         }
                     });
-                    WritableMap json = new WritableNativeMap();
-                    json.putString("status", null);
-                    promise.resolve(json);
+
+                    Log.d(LOG_TAG, "TokenHolder.get().getToken(): " + TokenHolder.get().getToken());
+                    if (TokenHolder.get().getToken() != null) {
+                        register(TokenHolder.get().getToken(), new PromiseImpl(
+                                attrs -> {
+                                    WritableMap json = new WritableNativeMap();
+                                    json.putString("status", null);
+                                    promise.resolve(json);
+                                },
+                                attrs -> promise.reject("Could not register FCM token")
+                        ));
+                    } else {
+                        WritableMap json = new WritableNativeMap();
+                        json.putString("status", null);
+                        promise.resolve(json);
+                    }
                 }
             });
         } else {
@@ -81,29 +103,40 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void register(String token, final Promise promise) {
-        CHAT_CLIENT.registerFCMToken(token, new StatusListener() {
-            @Override
-            public void onSuccess() {
-                promise.resolve(null);
-            }
+        if (CHAT_CLIENT == null) {
+            Log.d(LOG_TAG, "Setting FCM token for later registration: " + token);
+            promise.resolve(null);
+        } else {
+            Log.d(LOG_TAG, "Registering FCM token: " + token);
+            CHAT_CLIENT.registerFCMToken(token, new StatusListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(LOG_TAG, "FCM token registered");
+                    promise.resolve(null);
+                }
 
-            @Override
-            public void onError(ErrorInfo errorInfo) {
-                promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
-            }
-        });
+                @Override
+                public void onError(ErrorInfo errorInfo) {
+                    Log.d(LOG_TAG, "Could not register FCM token");
+                    promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
+                }
+            });
+        }
     }
 
     @ReactMethod
     public void unregister(String token, final Promise promise) {
+        Log.d(LOG_TAG, "Unregistering FCM token: " + token);
         CHAT_CLIENT.unregisterFCMToken(token, new StatusListener() {
             @Override
             public void onSuccess() {
+                Log.d(LOG_TAG, "FCM token unregistered");
                 promise.resolve(null);
             }
 
             @Override
             public void onError(ErrorInfo errorInfo) {
+                Log.d(LOG_TAG, "Could not unregister FCM token");
                 promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
             }
         });
