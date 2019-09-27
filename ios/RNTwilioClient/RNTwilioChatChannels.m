@@ -34,12 +34,12 @@ RCT_REMAP_METHOD(get, sidOrUniqueName:(NSString *)sidOrUniqueName get_resolver:(
                     @"friendlyName": channel.friendlyName
                     });
         } else {
-            reject(@"get-channel-error", @"get channel failed with error", result.error);
+            reject(@"get-channel-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], nil);
         }
     }];
 }
 
-RCT_REMAP_METHOD(create, sidOrUniqueName:(NSString *)sidOrUniqueName friendlyName:(NSString *)friendlyName type:(NSString *)type create_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(create, sidOrUniqueName:(NSString *)sidOrUniqueName friendlyName:(NSString *)friendlyName type:(NSString *)type attributes:(NSDictionary *)attributes create_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioChatChannels] create channel called with sidOrUniqueName: %@", sidOrUniqueName);
 
     if (sidOrUniqueName == nil || friendlyName == nil || type == nil) {
@@ -67,7 +67,7 @@ RCT_REMAP_METHOD(create, sidOrUniqueName:(NSString *)sidOrUniqueName friendlyNam
                        @"friendlyName": channel.friendlyName
                        });
            } else {
-               reject(@"create-channel-error", @"Failed to create channel", result.error);
+               reject(@"create-channel-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
            }
        }];
     }
@@ -82,11 +82,11 @@ RCT_REMAP_METHOD(join, sidOrUniqueName:(NSString *)sidOrUniqueName join_resolver
                 if (result.isSuccessful) {
                     resolve(@[@TRUE]);
                 } else {
-                    reject(@"join-channel-error", @"joinWithCompletion failed with error", result.error);
+                    reject(@"join-channel-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
              }];
         } else {
-            reject(@"join-channel-error", @"loadChannelFromSid failed with error", result.error);
+            reject(@"join-channel-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -101,11 +101,11 @@ RCT_REMAP_METHOD(leave, sidOrUniqueName:(NSString *)sidOrUniqueName leave_resolv
                     resolve(@[@TRUE]);
                 }
                 else {
-                    reject(@"leave-channel-error", @"leaveWithCompletion failed with error", result.error);
+                    reject(@"leave-channel-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
              }];
         } else {
-            reject(@"leave-channel-error", @"loadChannelFromSid failed with error", result.error);
+            reject(@"leave-channel-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -142,7 +142,7 @@ RCT_REMAP_METHOD(getUnconsumedMessagesCount, sidOrUniqueName:(NSString *)sidOrUn
                       }];
                 }
             } else {
-                reject(@"unconsumed-messages-error", @"getUnconsumedMessagesCount failed with error", result.error);
+                reject(@"unconsumed-messages-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
             }
      }];
 }
@@ -155,11 +155,11 @@ RCT_REMAP_METHOD(getMessagesCount, sidOrUniqueName:(NSString *)sidOrUniqueName c
                 if ([result isSuccessful]) {
                     resolve(@(count));
                 } else {
-                    reject(@"messages-count-error", @"getMessagesCount failed with error", result.error);
+                    reject(@"messages-count-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
              }];
         } else {
-            reject(@"messages-count-error", @"getMessagesCount failed with error", result.error);
+            reject(@"messages-count-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
      }];
 }
@@ -173,11 +173,11 @@ RCT_REMAP_METHOD(getMembersCount, sidOrUniqueName:(NSString *)sidOrUniqueName me
                     resolve(@(count));
                 }
                 else {
-                    reject(@"get-members-count-error", @"getMembersCount failed with error", result.error);
+                    reject(@"get-members-count-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
             }];
         } else {
-            reject(@"get-members-count-error", @"getMembersCount failed with error", result.error);
+            reject(@"get-members-count-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -191,11 +191,11 @@ RCT_REMAP_METHOD(getLastMessages, sidOrUniqueName:(NSString *)sidOrUniqueName co
                          if ([result isSuccessful]) {
                              resolve([RCTConvert TCHMessages: messages]);
                          } else {
-                             reject(@"get-last-messages-error", @"getLastMessages failed with error", result.error);
+                             reject(@"get-last-messages-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                          }
                      }];
         } else {
-             reject(@"get-last-messages-error", @"getLastMessages failed with error", result.error);
+             reject(@"get-last-messages-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
      }];
 }
@@ -213,11 +213,11 @@ RCT_REMAP_METHOD(sendMessage, sidOrUniqueName:(NSString *)sidOrUniqueName messag
                     if (result.isSuccessful) {
                         resolve(@[@TRUE]);
                     } else {
-                        reject(@"send-message-error", @"Message not sent", result.error);
+                        reject(@"send-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                     }
                 }];
             } else {
-                reject(@"send-message-error", @"Message not sent", result.error);
+                reject(@"send-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
             }
         }];
     }
@@ -233,11 +233,11 @@ RCT_REMAP_METHOD(getMessagesBefore, sidOrUniqueName:(NSString *)sidOrUniqueName 
                                           if ([result isSuccessful]) {
                                               resolve([RCTConvert TCHMessages: messages]);
                                           } else {
-                                              reject(@"get-messages-before-error", @"getMessagesBefore failed", result.error);
+                                              reject(@"get-messages-before-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                                           }
                                       }];
         } else {
-            reject(@"get-messages-before-error", @"getMessagesBefore failed", result.error);
+            reject(@"get-messages-before-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -252,11 +252,11 @@ RCT_REMAP_METHOD(getMessagesAfter, sidOrUniqueName:(NSString *)sidOrUniqueName a
                                       if ([result isSuccessful]) {
                                           resolve([RCTConvert TCHMessages: messages]);
                                       } else {
-                                          reject(@"get-messages-after-error", @"getMessagesAfter failed", result.error);
+                                          reject(@"get-messages-after-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                                       }
                                   }];
         } else {
-            reject(@"get-messages-after-error", @"getMessagesAfter failed", result.error);
+            reject(@"get-messages-after-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -271,7 +271,7 @@ RCT_REMAP_METHOD(getLastConsumedMessageIndex, sidOrUniqueName:(NSString *)sidOrU
                 resolve(@"0");
             }
         } else {
-            reject(@"get-last-consumed-index-error", @"getLastConsumedMessageIndex failed", result.error);
+            reject(@"get-last-consumed-index-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -284,11 +284,11 @@ RCT_REMAP_METHOD(setNoMessagesConsumed, sidOrUniqueName:(NSString *)sidOrUniqueN
                 if ([result isSuccessful]) {
                     resolve(@[@TRUE]);
                 } else {
-                    reject(@"set-no-message-consumed-error", @"setNoMessagesConsumed failed", result.error);
+                    reject(@"set-no-message-consumed-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
             }];
         } else {
-            reject(@"set-no-message-consumed-error", @"setNoMessagesConsumed failed", result.error);
+            reject(@"set-no-message-consumed-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -301,11 +301,11 @@ RCT_REMAP_METHOD(setAllMessagesConsumed, sidOrUniqueName:(NSString *)sidOrUnique
                 if ([result isSuccessful]) {
                     resolve(@[@TRUE]);
                 } else {
-                    reject(@"set-all-message-consumed-error", @"setAllMessagesConsumed failed", result.error);
+                    reject(@"set-all-message-consumed-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
             }];
         } else {
-            reject(@"set-all-message-consumed-error", @"setAllMessagesConsumed failed", result.error);
+            reject(@"set-all-message-consumed-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -319,11 +319,11 @@ RCT_REMAP_METHOD(setLastConsumedMessage, sidOrUniqueName:(NSString *)sidOrUnique
                 if ([result isSuccessful]) {
                     resolve(@[@TRUE]);
                 } else {
-                    reject(@"set-last-consumed-message-error", @"setLastConsumedMessage failed", result.error);
+                    reject(@"set-last-consumed-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
             }];
         } else {
-            reject(@"set-last-consumed-message-error", @"setLastConsumedMessage failed", result.error);
+            reject(@"set-last-consumed-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -337,11 +337,11 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, sidOrUniqueName:(NSString *)sidOrUn
                 if ([result isSuccessful]) {
                     resolve(@[@TRUE]);
                 } else {
-                    reject(@"advance-last-consumed-message-error", @"advanceLastConsumedMessage failed", result.error);
+                    reject(@"advance-last-consumed-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
             }];
         } else {
-            reject(@"advance-last-consumed-message-error", @"advanceLastConsumedMessage failed", result.error);
+            reject(@"advance-last-consumed-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }

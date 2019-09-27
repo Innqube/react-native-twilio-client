@@ -56,7 +56,7 @@ RCT_REMAP_METHOD(createClient, token:(NSString*)token properties:(NSDictionary *
             });
         } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] createClient failed with error %@", result.error);
-            reject(@"create-client-error", @"Create ChatClient failed", nil);
+            reject(@"create-client-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], nil);
         }
     }];
 }
@@ -70,7 +70,7 @@ RCT_REMAP_METHOD(updateClient, updatedToken:(NSString*)token update_resolver:(RC
             resolve(@[@TRUE]);
         } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] updateClient failed with error: %@", result.error);
-           reject(@"update-client-error", @"updateClient failed with error", result.error);
+           reject(@"update-client-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -91,7 +91,7 @@ RCT_REMAP_METHOD(getPublicChannels, lpublic_channels_resolver:(RCTPromiseResolve
             resolve(channels);
         } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] getPublicChannels failed with error: %@", result.error);
-            reject(@"get-public-channels-error", @"getPublicChannels failed", result.error);
+            reject(@"get-public-channels-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -111,7 +111,7 @@ RCT_REMAP_METHOD(getUserChannels, luser_channels_resolver:(RCTPromiseResolveBloc
             }
             resolve(channels);
         } else {
-            reject(@"get-user-channels-error", @"getUserChannels failed", result.error);
+            reject(@"get-user-channels-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
     }];
 }
@@ -125,7 +125,7 @@ RCT_REMAP_METHOD(register, register_resolver:(RCTPromiseResolveBlock)resolve rej
             resolve(@{@"status": @"registered"});
         } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] register with token failed with error %@", result.error);
-             reject(@"register-error", @"register with token failed", nil);
+             reject(@"register-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], nil);
         }
     }];
 }
@@ -139,7 +139,7 @@ RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve
             resolve(@{@"status": @"registered"});
         } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token failed with error %@", result.error);
-             reject(@"deregister-error", @"deregister with token failed", nil);
+             reject(@"deregister-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], nil);
         }
     }];
 }
