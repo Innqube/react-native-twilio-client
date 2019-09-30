@@ -49,7 +49,12 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onNewToken(String token) {
         super.onNewToken(token);
         Log.d(LOG_TAG, "On new token: " + token);
-        tts.setToken(token);
+
+        if (tts != null) {
+            tts.setToken(token);
+        } else {
+            Log.w(LOG_TAG, "Twilio token service was null!");
+        }
     }
 
     @Override

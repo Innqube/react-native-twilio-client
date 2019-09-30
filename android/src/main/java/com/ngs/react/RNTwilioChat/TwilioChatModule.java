@@ -107,7 +107,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                     });
 
                     Log.d(LOG_TAG, "fcmListenerService.getToken(): " + tts.getToken());
-                    if (tts.getToken() != null) {
+                    if (tts != null && tts.getToken() != null) {
                         register(tts.getToken(), new PromiseImpl(
                                 attrs -> {
                                     WritableMap json = new WritableNativeMap();
@@ -117,6 +117,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                                 attrs -> promise.reject("Could not register FCM token")
                         ));
                     } else {
+                        Log.w(LOG_TAG, "Twilio token service or the token itself was null. No push will be received or sent");
                         WritableMap json = new WritableNativeMap();
                         json.putString("status", null);
                         promise.resolve(json);
