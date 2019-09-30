@@ -227,7 +227,7 @@ RCT_REMAP_METHOD(getMessagesBefore, sidOrUniqueName:(NSString *)sidOrUniqueName 
     NSLog(@"[IIMobile - RNTwilioChatChannels] getMessagesBefore called with sidOrUniqueName: %@", sidOrUniqueName);
     [RNTwilioChatChannels loadChannelFromSidOrUniqueName:sidOrUniqueName :^(TCHResult *result, TCHChannel *channel) {
         if (result.isSuccessful) {
-            [channel.messages getMessagesBefore:(index.intValue - 1)
+            [channel.messages getMessagesBefore:(index.intValue)
                                       withCount:count.longValue
                                      completion:^(TCHResult *result, NSArray<TCHMessage *> *messages) {
                                           if ([result isSuccessful]) {
@@ -246,7 +246,7 @@ RCT_REMAP_METHOD(getMessagesAfter, sidOrUniqueName:(NSString *)sidOrUniqueName a
     NSLog(@"[IIMobile - RNTwilioChatChannels] getMessagesAfter called with sidOrUniqueName: %@", sidOrUniqueName);
     [RNTwilioChatChannels loadChannelFromSidOrUniqueName:sidOrUniqueName :^(TCHResult *result, TCHChannel *channel) {
         if (result.isSuccessful) {
-            [channel.messages getMessagesAfter:(index.intValue + 1)
+            [channel.messages getMessagesAfter:(index.intValue)
                                      withCount:count.longValue
                                     completion:^(TCHResult *result, NSArray<TCHMessage *> *messages) {
                                       if ([result isSuccessful]) {
