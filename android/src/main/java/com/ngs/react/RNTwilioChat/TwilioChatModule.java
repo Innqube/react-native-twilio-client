@@ -1,7 +1,13 @@
 package com.ngs.react.RNTwilioChat;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.util.Log;
 import com.facebook.react.bridge.*;
+import com.ngs.react.FCMListenerService;
 import com.ngs.react.PromiseCallbackListener;
 import com.ngs.react.TokenHolder;
 import com.twilio.chat.ChatClient;
@@ -14,6 +20,18 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
     private static TwilioChatModule INSTANCE;
+    private FCMListenerService fcmListenerService;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.d(LOG_TAG, "FCM Listener Service connected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            Log.d(LOG_TAG, "FCM Listener Service disconnected");
+        }
+    };
 
     static ChatClient getChatClient() {
         return CHAT_CLIENT;
@@ -32,6 +50,14 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "RNTwilioChatClient";
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        Intent intent = new Intent(this.getReactApplicationContext(), FCMListenerService.class);
+        this.getReactApplicationContext().bindService(intent, this.serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @ReactMethod
