@@ -77,10 +77,15 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void create(String friendlyName, String uniqueName, Integer type, ReadableMap attributes, final Promise promise) {
+    public void create(String friendlyName, String uniqueName, String type, ReadableMap attributes, final Promise promise) {
         Log.d(LOG_TAG, "createChannel");
+
+        if (friendlyName == null || uniqueName == null || type == null) {
+            promise.resolve("Check that friendlyName, uniqueName and type are provided");
+        }
+
         try {
-            JSONObject attr = Utils.convertMapToJson(attributes);
+            JSONObject attr = attributes == null ? null : Utils.convertMapToJson(attributes);
             TwilioChatModule
                     .getChatClient()
                     .getChannels()
@@ -88,7 +93,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                     .withFriendlyName(friendlyName)
                     .withUniqueName(uniqueName)
                     .withAttributes(attr)
-                    .withType(Channel.ChannelType.fromInt(type))
+                    .withType(Channel.ChannelType.valueOf(type.toUpperCase()))
                     .build(new PromiseCallbackListener<Channel>(promise) {
                         @Override
                         public void onSuccess(Channel channel) {
