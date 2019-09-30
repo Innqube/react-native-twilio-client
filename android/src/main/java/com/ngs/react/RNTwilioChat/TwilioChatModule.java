@@ -25,11 +25,13 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(LOG_TAG, "FCM Listener Service connected");
+            Log.d("iBinder instanceof ", iBinder.getClass().getName());
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             Log.d(LOG_TAG, "FCM Listener Service disconnected");
+            fcmListenerService = null;
         }
     };
 
