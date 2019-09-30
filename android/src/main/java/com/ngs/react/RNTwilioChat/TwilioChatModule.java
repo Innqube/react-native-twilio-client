@@ -8,7 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
-import com.ngs.react.TwilioFCMListenerService;
+import com.ngs.react.TwilioChatTokenService;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
 import com.twilio.chat.StatusListener;
@@ -19,20 +19,20 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
     private static TwilioChatModule INSTANCE;
-    private TwilioFCMListenerService fcmListenerService;
+    private TwilioChatTokenService tts;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.d(LOG_TAG, "FCM Listener Service connected");
+            Log.d(LOG_TAG, "TwilioChatModule -> TwilioTokenService connected");
 
-            TwilioFCMListenerService.TwilioFCMListenerBinder binder = (TwilioFCMListenerService.TwilioFCMListenerBinder) iBinder;
-            fcmListenerService = binder.getService();
+            TwilioChatTokenService.TwilioFCMListenerBinder binder = (TwilioChatTokenService.TwilioFCMListenerBinder) iBinder;
+            tts = binder.getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            Log.d(LOG_TAG, "FCM Listener Service disconnected");
-            fcmListenerService = null;
+            Log.d(LOG_TAG, "TwilioChatModule -> TwilioTokenService disconnected");
+            tts = null;
         }
     };
 
@@ -59,7 +59,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     public void initialize() {
         super.initialize();
 
-        Intent intent = new Intent(this.getReactApplicationContext(), TwilioFCMListenerService.class);
+        Intent intent = new Intent(this.getReactApplicationContext(), TwilioChatTokenService.class);
         this.getReactApplicationContext().bindService(intent, this.serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -99,9 +99,9 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                         }
                     });
 
-                    Log.d(LOG_TAG, "fcmListenerService.getToken(): " + fcmListenerService.getToken());
-                    if (fcmListenerService.getToken() != null) {
-                        register(fcmListenerService.getToken(), new PromiseImpl(
+                    Log.d(LOG_TAG, "fcmListenerService.getToken(): " + tts.getToken());
+                    if (tts.getToken() != null) {
+                        register(tts.getToken(), new PromiseImpl(
                                 attrs -> {
                                     WritableMap json = new WritableNativeMap();
                                     json.putString("status", null);
