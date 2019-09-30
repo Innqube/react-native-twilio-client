@@ -43,6 +43,8 @@ public class Utils {
                 map.putArray(key, convertJsonToArray((JSONArray) value));
             } else if (value instanceof Boolean) {
                 map.putBoolean(key, (Boolean) value);
+            } else if (value instanceof Long) {
+                map.putDouble(key, ((Long) value).doubleValue());
             } else if (value instanceof Integer) {
                 map.putInt(key, (Integer) value);
             } else if (value instanceof Double) {
