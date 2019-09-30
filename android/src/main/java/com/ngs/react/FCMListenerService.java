@@ -49,7 +49,7 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onNewToken(String token) {
         super.onNewToken(token);
         Log.d(LOG_TAG, "On new token: " + token);
-        TokenHolder.get().setToken(token);
+        tts.setToken(token);
     }
 
     @Override

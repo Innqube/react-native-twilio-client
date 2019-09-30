@@ -34,6 +34,11 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
             Log.d(LOG_TAG, "TwilioChatModule -> TwilioTokenService disconnected");
             tts = null;
         }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+            Log.d(LOG_TAG, "TwilioChatModule -> onBindingDied: " + name.flattenToString());
+        }
     };
 
     static ChatClient getChatClient() {
@@ -58,6 +63,8 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @Override
     public void initialize() {
         super.initialize();
+
+        Log.d(LOG_TAG, "Binding TwilioChatTokenService");
 
         Intent intent = new Intent(this.getReactApplicationContext(), TwilioChatTokenService.class);
         this.getReactApplicationContext().bindService(intent, this.serviceConnection, Context.BIND_AUTO_CREATE);
