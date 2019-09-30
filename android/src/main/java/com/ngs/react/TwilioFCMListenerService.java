@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -52,10 +51,22 @@ public class TwilioFCMListenerService extends Service {
 
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(LOG_TAG, "onBind called");
         return binder;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(LOG_TAG, "onCreate called");
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d(LOG_TAG, "onBind");
+        return super.onUnbind(intent);
     }
 
     @Override
