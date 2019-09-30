@@ -48,9 +48,9 @@ RCT_REMAP_METHOD(create, sidOrUniqueName:(NSString *)sidOrUniqueName friendlyNam
         TwilioChatClient *_twilioChatClient = [[RNTwilioChatClient sharedInstance] client];
 
         NSNumber *channelType = nil;
-        if ([type isEqualToString:@"private"]) {
+        if ([type isEqualToString:@"PRIVATE"]) {
             channelType = @(TCHChannelTypePrivate);
-        } else if ([type isEqualToString:@"public"]) {
+        } else if ([type isEqualToString:@"PUBLIC"]) {
             channelType = @(TCHChannelTypePublic);
         }
 
