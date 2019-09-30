@@ -16,7 +16,7 @@ public abstract class PromiseCallbackListener<T> extends CallbackListener<T> {
 
     @Override
     public void onError(ErrorInfo errorInfo) {
-        Log.d(LOG_TAG, "Error creating client: " + errorInfo.getCode() + ": " + errorInfo.getMessage());
+        Log.d(LOG_TAG, "Promise rejected: " + errorInfo.getCode() + ": " + errorInfo.getMessage());
         promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
     }
 
