@@ -1,5 +1,6 @@
 package com.ngs.react;
 
+@Deprecated
 public class TokenHolder {
 
     private static TokenHolder instance;

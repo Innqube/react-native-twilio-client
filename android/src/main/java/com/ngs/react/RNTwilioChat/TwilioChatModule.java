@@ -7,9 +7,8 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 import com.facebook.react.bridge.*;
-import com.ngs.react.FCMListenerService;
 import com.ngs.react.PromiseCallbackListener;
-import com.ngs.react.TokenHolder;
+import com.ngs.react.TwilioFCMListenerService;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
 import com.twilio.chat.StatusListener;
@@ -20,12 +19,14 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
     private static TwilioChatModule INSTANCE;
-    private FCMListenerService fcmListenerService;
+    private TwilioFCMListenerService fcmListenerService;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(LOG_TAG, "FCM Listener Service connected");
-            Log.d("iBinder instanceof ", iBinder.getClass().getName());
+
+            TwilioFCMListenerService.TwilioFCMListenerBinder binder = (TwilioFCMListenerService.TwilioFCMListenerBinder) iBinder;
+            fcmListenerService = binder.getService();
         }
 
         @Override
@@ -58,7 +59,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     public void initialize() {
         super.initialize();
 
-        Intent intent = new Intent(this.getReactApplicationContext(), FCMListenerService.class);
+        Intent intent = new Intent(this.getReactApplicationContext(), TwilioFCMListenerService.class);
         this.getReactApplicationContext().bindService(intent, this.serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -98,9 +99,9 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                         }
                     });
 
-                    Log.d(LOG_TAG, "TokenHolder.get().getToken(): " + TokenHolder.get().getToken());
-                    if (TokenHolder.get().getToken() != null) {
-                        register(TokenHolder.get().getToken(), new PromiseImpl(
+                    Log.d(LOG_TAG, "fcmListenerService.getToken(): " + fcmListenerService.getToken());
+                    if (fcmListenerService.getToken() != null) {
+                        register(fcmListenerService.getToken(), new PromiseImpl(
                                 attrs -> {
                                     WritableMap json = new WritableNativeMap();
                                     json.putString("status", null);

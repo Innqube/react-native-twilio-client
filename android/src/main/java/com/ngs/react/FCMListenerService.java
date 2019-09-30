@@ -4,6 +4,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+@Deprecated
 public class FCMListenerService extends FirebaseMessagingService {
 
     private static final String LOG_TAG = "[Twi-Push]";
