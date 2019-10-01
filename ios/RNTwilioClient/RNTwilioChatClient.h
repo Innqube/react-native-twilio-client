@@ -18,5 +18,6 @@
 @property (nonatomic, retain) NSData *deviceToken;
 
 + (id)sharedInstance;
+- (void)handleNotification:(NSDictionary *)userInfo;
 
 @end

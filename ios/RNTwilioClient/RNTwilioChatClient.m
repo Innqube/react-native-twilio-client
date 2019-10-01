@@ -144,6 +144,18 @@ RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve
     }];
 }
 
+- (void)handleNotification:(NSDictionary *)userInfo {
+    NSLog(@"[IIMobile - RNTwilioChatClient] handleNotification with payload: %@", userInfo);
+
+    [self.client handleNotification:userInfo completion:^(TCHResult *result) {
+        if ([result isSuccessful]) {
+
+        } else {
+
+        }
+    }];
+}
+
 #pragma mark RNTwilioChatClient Delegates
 
 - (void)chatClient:(TwilioChatClient *)client connectionStateUpdated:(TCHClientConnectionState)state {
