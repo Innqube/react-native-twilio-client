@@ -346,6 +346,23 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, sidOrUniqueName:(NSString *)sidOrUn
     }];
 }
 
+RCT_REMAP_METHOD(getMembers, sidOrUniqueName:(NSString *)sidOrUniqueName getMembersResolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSLog(@"[IIMobile - RNTwilioChatChannels] getMembers called with sidOrUniqueName: %@", sidOrUniqueName);
+    [RNTwilioChatChannels loadChannelFromSidOrUniqueName:sidOrUniqueName :^(TCHResult *result, TCHChannel *channel) {
+        if (result.isSuccessful) {
+            [channel.members membersWithCompletion:^(TCHResult* result, TCHMemberPaginator* paginator) {
+                if ([result isSuccessful]) {
+                    resolve([RCTConvert TCHMembers: paginator.items]);
+                } else {
+                    reject(@"get-members-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
+                }
+            }];
+        } else {
+            reject(@"get-members-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
+        }
+    }];
+}
+
 +(BOOL)requiresMainQueueSetup {
     return NO;
 }
