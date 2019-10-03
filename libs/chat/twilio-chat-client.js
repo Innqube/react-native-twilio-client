@@ -86,6 +86,8 @@ class TwilioChatClient {
         .get(channelSidOrUniqueName)
         .then(channel => Promise.resolve(this._buildChatChannel(channel)));
 
+    getDeviceToken = () => RNTwilioChatClient.getDeviceToken();
+
     _buildChatChannel = (channel) => {
         const twilioChatChannel = new TwilioChatChannel(channel);
         this._channels[twilioChatChannel.sid] = twilioChatChannel;
@@ -115,8 +117,6 @@ class TwilioChatClient {
     _initEventListeners = () => {
         NativeAppEventEmitter.addListener('tokenAboutToExpire', this._onTokenAboutToExpire);
         NativeAppEventEmitter.addListener('tokenExpired', this._onTokenAboutToExpire);
-        // EventEmitterHelper.addEventListener('channelJoined', this._onChannelJoined);
-        // EventEmitterHelper.addEventListener('channelInvited', this._onChannelInvited);
         NativeAppEventEmitter.addListener('channelAdded', this._onChannelAdded);
         NativeAppEventEmitter.addListener('channelUpdated', this._onChannelUpdated);
         NativeAppEventEmitter.addListener('channelDeleted', this._onChannelDeleted);
@@ -127,7 +127,6 @@ class TwilioChatClient {
         NativeAppEventEmitter.addListener('addedToChannelNotification', this._onAddedToChannelNotification);
         NativeAppEventEmitter.addListener('invitedToChannelNotification', this._onInvitedToChannelNotification);
         NativeAppEventEmitter.addListener('removedFromChannelNotification', this._onRemovedFromChannelNotification);
-        // EventEmitterHelper.addEventListener('notificationSubscribed', this._onNotificationSubscribed);
         NativeAppEventEmitter.addListener('connectionStateUpdated', this._onConnectionStateUpdated);
         NativeAppEventEmitter.addListener('channelSynchronizationStatusUpdated', this._onChannelSynchronizationStatusUpdated);
 
@@ -146,8 +145,6 @@ class TwilioChatClient {
         this.removeAllListeners('synchronizationStatusUpdated');
         this.removeAllListeners('tokenAboutToExpire');
         this.removeAllListeners('tokenExpired');
-        // EventEmitterHelper.removeEventListener('channelJoined', this._onChannelJoined);
-        // EventEmitterHelper.removeEventListener('channelInvited', this._onChannelInvited);
         this.removeAllListeners('channelAdded');
         this.removeAllListeners('channelUpdated');
         this.removeAllListeners('channelDeleted');
@@ -198,14 +195,14 @@ class TwilioChatClient {
 
         this._eventEmitter.emit('channelSynchronizationStatusUpdated', payload);
     };
-    _onMessageAdded = (payload) => this._channels[payload.channelSid]._onMessageAdded(payload.message);
-    _onMessageDeleted = (payload) => this._channels[payload.channelSid]._onMessageDeleted(payload.message);
-    _onMessageUpdated = (payload) => this._channels[payload.channelSid]._onMessageUpdated(payload.message);
-    _onMemberAdded = (payload) => this._channels[payload.channelSid]._onMemberAdded(payload.message);
-    _onMemberUpdated = (payload) => this._channels[payload.channelSid]._onMemberUpdated(payload.message);
-    _onMemberDeleted = (payload) => this._channels[payload.channelSid]._onMemberDeleted(payload.message);
-    _onTypingStarted = (payload) => this._channels[payload.channelSid]._onTypingStarted(payload.member);
-    _onTypingEnded = (payload) => this._channels[payload.channelSid]._onTypingEnded(payload.member);
+    _onMessageAdded = (payload) => this._channels[payload.channelSid]?._onMessageAdded(payload.message);
+    _onMessageDeleted = (payload) => this._channels[payload.channelSid]?._onMessageDeleted(payload.message);
+    _onMessageUpdated = (payload) => this._channels[payload.channelSid]?._onMessageUpdated(payload.message);
+    _onMemberAdded = (payload) => this._channels[payload.channelSid]?._onMemberAdded(payload.message);
+    _onMemberUpdated = (payload) => this._channels[payload.channelSid]?._onMemberUpdated(payload.message);
+    _onMemberDeleted = (payload) => this._channels[payload.channelSid]?._onMemberDeleted(payload.message);
+    _onTypingStarted = (payload) => this._channels[payload.channelSid]?._onTypingStarted(payload.member);
+    _onTypingEnded = (payload) => this._channels[payload.channelSid]?._onTypingEnded(payload.member);
 
     _onError = (payload) => dispatchEvent(new CustomEvent('error', {detail: payload}));
 }

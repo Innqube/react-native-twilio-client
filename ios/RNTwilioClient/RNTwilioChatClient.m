@@ -89,7 +89,7 @@ RCT_REMAP_METHOD(getPublicChannels, lpublic_channels_resolver:(RCTPromiseResolve
                                       }];
             }
             resolve(channels);
-        } else {
+        } else {
             NSLog(@"[IIMobile - RNTwilioChatClient] getPublicChannels failed with error: %@", result.error);
             reject(@"get-public-channels-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
         }
@@ -144,16 +144,30 @@ RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve
     }];
 }
 
-- (void)handleNotification:(NSDictionary *)userInfo {
-    NSLog(@"[IIMobile - RNTwilioChatClient] handleNotification with payload: %@", userInfo);
+RCT_REMAP_METHOD(getDeviceToken, deviceResolver: (RCTPromiseResolveBlock)resolve
+                                       rejecter:(RCTPromiseRejectBlock)reject) {
+    NSString* deviceTokenString = [self stringFromDeviceToken:self.deviceToken];
 
-    [self.client handleNotification:userInfo completion:^(TCHResult *result) {
-        if ([result isSuccessful]) {
+    NSLog(@"[IIMobile - RNTwilioChatClient][getDeviceToken] %@", deviceTokenString);
 
-        } else {
+    if (self.deviceToken != nil) {
+        resolve(deviceTokenString);
+    } else {
+        reject(@"get-device-token-error", @"Device token is null", nil);
+    }
+}
 
-        }
-    }];
+- (NSString *)stringFromDeviceToken:(NSData *)deviceToken {
+    NSUInteger length = deviceToken.length;
+    if (length == 0) {
+        return nil;
+    }
+    const unsigned char *buffer = deviceToken.bytes;
+    NSMutableString *hexString  = [NSMutableString stringWithCapacity:(length * 2)];
+    for (int i = 0; i < length; ++i) {
+        [hexString appendFormat:@"%02x", buffer[i]];
+    }
+    return [hexString copy];
 }
 
 #pragma mark RNTwilioChatClient Delegates
