@@ -11,6 +11,7 @@ import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
+import com.ngs.react.RNTwilioClient.BuildConfig;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

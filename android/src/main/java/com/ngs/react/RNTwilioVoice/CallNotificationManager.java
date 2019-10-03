@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.ngs.react.RNTwilioClient.BuildConfig;
 import com.twilio.voice.CallInvite;
 
 import java.util.List;
