@@ -1,4 +1,4 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
 import android.support.annotation.Nullable;
 import android.util.Log;

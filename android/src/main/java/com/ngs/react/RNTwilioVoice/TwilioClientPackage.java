@@ -1,4 +1,4 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

@@ -1,4 +1,4 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
 import android.Manifest;
 import android.app.Activity;
@@ -28,7 +28,7 @@ import static com.ngs.react.RNTwilioClient.EventManager.*;
 
 public class TwilioClientModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
-    public static String TAG = "RNTwilioClient";
+    public static String TAG = "RNTwilioVoiceClient";
     private static final int MIC_PERMISSION_REQUEST_CODE = 1;
     private AudioManager audioManager;
     private int originalAudioMode = AudioManager.MODE_NORMAL;
