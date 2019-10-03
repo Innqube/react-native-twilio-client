@@ -305,6 +305,25 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         });
     }
 
+    @ReactMethod
+    public void getMembers(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getMembers");
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            JSONArray jsonArray = new JSONArray();
+            try {
+                for (Member member : channel.getMembers().getMembersList()) {
+                    JSONObject jsonObject = Utils.memberToJsonObject(member);
+                    jsonArray.put(jsonObject);
+                }
+            } catch (JSONException e) {
+                promise.reject(e);
+            }
+
+            promise.resolve(jsonArray);
+        });
+    }
+
     private class MessageListPromiseCallbackListener extends PromiseCallbackListener<List<Message>> {
 
         public MessageListPromiseCallbackListener(Promise promise) {
@@ -342,7 +361,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", message.getChannelSid());
             wrapper.putMap("message", messageMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"messageAdded", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "messageAdded", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -361,7 +380,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("reason", updateReason.name());
             wrapper.putMap("message", messageMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"messageUpdated", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "messageUpdated", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -379,7 +398,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", message.getChannelSid());
             wrapper.putMap("message", messageMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"messageDeleted", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "messageDeleted", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -397,7 +416,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", member.getChannel().getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"memberAdded", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "memberAdded", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -416,7 +435,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putMap("member", memberMap);
             wrapper.putString("reason", updateReason.name());
 
-            Utils.sendEvent(getReactApplicationContext() ,"memberUpdated", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "memberUpdated", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -434,7 +453,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", member.getChannel().getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"memberDeleted", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "memberDeleted", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -452,7 +471,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", channel.getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"typingStarted", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "typingStarted", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -470,7 +489,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", channel.getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"typingEnded", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "typingEnded", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -482,6 +501,6 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         WritableMap wrapper = new WritableNativeMap();
         wrapper.putString("channelSid", channel.getSid());
         wrapper.putString("status", channel.getSynchronizationStatus().name());
-        Utils.sendEvent(getReactApplicationContext() ,"channelSynchronizationStatusUpdated", wrapper);
+        Utils.sendEvent(getReactApplicationContext(), "channelSynchronizationStatusUpdated", wrapper);
     }
 }
