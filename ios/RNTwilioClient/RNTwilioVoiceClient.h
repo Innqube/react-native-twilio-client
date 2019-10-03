@@ -1,5 +1,5 @@
 //
-//  RNTwilioClient.m
+//  RNTwilioVoiceClient.m
 //  Interpreter Intelligence
 //
 //  Created by Enrique Viard.
@@ -11,7 +11,7 @@
 #import <React/RCTEventEmitter.h>
 #import <PushKit/PushKit.h>
 
-@interface RNTwilioClient: NSObject<RCTBridgeModule>
+@interface RNTwilioVoiceClient: NSObject<RCTBridgeModule>
 -(void)didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type withState:(NSString *)pending;
 -(void)didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type;
 -(void)initPushRegistry;

@@ -7,11 +7,11 @@ import {
 const ANDROID = 'android'
 const IOS = 'ios'
 
-const {RNTwilioClient, RNEventEmitterHelper} = NativeModules;
+const {RNTwilioVoiceClient, RNEventEmitterHelper} = NativeModules;
 
 const NativeAppEventEmitter = new NativeEventEmitter(RNEventEmitterHelper);
 
-    // Supported events
+// Supported events
 const _eventHandlers = {
     deviceReady: new Map(),
     deviceNotReady: new Map(),
@@ -37,7 +37,7 @@ const TwilioVoiceClient = {
             }
         };
 
-        const result = await RNTwilioClient.initWithAccessToken(token)
+        const result = await RNTwilioVoiceClient.initWithAccessToken(token)
         if (Platform.OS === IOS) {
             return {
                 initialized: true,
@@ -46,46 +46,46 @@ const TwilioVoiceClient = {
         return result
     },
     connect(params = {}) {
-        return RNTwilioClient.connect(params)
+        return RNTwilioVoiceClient.connect(params)
     },
     disconnect(uuid) {
-        RNTwilioClient.disconnect(uuid)
+        RNTwilioVoiceClient.disconnect(uuid)
     },
     accept() {
         if (Platform.OS === IOS) {
             return
         }
-        RNTwilioClient.accept()
+        RNTwilioVoiceClient.accept()
     },
     reject() {
         if (Platform.OS === IOS) {
             return
         }
-        RNTwilioClient.reject()
+        RNTwilioVoiceClient.reject()
     },
     ignore() {
         if (Platform.OS === IOS) {
             return
         }
-        RNTwilioClient.ignore()
+        RNTwilioVoiceClient.ignore()
     },
     setMuted(isMuted) {
-        RNTwilioClient.setMuted(isMuted)
+        RNTwilioVoiceClient.setMuted(isMuted)
     },
     setSpeakerPhone(value) {
-        RNTwilioClient.setSpeakerPhone(value)
+        RNTwilioVoiceClient.setSpeakerPhone(value)
     },
     sendDigits(digits) {
-        RNTwilioClient.sendDigits(digits)
+        RNTwilioVoiceClient.sendDigits(digits)
     },
     requestPermissions(senderId) {
         if (Platform.OS === ANDROID) {
-            RNTwilioClient.requestPermissions(senderId)
+            RNTwilioVoiceClient.requestPermissions(senderId)
         }
     },
     unregister() {
         if (Platform.OS === IOS) {
-            RNTwilioClient.unregister()
+            RNTwilioVoiceClient.unregister()
         }
     },
     addEventListener(type, handler) {
@@ -104,13 +104,13 @@ const TwilioVoiceClient = {
         _eventHandlers[type].delete(handler)
     },
     log(message) {
-        RNTwilioClient.sendMessage(message)
+        RNTwilioVoiceClient.sendMessage(message)
     },
     deviceReadyForCalls() {
-        RNTwilioClient.deviceReadyForCalls()
+        RNTwilioVoiceClient.deviceReadyForCalls()
     },
     getDeviceToken() {
-        return RNTwilioClient.getDeviceToken();
+        return RNTwilioVoiceClient.getDeviceToken();
     }
 }
 
