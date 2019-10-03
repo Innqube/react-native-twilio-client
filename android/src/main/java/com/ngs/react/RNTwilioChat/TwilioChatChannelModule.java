@@ -311,16 +311,18 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             JSONArray jsonArray = new JSONArray();
+            WritableArray wArray = new WritableNativeArray();
             try {
                 for (Member member : channel.getMembers().getMembersList()) {
                     JSONObject jsonObject = Utils.memberToJsonObject(member);
                     jsonArray.put(jsonObject);
                 }
+                wArray = Utils.convertJsonToArray(jsonArray);
             } catch (JSONException e) {
                 promise.reject(e);
             }
 
-            promise.resolve(jsonArray);
+            promise.resolve(wArray);
         });
     }
 
