@@ -179,4 +179,10 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         });
     }
 
+    @ReactMethod
+    public void getDeviceToken(final Promise promise) {
+        Log.d(LOG_TAG, "getDeviceToken");
+        promise.resolve(tts.getToken());
+    }
+
 }
