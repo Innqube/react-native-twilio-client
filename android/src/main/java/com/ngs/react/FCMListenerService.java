@@ -15,6 +15,8 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ngs.react.RNTwilioClient.R;
 
+import java.util.Random;
+
 public class FCMListenerService extends FirebaseMessagingService {
 
     private static final String CHANNEL_ID = "II";
@@ -75,11 +77,11 @@ public class FCMListenerService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_call_black_24dp)
                 .setContentTitle(remoteMessage.getData().get("ii_author"))
-                .setContentText("ii_body")
+                .setContentText(remoteMessage.getData().get("ii_body"))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify((int)(Math.random() * 1000), builder.build());
+        notificationManager.notify(Math.abs(new Random().nextInt()), builder.build());
     }
 
     private String remoteMessageToString(RemoteMessage msg) {
