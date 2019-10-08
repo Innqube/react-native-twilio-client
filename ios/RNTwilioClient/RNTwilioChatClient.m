@@ -147,14 +147,17 @@ RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve
 RCT_REMAP_METHOD(getDeviceToken, deviceResolver: (RCTPromiseResolveBlock)resolve
                                        rejecter:(RCTPromiseRejectBlock)reject) {
     NSString* deviceTokenString = [self stringFromDeviceToken:self.deviceToken];
-
     NSLog(@"[IIMobile - RNTwilioChatClient][getDeviceToken] %@", deviceTokenString);
 
-    if (self.deviceToken != nil) {
-        resolve(deviceTokenString);
-    } else {
-        reject(@"get-device-token-error", @"Device token is null", nil);
-    }
+    #if TARGET_IPHONE_SIMULATOR
+        resolve(@"iphone-simulator-token");
+    #else
+        if (self.deviceToken != nil) {
+            resolve(deviceTokenString);
+        } else {
+            reject(@"get-device-token-error", @"Device token is null", nil);
+        }
+    #endif
 }
 
 - (NSString *)stringFromDeviceToken:(NSData *)deviceToken {
