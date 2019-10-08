@@ -113,7 +113,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void join(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "join");
+        Log.d(LOG_TAG, "join channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.join(new StatusListener() {
                 @Override
@@ -132,7 +132,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void leave(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "leave");
+        Log.d(LOG_TAG, "leave channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.leave(new StatusListener() {
                 @Override
@@ -151,13 +151,13 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void typing(String channelSidOrUniqueName) {
-        Log.d(LOG_TAG, "typing");
+        Log.d(LOG_TAG, "typing in channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, Channel::typing);
     }
 
     @ReactMethod
     public void getUnconsumedMessagesCount(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "getUnconsumedMessagesCount");
+        Log.d(LOG_TAG, "getUnconsumedMessagesCount for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getUnconsumedMessagesCount(new PromiseCallbackListener<Long>(promise) {
                 @Override
@@ -171,7 +171,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void getMessagesCount(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "getMessagesCount");
+        Log.d(LOG_TAG, "getMessagesCount for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessagesCount(new PromiseCallbackListener<Long>(promise) {
                 @Override
@@ -185,7 +185,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void getMembersCount(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "getMembersCount");
+        Log.d(LOG_TAG, "getMembersCount for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMembersCount(new PromiseCallbackListener<Long>(promise) {
                 @Override
@@ -199,7 +199,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void getLastMessages(String channelSidOrUniqueName, final Integer count, final Promise promise) {
-        Log.d(LOG_TAG, "getMessages");
+        Log.d(LOG_TAG, "getMessages for channel: " + channelSidOrUniqueName);
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessages().getLastMessages(count, new MessageListPromiseCallbackListener(promise));
@@ -208,7 +208,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void getMessagesBefore(String channelSidOrUniqueName, final Integer index, final Integer count, final Promise promise) {
-        Log.d(LOG_TAG, "getMessagesBefore");
+        Log.d(LOG_TAG, "getMessagesBefore for channel: " + channelSidOrUniqueName);
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessages().getMessagesBefore(index, count, new MessageListPromiseCallbackListener(promise));
@@ -217,7 +217,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void getMessagesAfter(String channelSidOrUniqueName, final Integer index, final Integer count, final Promise promise) {
-        Log.d(LOG_TAG, "getMessagesAfter");
+        Log.d(LOG_TAG, "getMessagesAfter for channel: " + channelSidOrUniqueName);
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessages().getMessagesAfter(index, count, new MessageListPromiseCallbackListener(promise));
@@ -226,6 +226,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void setNoMessagesConsumed(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessages().setNoMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
                 @Override
@@ -238,6 +239,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void setAllMessageConsumed(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "setAllMessageConsumed for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessages().setAllMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
                 @Override
@@ -250,6 +252,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void setLastConsumedMessage(String channelSidOrUniqueName, Integer index, final Promise promise) {
+        Log.d(LOG_TAG, "setLastConsumedMessage for channel: " + channelSidOrUniqueName + ", index: " + index);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessages().setLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
                 @Override
@@ -262,6 +265,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void advanceLastConsumedMessage(String channelSidOrUniqueName, Integer index, final Promise promise) {
+        Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName + ", index: " + index);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             channel.getMessages().advanceLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
                 @Override
@@ -274,6 +278,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void getLastConsumedMessageIndex(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             Long index = channel.getMessages().getLastConsumedMessageIndex();
             promise.resolve(index != null ? index.toString() : null);
@@ -302,6 +307,27 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                                 }
                             }
                     );
+        });
+    }
+
+    @ReactMethod
+    public void getMembers(String channelSidOrUniqueName, final Promise promise) {
+        Log.d(LOG_TAG, "getMembers for channel: " + channelSidOrUniqueName);
+
+        getChannel(channelSidOrUniqueName, (Channel channel) -> {
+            JSONArray jsonArray = new JSONArray();
+            WritableArray wArray = new WritableNativeArray();
+            try {
+                for (Member member : channel.getMembers().getMembersList()) {
+                    JSONObject jsonObject = Utils.memberToJsonObject(member);
+                    jsonArray.put(jsonObject);
+                }
+                wArray = Utils.convertJsonToArray(jsonArray);
+            } catch (JSONException e) {
+                promise.reject(e);
+            }
+
+            promise.resolve(wArray);
         });
     }
 
@@ -342,7 +368,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", message.getChannelSid());
             wrapper.putMap("message", messageMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"messageAdded", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "messageAdded", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -361,7 +387,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("reason", updateReason.name());
             wrapper.putMap("message", messageMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"messageUpdated", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "messageUpdated", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -379,7 +405,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", message.getChannelSid());
             wrapper.putMap("message", messageMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"messageDeleted", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "messageDeleted", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -397,7 +423,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", member.getChannel().getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"memberAdded", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "memberAdded", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -416,7 +442,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putMap("member", memberMap);
             wrapper.putString("reason", updateReason.name());
 
-            Utils.sendEvent(getReactApplicationContext() ,"memberUpdated", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "memberUpdated", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -434,7 +460,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", member.getChannel().getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"memberDeleted", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "memberDeleted", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -452,7 +478,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", channel.getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"typingStarted", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "typingStarted", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -470,7 +496,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
             wrapper.putString("channelSid", channel.getSid());
             wrapper.putMap("member", memberMap);
 
-            Utils.sendEvent(getReactApplicationContext() ,"typingEnded", wrapper);
+            Utils.sendEvent(getReactApplicationContext(), "typingEnded", wrapper);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Could not handle event", e);
         }
@@ -482,6 +508,6 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         WritableMap wrapper = new WritableNativeMap();
         wrapper.putString("channelSid", channel.getSid());
         wrapper.putString("status", channel.getSynchronizationStatus().name());
-        Utils.sendEvent(getReactApplicationContext() ,"channelSynchronizationStatusUpdated", wrapper);
+        Utils.sendEvent(getReactApplicationContext(), "channelSynchronizationStatusUpdated", wrapper);
     }
 }

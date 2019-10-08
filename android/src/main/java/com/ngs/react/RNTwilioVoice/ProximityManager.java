@@ -8,16 +8,16 @@ import android.hardware.SensorManager;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
+import com.ngs.react.RNTwilioClient.BuildConfig;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_PROXIMITY;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.TAG;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_PROXIMITY;
+import static com.ngs.react.RNTwilioVoice.TwilioClientModule.TAG;
 
 public class ProximityManager {
 

@@ -24,7 +24,7 @@ import com.twilio.voice.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ngs.react.RNTwilioClient.EventManager.*;
+import static com.ngs.react.RNTwilioVoice.EventManager.*;
 
 public class TwilioClientModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
