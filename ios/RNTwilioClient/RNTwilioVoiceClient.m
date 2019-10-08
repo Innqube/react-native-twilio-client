@@ -171,15 +171,19 @@ RCT_EXPORT_METHOD(unregister) {
     }];
 }
 
-RCT_REMAP_METHOD(getDeviceToken, res: (RCTPromiseResolveBlock)resolve1
-                 rej:(RCTPromiseRejectBlock)reject1) {
+RCT_REMAP_METHOD(getDeviceToken, tokenResolver: (RCTPromiseResolveBlock)resolve
+                 rej:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioVoiceClient][getDeviceToken] %@", self.deviceTokenString);
 
-    if (self.deviceTokenString != nil) {
-        resolve1(self.deviceTokenString);
-    } else {
-        reject1(@"error", @"Device token is null", nil);
-    }
+    #if TARGET_IPHONE_SIMULATOR
+        resolve(@"iphone-simulator-token");
+    #else
+        if (self.deviceTokenString != nil) {
+            resolve(self.deviceTokenString);
+        } else {
+            reject(@"error", @"Device token is null", nil);
+        }
+    #endif
 }
 
 RCT_REMAP_METHOD(getActiveCall,
