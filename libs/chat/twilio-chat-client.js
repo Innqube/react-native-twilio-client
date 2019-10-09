@@ -70,7 +70,7 @@ class TwilioChatClient {
 
     register = (token) => Platform.OS === 'ios' ? RNTwilioChatClient.register() : RNTwilioChatClient.register(token);
 
-    unRegister = (token) => Platform.OS === 'ios' ? RNTwilioChatClient.unRegister() : RNTwilioChatClient.unRegister(token);
+    unregister = (token) => Platform.OS === 'ios' ? RNTwilioChatClient.unregister() : RNTwilioChatClient.unregister(token);
 
     createChannel = (uniqueName, friendlyName, type = 0, attributes = {}) => RNTwilioChatChannels.create(uniqueName, friendlyName, type, attributes);
 
