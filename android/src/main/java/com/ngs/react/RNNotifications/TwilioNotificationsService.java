@@ -2,10 +2,11 @@ package com.ngs.react.RNNotifications;
 
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -36,15 +37,14 @@ public class TwilioNotificationsService extends Service {
         Log.d(LOG_TAG, "TwilioNotificationsService started");
 
         try {
-            ApplicationInfo ai = getPackageManager()
-                    .getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+            ComponentName componentName = new ComponentName(this, this.getClass());
+            ServiceInfo ai = getPackageManager().getServiceInfo(componentName, PackageManager.GET_META_DATA);
 
             for (String key : ai.metaData.keySet()) {
                 Log.d(LOG_TAG, key + ": " + ai.metaData.get(key));
             }
 
-
-            String delegateClassName = ai.metaData.getString("delegate");
+            String delegateClassName = ai.metaData.getString("com.ngs.react.RNNotifications.DELEGATE");
 
             Log.d(LOG_TAG, "Delegate class: " + delegateClassName);
 
