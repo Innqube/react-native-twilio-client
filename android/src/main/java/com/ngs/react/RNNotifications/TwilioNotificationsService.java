@@ -1,11 +1,15 @@
 package com.ngs.react.RNNotifications;
 
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class TwilioNotificationsService extends Service {
 
@@ -31,10 +35,12 @@ public class TwilioNotificationsService extends Service {
 
         Class<MessageReceivedDelegate> delegateClass = (Class<MessageReceivedDelegate>) intent.getExtras().getSerializable("delegate");
         try {
-            delegate = delegateClass.newInstance();
+            delegate = delegateClass
+                    .getConstructor(Context.class, NotificationManager.class)
+                    .newInstance(getApplicationContext(), getSystemService(NotificationManager.class));
             delegate.createNotificationChannel();
             Log.e(LOG_TAG, "MessageReceivedDelegate: " + delegateClass.getName() + " instantiated");
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             Log.e(LOG_TAG, "Could not instantiate MessageReceivedDelegate: " + delegateClass.getName());
         }
 
