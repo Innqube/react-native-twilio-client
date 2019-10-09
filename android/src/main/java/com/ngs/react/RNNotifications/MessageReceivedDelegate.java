@@ -10,6 +10,8 @@ public interface MessageReceivedDelegate extends Serializable {
 
     void createNotificationChannel();
 
+    void createNotificationGroup();
+
     void onMessageReceived(RemoteMessage remoteMessage);
 
     NotificationManager getNotificationManager();

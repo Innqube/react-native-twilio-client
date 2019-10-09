@@ -53,6 +53,7 @@ public class TwilioNotificationsService extends Service {
                     .getConstructor(Context.class, NotificationManager.class)
                     .newInstance(getApplicationContext(), getSystemService(NotificationManager.class));
             delegate.createNotificationChannel();
+            delegate.createNotificationGroup();
             Log.e(LOG_TAG, "MessageReceivedDelegate: " + delegateClass.getName() + " instantiated");
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | PackageManager.NameNotFoundException | ClassNotFoundException e) {
             Log.e(LOG_TAG, "Could not instantiate MessageReceivedDelegate", e);

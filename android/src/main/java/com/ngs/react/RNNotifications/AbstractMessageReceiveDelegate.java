@@ -30,4 +30,9 @@ public abstract class AbstractMessageReceiveDelegate implements MessageReceivedD
     public void setContext(Context context) {
         this.context = context;
     }
+
+    @Override
+    public void createNotificationGroup() {
+
+    }
 }
