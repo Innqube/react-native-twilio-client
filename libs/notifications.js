@@ -14,6 +14,13 @@ class Notifications {
 
     _eventEmitter;
 
+    static getInstance() {
+        if (!this._instance) {
+            this._instance = new Notifications();
+        }
+        return this._instance;
+    }
+
     constructor(props) {
         this._eventEmitter = new EventEmitter();
         this._initEventListeners();
