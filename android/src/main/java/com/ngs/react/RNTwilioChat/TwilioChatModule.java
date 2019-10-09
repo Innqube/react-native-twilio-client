@@ -1,5 +1,10 @@
 package com.ngs.react.RNTwilioChat;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
@@ -15,6 +20,26 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
     private static TwilioChatModule INSTANCE;
     private TwilioNotificationsService tts;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.d(LOG_TAG, "TwilioChatModule -> TwilioTokenService connected");
+
+            TwilioNotificationsService.TwilioFCMListenerBinder binder = (TwilioNotificationsService.TwilioFCMListenerBinder) iBinder;
+            tts = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            Log.d(LOG_TAG, "TwilioChatModule -> TwilioTokenService disconnected");
+            tts = null;
+        }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+            Log.d(LOG_TAG, "TwilioChatModule -> onBindingDied: " + name.flattenToString());
+        }
+    };
 
     static ChatClient getChatClient() {
         return CHAT_CLIENT;
@@ -38,6 +63,11 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @Override
     public void initialize() {
         super.initialize();
+
+        Log.d(LOG_TAG, "Binding TwilioChatTokenService");
+
+        Intent intent = new Intent(this.getReactApplicationContext(), TwilioNotificationsService.class);
+        this.getReactApplicationContext().bindService(intent, this.serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @ReactMethod
