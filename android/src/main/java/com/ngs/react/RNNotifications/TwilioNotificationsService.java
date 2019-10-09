@@ -38,6 +38,12 @@ public class TwilioNotificationsService extends Service {
         try {
             ApplicationInfo ai = getPackageManager()
                     .getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+
+            for (String key : ai.metaData.keySet()) {
+                Log.d(LOG_TAG, key + ": " + ai.metaData.get(key));
+            }
+
+
             String delegateClassName = ai.metaData.getString("delegate");
 
             Log.d(LOG_TAG, "Delegate class: " + delegateClassName);
