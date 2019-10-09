@@ -12,9 +12,9 @@ import java.util.List;
 
 public class NotificationsPackage implements ReactPackage {
 
-    private Class<MessageReceivedDelegate> delegateClass;
+    private Class<? extends MessageReceivedDelegate> delegateClass;
 
-    public NotificationsPackage(Class<MessageReceivedDelegate> delegateClass) {
+    public NotificationsPackage(Class<? extends MessageReceivedDelegate> delegateClass) {
         this.delegateClass = delegateClass;
     }
 

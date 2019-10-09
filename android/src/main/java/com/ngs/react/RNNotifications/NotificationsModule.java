@@ -9,9 +9,9 @@ import com.facebook.react.bridge.ReactMethod;
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
     private static final String LOG_TAG = "[IIMobile-Notif]";
-    private Class<MessageReceivedDelegate> delegateClass;
+    private Class<? extends MessageReceivedDelegate> delegateClass;
 
-    public NotificationsModule(ReactApplicationContext reactContext, Class<MessageReceivedDelegate> delegateClass) {
+    public NotificationsModule(ReactApplicationContext reactContext, Class<? extends MessageReceivedDelegate> delegateClass) {
         super(reactContext);
         this.delegateClass = delegateClass;
     }
