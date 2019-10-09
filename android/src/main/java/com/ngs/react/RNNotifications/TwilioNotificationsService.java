@@ -4,6 +4,8 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -33,15 +35,21 @@ public class TwilioNotificationsService extends Service {
         int res = super.onStartCommand(intent, flags, startId);
         Log.d(LOG_TAG, "TwilioNotificationsService started");
 
-        Class<MessageReceivedDelegate> delegateClass = (Class<MessageReceivedDelegate>) intent.getExtras().getSerializable("delegate");
         try {
+            ApplicationInfo ai = getPackageManager()
+                    .getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+            String delegateClassName = ai.metaData.getString("delegate");
+
+            Log.d(LOG_TAG, "Delegate class: " + delegateClassName);
+
+            Class<? extends MessageReceivedDelegate> delegateClass = (Class<? extends MessageReceivedDelegate>) Class.forName(delegateClassName);
             delegate = delegateClass
                     .getConstructor(Context.class, NotificationManager.class)
                     .newInstance(getApplicationContext(), getSystemService(NotificationManager.class));
             delegate.createNotificationChannel();
             Log.e(LOG_TAG, "MessageReceivedDelegate: " + delegateClass.getName() + " instantiated");
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            Log.e(LOG_TAG, "Could not instantiate MessageReceivedDelegate: " + delegateClass.getName());
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | PackageManager.NameNotFoundException | ClassNotFoundException e) {
+            Log.e(LOG_TAG, "Could not instantiate MessageReceivedDelegate", e);
         }
 
         return res;

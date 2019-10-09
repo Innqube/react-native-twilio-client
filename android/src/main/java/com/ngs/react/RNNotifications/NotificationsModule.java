@@ -9,11 +9,9 @@ import com.facebook.react.bridge.ReactMethod;
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
     private static final String LOG_TAG = "[IIMobile-Notif]";
-    private Class<? extends MessageReceivedDelegate> delegateClass;
 
-    public NotificationsModule(ReactApplicationContext reactContext, Class<? extends MessageReceivedDelegate> delegateClass) {
+    public NotificationsModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        this.delegateClass = delegateClass;
     }
 
     @Override
@@ -26,8 +24,6 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         Log.d(LOG_TAG, "Starting FCM service");
 
         Intent tnsIntent = new Intent(this.getReactApplicationContext(), TwilioNotificationsService.class);
-        tnsIntent.putExtra("delegate", delegateClass);
-
         this.getReactApplicationContext().startService(tnsIntent);
     }
 
