@@ -24,6 +24,7 @@ class Notifications {
     };
 
     onNotificationReceived = (payload) => this._eventEmitter.emit('notificationReceived', payload);
+    startService = () => RNNotificationsModule.startService();
 
     // Events delegation
     addListener = (name, handler) => this._eventEmitter.addListener(name, handler);

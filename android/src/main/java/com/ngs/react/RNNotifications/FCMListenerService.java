@@ -1,40 +1,32 @@
-package com.ngs.react;
+package com.ngs.react.RNNotifications;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.ngs.react.RNTwilioClient.R;
-
-import java.util.Random;
 
 public class FCMListenerService extends FirebaseMessagingService {
 
-    private static final String CHANNEL_ID = "II";
-    private TwilioChatTokenService tts;
+//    private static final String CHANNEL_ID = "II";
+    private TwilioNotificationsService tns;
     private static final String LOG_TAG = "[Twi-Push]";
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(LOG_TAG, "FCMListenerService -> TwilioTokenService connected");
 
-            TwilioChatTokenService.TwilioFCMListenerBinder binder = (TwilioChatTokenService.TwilioFCMListenerBinder) iBinder;
-            tts = binder.getService();
+            TwilioNotificationsService.TwilioFCMListenerBinder binder = (TwilioNotificationsService.TwilioFCMListenerBinder) iBinder;
+            tns = binder.getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             Log.d(LOG_TAG, "FCMListenerService -> TwilioTokenService disconnected");
-            tts = null;
+            tns = null;
         }
     };
 
@@ -46,13 +38,11 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onCreate() {
         super.onCreate();
 
-        createNotificationChannel();
-
         Log.d(LOG_TAG, "Starting twilio chat token service");
-        Intent ttsIntent = new Intent(getApplicationContext(), TwilioChatTokenService.class);
+        Intent ttsIntent = new Intent(getApplicationContext(), TwilioNotificationsService.class);
         startService(ttsIntent);
 
-        Intent intent = new Intent(getApplicationContext(), TwilioChatTokenService.class);
+        Intent intent = new Intent(getApplicationContext(), TwilioNotificationsService.class);
         getApplicationContext().bindService(intent, this.serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -61,8 +51,8 @@ public class FCMListenerService extends FirebaseMessagingService {
         super.onNewToken(token);
         Log.d(LOG_TAG, "On new token: " + token);
 
-        if (tts != null) {
-            tts.setToken(token);
+        if (tns != null) {
+            tns.setToken(token);
         } else {
             Log.w(LOG_TAG, "Twilio token service was null!");
         }
@@ -72,7 +62,12 @@ public class FCMListenerService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        Log.d(LOG_TAG, "Received push notification: " + remoteMessageToString(remoteMessage));
+        if (this.tns != null) {
+            this.tns.onMessageReceived(remoteMessage);
+        } else {
+            Log.w(LOG_TAG, "TwilioNotificationsService not instantiated!");
+        }
+        /*Log.d(LOG_TAG, "Received push notification: " + remoteMessageToString(remoteMessage));
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_call_black_24dp)
@@ -81,18 +76,18 @@ public class FCMListenerService extends FirebaseMessagingService {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(Math.abs(new Random().nextInt()), builder.build());
+        notificationManager.notify(Math.abs(new Random().nextInt()), builder.build());*/
     }
 
-    private String remoteMessageToString(RemoteMessage msg) {
+/*    private String remoteMessageToString(RemoteMessage msg) {
         return "RemoteMessage[from:" + msg.getFrom() + ", " +
                 "messageId: " + msg.getMessageId() + ", " +
                 "messageType: " + msg.getMessageType() + ", " +
                 "to: " + msg.getTo() + ", " +
                 "data: " + (msg.getData() == null ? "null" : msg.getData().toString()) + "]";
-    }
+    }*/
 
-    private void createNotificationChannel() {
+/*    private void createNotificationChannel() {
         Log.d(LOG_TAG, "Creating notification channel");
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -107,7 +102,7 @@ public class FCMListenerService extends FirebaseMessagingService {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-    }
+    }*/
 
 
 }

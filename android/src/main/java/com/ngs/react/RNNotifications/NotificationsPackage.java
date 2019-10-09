@@ -12,10 +12,16 @@ import java.util.List;
 
 public class NotificationsPackage implements ReactPackage {
 
+    private Class<MessageReceivedDelegate> delegateClass;
+
+    public NotificationsPackage(Class<MessageReceivedDelegate> delegateClass) {
+        this.delegateClass = delegateClass;
+    }
+
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> list = new ArrayList<>();
-        list.add(new NotificationsModule(reactContext));
+        list.add(new NotificationsModule(reactContext, delegateClass));
         return list;
     }
 
