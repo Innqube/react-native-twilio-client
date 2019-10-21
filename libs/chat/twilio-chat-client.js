@@ -72,7 +72,9 @@ class TwilioChatClient {
 
     unregister = (token) => Platform.OS === 'ios' ? RNTwilioChatClient.unregister() : RNTwilioChatClient.unregister(token);
 
-    createChannel = (uniqueName, friendlyName, type = 0, attributes = {}) => RNTwilioChatChannels.create(uniqueName, friendlyName, type, attributes);
+    createChannel = (uniqueName, friendlyName, type = 0, attributes = {}) => RNTwilioChatChannels
+        .create(uniqueName, friendlyName, type, attributes)
+        .then(channel => Promise.resolve(this._buildChatChannel(channel)));
 
     getPublicChannels = () => RNTwilioChatClient
         .getPublicChannels()
