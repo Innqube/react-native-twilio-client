@@ -264,7 +264,7 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
   return @{
            @"sid": channel.sid,
            @"friendlyName": RCTNullIfNil(channel.friendlyName),
-           @"uniqueName": channel.uniqueName,
+           @"uniqueName": RCTNullIfNil(channel.uniqueName),
            @"status": @(channel.status),
            @"type": @(channel.type),
            @"attributes": RCTNullIfNil(channel.attributes),
