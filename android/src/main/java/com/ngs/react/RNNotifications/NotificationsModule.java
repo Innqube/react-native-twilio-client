@@ -1,11 +1,10 @@
 package com.ngs.react.RNNotifications;
 
+import android.content.Intent;
 import android.util.Log;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.messaging.RemoteMessage;
-import com.ngs.react.Utils;
+import com.facebook.react.bridge.ReactMethod;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -20,10 +19,12 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         return "RNNotificationsModule";
     }
 
-    public void sendNotification(RemoteMessage remoteMessage) {
-        Log.d(LOG_TAG, "Sending notification");
-        WritableMap msg = Utils.convertRemoteMessageDataToMap(remoteMessage);
-        Utils.sendEvent(getReactApplicationContext(),  "notificationReceived", msg);
+    @ReactMethod
+    public void startService() {
+        Log.d(LOG_TAG, "Starting FCM service");
+
+        Intent tnsIntent = new Intent(this.getReactApplicationContext(), TwilioNotificationsService.class);
+        this.getReactApplicationContext().startService(tnsIntent);
     }
 
 }

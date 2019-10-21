@@ -14,6 +14,13 @@ class Notifications {
 
     _eventEmitter;
 
+    static getInstance() {
+        if (!this._instance) {
+            this._instance = new Notifications();
+        }
+        return this._instance;
+    }
+
     constructor(props) {
         this._eventEmitter = new EventEmitter();
         this._initEventListeners();
@@ -24,6 +31,7 @@ class Notifications {
     };
 
     onNotificationReceived = (payload) => this._eventEmitter.emit('notificationReceived', payload);
+    startService = () => RNNotificationsModule.startService();
 
     // Events delegation
     addListener = (name, handler) => this._eventEmitter.addListener(name, handler);

@@ -130,7 +130,7 @@ RCT_REMAP_METHOD(register, register_resolver:(RCTPromiseResolveBlock)resolve rej
     }];
 }
 
-RCT_REMAP_METHOD(unRegister, deregister_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(unregister, deregister_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     NSLog(@"[IIMobile - RNTwilioChatClient] deregister with token: %@", self.deviceToken);
 
     [self.client deregisterWithNotificationToken:self.deviceToken completion:^(TCHResult * _Nonnull result) {

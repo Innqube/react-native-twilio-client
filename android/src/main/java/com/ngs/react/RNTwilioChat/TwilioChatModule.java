@@ -8,7 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.ngs.react.PromiseCallbackListener;
-import com.ngs.react.TwilioChatTokenService;
+import com.ngs.react.RNNotifications.TwilioNotificationsService;
 import com.twilio.chat.ChatClient;
 import com.twilio.chat.ErrorInfo;
 import com.twilio.chat.StatusListener;
@@ -19,13 +19,13 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = "[Twi-Chat]";
     private static ChatClient.SynchronizationStatus SYNCHRONIZATION_STATUS;
     private static TwilioChatModule INSTANCE;
-    private TwilioChatTokenService tts;
+    private TwilioNotificationsService tts;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(LOG_TAG, "TwilioChatModule -> TwilioTokenService connected");
 
-            TwilioChatTokenService.TwilioFCMListenerBinder binder = (TwilioChatTokenService.TwilioFCMListenerBinder) iBinder;
+            TwilioNotificationsService.TwilioFCMListenerBinder binder = (TwilioNotificationsService.TwilioFCMListenerBinder) iBinder;
             tts = binder.getService();
         }
 
@@ -66,7 +66,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
         Log.d(LOG_TAG, "Binding TwilioChatTokenService");
 
-        Intent intent = new Intent(this.getReactApplicationContext(), TwilioChatTokenService.class);
+        Intent intent = new Intent(this.getReactApplicationContext(), TwilioNotificationsService.class);
         this.getReactApplicationContext().bindService(intent, this.serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -106,22 +106,9 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                         }
                     });
 
-                    Log.d(LOG_TAG, "fcmListenerService.getToken(): " + tts.getToken());
-                    if (tts != null && tts.getToken() != null) {
-                        register(tts.getToken(), new PromiseImpl(
-                                attrs -> {
-                                    WritableMap json = new WritableNativeMap();
-                                    json.putString("status", null);
-                                    promise.resolve(json);
-                                },
-                                attrs -> promise.reject("Could not register FCM token")
-                        ));
-                    } else {
-                        Log.w(LOG_TAG, "Twilio token service or the token itself was null. No push will be received or sent");
-                        WritableMap json = new WritableNativeMap();
-                        json.putString("status", null);
-                        promise.resolve(json);
-                    }
+                    WritableMap json = new WritableNativeMap();
+                    json.putString("status", null);
+                    promise.resolve(json);
                 }
             });
         } else {
