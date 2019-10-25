@@ -79,7 +79,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     public void createClient(String token, ReadableMap props, final Promise promise) {
         Log.d(LOG_TAG, "creating client. Token: " + token);
 
-        if (CHAT_CLIENT == null) {
+        /*if (CHAT_CLIENT == null) {*/
             Log.d(LOG_TAG, "No client instance found. Creating new client.");
             ChatClient.Properties.Builder builder = new ChatClient.Properties.Builder();
 
@@ -111,12 +111,12 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                     promise.resolve(json);
                 }
             });
-        } else {
+        /*} else {
             Log.d(LOG_TAG, "Found existent client instance");
             WritableMap json = new WritableNativeMap();
             json.putString("status", SYNCHRONIZATION_STATUS != null ? SYNCHRONIZATION_STATUS.name() : null);
             promise.resolve(json);
-        }
+        }*/
     }
 
     @ReactMethod
