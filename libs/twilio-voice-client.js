@@ -1,8 +1,4 @@
-import {
-    NativeModules,
-    NativeEventEmitter,
-    Platform,
-} from 'react-native'
+import {NativeEventEmitter, NativeModules, Platform,} from 'react-native'
 
 const ANDROID = 'android'
 const IOS = 'ios'
@@ -28,25 +24,24 @@ const _eventHandlers = {
 }
 
 const TwilioVoiceClient = {
-    // initialize TwilioVoice with access token
-    async initWithToken(token) {
-        if (typeof token !== 'string') {
-            return {
-                initialized: false,
-                err: 'Invalid token, token must be a string'
-            }
-        };
 
-        const result = await RNTwilioVoiceClient.initWithAccessToken(token)
-        if (Platform.OS === IOS) {
-            return {
-                initialized: true,
-            }
-        }
-        return result
+    initialize(tokenCallback) {
+        return new Promise(((resolve, reject) => {
+            tokenCallback()
+                .then(token => {
+                    RNTwilioVoiceClient
+                        .init(token)
+                        .then(result => resolve(result))
+                        .catch(error => reject(error));
+                })
+                .catch(error => reject(error));
+        }));
     },
-    connect(params = {}) {
-        return RNTwilioVoiceClient.connect(params)
+    connect(params = {}, tokenCallback) {
+        tokenCallback()
+            .then(token => {
+                return RNTwilioVoiceClient.connect(params, token)
+            })
     },
     disconnect(uuid) {
         RNTwilioVoiceClient.disconnect(uuid)
@@ -83,9 +78,18 @@ const TwilioVoiceClient = {
             RNTwilioVoiceClient.requestPermissions(senderId)
         }
     },
-    unregister() {
+    unregister(tokenCallback) {
         if (Platform.OS === IOS) {
-            RNTwilioVoiceClient.unregister()
+            return new Promise(((resolve, reject) => {
+                tokenCallback()
+                    .then(token => {
+                        RNTwilioVoiceClient
+                            .unregister(token)
+                            .then(result => resolve(result))
+                            .catch(error => reject(error));
+                    })
+                    .catch(error => reject(error));
+            }));
         }
     },
     addEventListener(type, handler) {
