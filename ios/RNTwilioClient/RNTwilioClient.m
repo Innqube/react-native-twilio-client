@@ -273,7 +273,7 @@ RCT_REMAP_METHOD(getActiveCall,
 
 #pragma mark - PKPushRegistryDelegate ##################
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
-    self.deviceTokenString = [credentials.token description];
+    self.deviceTokenString = [self stringFromDeviceToken: credentials.token];
     self.type = type;
     NSLog(@"[IIMobile - RNTwilioClient][didUpdatePushCredentials][DeviceToken: %@]", self.deviceTokenString);
 }
@@ -341,6 +341,19 @@ RCT_REMAP_METHOD(getActiveCall,
         // Cancel Video or Voice Call, sent by II
         [self performEndCallActionWithUUID:self.call.uuid];
     }
+}
+
+- (NSString *)stringFromDeviceToken:(NSData *)deviceToken {
+    NSUInteger length = deviceToken.length;
+    if (length == 0) {
+        return nil;
+    }
+    const unsigned char *buffer = deviceToken.bytes;
+    NSMutableString *hexString  = [NSMutableString stringWithCapacity:(length * 2)];
+    for (int i = 0; i < length; ++i) {
+        [hexString appendFormat:@"%02x", buffer[i]];
+    }
+    return [hexString copy];
 }
 
 #pragma mark - TVONotificationDelegate
