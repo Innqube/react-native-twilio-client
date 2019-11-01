@@ -202,7 +202,11 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         Log.d(LOG_TAG, "getMessages for channel: " + channelSidOrUniqueName);
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages().getLastMessages(count, new MessageListPromiseCallbackListener(promise));
+            if (channel.getMessages() != null) {
+                channel.getMessages().getLastMessages(count, new MessageListPromiseCallbackListener(promise));
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -211,7 +215,11 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         Log.d(LOG_TAG, "getMessagesBefore for channel: " + channelSidOrUniqueName);
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages().getMessagesBefore(index, count, new MessageListPromiseCallbackListener(promise));
+            if (channel.getMessages() != null) {
+                channel.getMessages().getMessagesBefore(index, count, new MessageListPromiseCallbackListener(promise));
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -220,7 +228,11 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         Log.d(LOG_TAG, "getMessagesAfter for channel: " + channelSidOrUniqueName);
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages().getMessagesAfter(index, count, new MessageListPromiseCallbackListener(promise));
+            if (channel.getMessages() != null) {
+                channel.getMessages().getMessagesAfter(index, count, new MessageListPromiseCallbackListener(promise));
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -228,12 +240,16 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     public void setNoMessagesConsumed(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages().setNoMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
-                @Override
-                public void onSuccess(Long messageCount) {
-                    promise.resolve(messageCount != null ? messageCount.toString() : null);
-                }
-            });
+            if (channel.getMessages() != null) {
+                channel.getMessages().setNoMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
+                    @Override
+                    public void onSuccess(Long messageCount) {
+                        promise.resolve(messageCount != null ? messageCount.toString() : null);
+                    }
+                });
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -241,12 +257,16 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     public void setAllMessageConsumed(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "setAllMessageConsumed for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages().setAllMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
-                @Override
-                public void onSuccess(Long messageCount) {
-                    promise.resolve(messageCount != null ? messageCount.toString() : null);
-                }
-            });
+            if (channel.getMessages() != null) {
+                channel.getMessages().setAllMessagesConsumedWithResult(new PromiseCallbackListener<Long>(promise) {
+                    @Override
+                    public void onSuccess(Long messageCount) {
+                        promise.resolve(messageCount != null ? messageCount.toString() : null);
+                    }
+                });
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -254,12 +274,16 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     public void setLastConsumedMessage(String channelSidOrUniqueName, Integer index, final Promise promise) {
         Log.d(LOG_TAG, "setLastConsumedMessage for channel: " + channelSidOrUniqueName + ", index: " + index);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages().setLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
-                @Override
-                public void onSuccess(Long messageCount) {
-                    promise.resolve(messageCount != null ? messageCount.toString() : null);
-                }
-            });
+            if (channel.getMessages() != null) {
+                channel.getMessages().setLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
+                    @Override
+                    public void onSuccess(Long messageCount) {
+                        promise.resolve(messageCount != null ? messageCount.toString() : null);
+                    }
+                });
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -267,12 +291,16 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     public void advanceLastConsumedMessage(String channelSidOrUniqueName, Integer index, final Promise promise) {
         Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName + ", index: " + index);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel.getMessages().advanceLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
-                @Override
-                public void onSuccess(Long messageIndex) {
-                    promise.resolve(messageIndex != null ? messageIndex.intValue() : null);
-                }
-            });
+            if (channel.getMessages() != null) {
+                channel.getMessages().advanceLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
+                    @Override
+                    public void onSuccess(Long messageIndex) {
+                        promise.resolve(messageIndex != null ? messageIndex.intValue() : null);
+                    }
+                });
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -280,8 +308,12 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     public void getLastConsumedMessageIndex(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            Long index = channel.getMessages().getLastConsumedMessageIndex();
-            promise.resolve(index != null ? index.toString() : null);
+            if (channel.getMessages() != null) {
+                Long index = channel.getMessages().getLastConsumedMessageIndex();
+                promise.resolve(index != null ? index.toString() : null);
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
@@ -290,23 +322,27 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         Log.d(LOG_TAG, "sendMessage");
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
-            channel
-                    .getMessages()
-                    .sendMessage(
-                            Message.options().withBody(message),
-                            new PromiseCallbackListener<Message>(promise) {
-                                @Override
-                                public void onSuccess(Message message) {
-                                    try {
-                                        JSONObject json = Utils.messageToJsonObject(message);
-                                        WritableMap map = Utils.convertJsonToMap(json);
-                                        promise.resolve(map);
-                                    } catch (JSONException e) {
-                                        promise.reject(e);
+            if (channel.getMessages() != null) {
+                channel
+                        .getMessages()
+                        .sendMessage(
+                                Message.options().withBody(message),
+                                new PromiseCallbackListener<Message>(promise) {
+                                    @Override
+                                    public void onSuccess(Message message) {
+                                        try {
+                                            JSONObject json = Utils.messageToJsonObject(message);
+                                            WritableMap map = Utils.convertJsonToMap(json);
+                                            promise.resolve(map);
+                                        } catch (JSONException e) {
+                                            promise.reject(e);
+                                        }
                                     }
                                 }
-                            }
-                    );
+                        );
+            } else {
+                promise.reject("No messages instance obtained");
+            }
         });
     }
 
