@@ -64,7 +64,8 @@ class TwilioChatClient {
     };
 
     shutdown = () => {
-        this.removeAllListeners();
+        this._removeAllListeners();
+        this._instance = null;
         RNTwilioChatClient.shutdown();
     };
 

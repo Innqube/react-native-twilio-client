@@ -61,6 +61,12 @@ RCT_REMAP_METHOD(createClient, token:(NSString*)token properties:(NSDictionary *
     }];
 }
 
+RCT_EXPORT_METHOD(shutdown) {
+    NSLog(@"[IIMobile - RNTwilioChatClient] shutdown client");
+    [self.client shutdown];
+    self.client = nil;
+}
+
 RCT_REMAP_METHOD(updateClient, updatedToken:(NSString*)token update_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     NSLog(@"[IIMobile - RNTwilioChatClient] updateClient with token: %@", token);
     [self.client updateToken:token
