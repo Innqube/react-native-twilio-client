@@ -25,6 +25,7 @@ class TwilioChatClient {
     }
 
     create = (tokenCallback) => {
+        this.shutdown();
         this._initEventListeners();
         this._tokenCallback = tokenCallback;
         return new Promise(((resolve, reject) => {
@@ -65,7 +66,6 @@ class TwilioChatClient {
 
     shutdown = () => {
         this._removeAllListeners();
-        this._instance = null;
         RNTwilioChatClient.shutdown();
     };
 
