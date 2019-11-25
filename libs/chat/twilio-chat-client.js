@@ -92,9 +92,7 @@ class TwilioChatClient {
     getDeviceToken = () => RNTwilioChatClient.getDeviceToken();
 
     _buildChatChannel = (channel) => {
-        const twilioChatChannel = new TwilioChatChannel(channel);
-        this._channels[twilioChatChannel.sid] = twilioChatChannel;
-        return twilioChatChannel;
+        return this._channels[channel.sid] = this._channels[channel.sid] || new TwilioChatChannel(channel);
     };
 
     _synchronizationListener = (status) => {
