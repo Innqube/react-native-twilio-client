@@ -113,7 +113,10 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void shutdown() {
         Log.d(LOG_TAG, "Shutting down twilio chat client");
-        CHAT_CLIENT.shutdown();
+
+        if (CHAT_CLIENT != null) {
+            CHAT_CLIENT.shutdown();
+        }
     }
 
     @ReactMethod
