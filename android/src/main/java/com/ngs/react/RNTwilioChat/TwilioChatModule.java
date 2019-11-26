@@ -166,4 +166,28 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         promise.resolve(tts.getToken());
     }
 
+    @ReactMethod
+    public void updateClient(String token, final Promise promise) {
+        Log.d(LOG_TAG, "updateClient with token: " + token);
+
+        if (CHAT_CLIENT == null) {
+            Log.w(LOG_TAG, "Trying to update null client!");
+            promise.reject("Trying to update null client!");
+        } else {
+            CHAT_CLIENT.updateToken(token, new StatusListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(LOG_TAG, "Chat client token updated successfully");
+                    promise.resolve(null);
+                }
+
+                @Override
+                public void onError(ErrorInfo errorInfo) {
+                    Log.d(LOG_TAG, "Could not update chat client token");
+                    promise.reject(Integer.valueOf(errorInfo.getCode()).toString(), errorInfo.getMessage());
+                }
+            });
+        }
+    }
+
 }
