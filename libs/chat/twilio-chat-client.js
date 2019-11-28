@@ -208,7 +208,7 @@ class TwilioChatClient {
     _onTypingStarted = (payload) => this._channels[payload.channelSid]?._onTypingStarted(payload.member);
     _onTypingEnded = (payload) => this._channels[payload.channelSid]?._onTypingEnded(payload.member);
 
-    _onError = (payload) => dispatchEvent(new CustomEvent('error', {detail: payload}));
+    _onError = (payload) => this._eventEmitter.emit('error', payload);
 }
 
 export default TwilioChatClient;
