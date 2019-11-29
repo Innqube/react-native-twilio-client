@@ -187,7 +187,7 @@ class TwilioChatClient {
     _onInvitedToChannelNotification = (payload) => this._eventEmitter.emit('invitedToChannelNotification', payload);
     _onRemovedFromChannelNotification = (payload) => this._eventEmitter.emit('removedFromChannelNotification', payload);
     _onNotificationSubscribed = (payload) => this._eventEmitter.emit('notificationSubscribed', payload);
-    _onConnectionStateUpdated = (payload) => this._eventEmitter.emit('connectionStateUpdated', payload);
+    _onConnectionStateUpdated = (payload) => this._eventEmitter.emit('clientConnectionStateUpdated', payload.state);
 
     _onChannelSynchronizationStatusUpdated = (payload) => {
         let channel = this._channels[payload.channelSid];
