@@ -170,7 +170,10 @@ class TwilioChatClient {
         this.removeAllListeners('error');
     };
 
-    _onTokenAboutToExpire = async () => RNTwilioChatClient.updateClient(await this._tokenCallback());
+    _onTokenAboutToExpire = async () =>
+        RNTwilioChatClient
+            .updateClient(await this._tokenCallback())
+            .catch(error => this._eventEmitter.emit('updateClientError', error.message));
     _onChannelJoined = (payload) => this._eventEmitter.emit('channelJoined', payload);
     _onChannelInvited = (payload) => this._eventEmitter.emit('channelInvited', payload);
     _onChannelAdded = (payload) => this._eventEmitter.emit('channelAdded', payload);
@@ -184,7 +187,7 @@ class TwilioChatClient {
     _onInvitedToChannelNotification = (payload) => this._eventEmitter.emit('invitedToChannelNotification', payload);
     _onRemovedFromChannelNotification = (payload) => this._eventEmitter.emit('removedFromChannelNotification', payload);
     _onNotificationSubscribed = (payload) => this._eventEmitter.emit('notificationSubscribed', payload);
-    _onConnectionStateUpdated = (payload) => this._eventEmitter.emit('connectionStateUpdated', payload);
+    _onConnectionStateUpdated = (payload) => this._eventEmitter.emit('clientConnectionStateUpdated', payload.state);
 
     _onChannelSynchronizationStatusUpdated = (payload) => {
         let channel = this._channels[payload.channelSid];
@@ -205,7 +208,7 @@ class TwilioChatClient {
     _onTypingStarted = (payload) => this._channels[payload.channelSid]?._onTypingStarted(payload.member);
     _onTypingEnded = (payload) => this._channels[payload.channelSid]?._onTypingEnded(payload.member);
 
-    _onError = (payload) => dispatchEvent(new CustomEvent('error', {detail: payload}));
+    _onError = (payload) => this._eventEmitter.emit('error', payload);
 }
 
 export default TwilioChatClient;
