@@ -282,7 +282,7 @@ RCT_REMAP_METHOD(setNoMessagesConsumed, sidOrUniqueName:(NSString *)sidOrUniqueN
         if (result.isSuccessful) {
             [channel.messages setNoMessagesConsumedWithCompletion:^(TCHResult *result, NSUInteger count) {
                 if ([result isSuccessful]) {
-                    resolve(@[@TRUE]);
+                    resolve(@(count));
                 } else {
                     reject(@"set-no-message-consumed-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
@@ -299,7 +299,7 @@ RCT_REMAP_METHOD(setAllMessagesConsumed, sidOrUniqueName:(NSString *)sidOrUnique
         if (result.isSuccessful) {
             [channel.messages setAllMessagesConsumedWithCompletion:^(TCHResult *result, NSUInteger count) {
                 if ([result isSuccessful]) {
-                    resolve(@[@TRUE]);
+                    resolve(@(count));
                 } else {
                     reject(@"set-all-message-consumed-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
@@ -317,7 +317,7 @@ RCT_REMAP_METHOD(setLastConsumedMessage, sidOrUniqueName:(NSString *)sidOrUnique
             [channel.messages setLastConsumedMessageIndex:index
                                                     completion:^(TCHResult *result, NSUInteger count) {
                 if ([result isSuccessful]) {
-                    resolve(@[@TRUE]);
+                    resolve(@(count));
                 } else {
                     reject(@"set-last-consumed-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
@@ -335,7 +335,7 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, sidOrUniqueName:(NSString *)sidOrUn
             [channel.messages advanceLastConsumedMessageIndex:index
                                                     completion:^(TCHResult *result, NSUInteger count) {
                 if ([result isSuccessful]) {
-                    resolve(@[@TRUE]);
+                    resolve(@(count);
                 } else {
                     reject(@"advance-last-consumed-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
