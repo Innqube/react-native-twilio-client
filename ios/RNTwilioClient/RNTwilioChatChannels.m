@@ -335,7 +335,7 @@ RCT_REMAP_METHOD(advanceLastConsumedMessage, sidOrUniqueName:(NSString *)sidOrUn
             [channel.messages advanceLastConsumedMessageIndex:index
                                                     completion:^(TCHResult *result, NSUInteger count) {
                 if ([result isSuccessful]) {
-                    resolve(@(count);
+                    resolve(@(count));
                 } else {
                     reject(@"advance-last-consumed-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                 }
