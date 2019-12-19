@@ -108,8 +108,25 @@ public class TwilioChatClientListener implements ChatClientListener {
     public void onConnectionStateChange(ChatClient.ConnectionState connectionState) {
         Log.d(LOG_TAG, "onConnectionStateChange: " + connectionState);
         WritableMap json = new WritableNativeMap();
-        json.putString("state", connectionState.name());
+        json.putString("state", adaptConnectionStateName(connectionState));
         Utils.sendEvent(reactApplicationContext, "connectionStateUpdated", json);
+    }
+
+    private String adaptConnectionStateName(ChatClient.ConnectionState connectionState) {
+        switch (connectionState) {
+            case CONNECTING:
+                return "CONNECTING";
+            case CONNECTED:
+                return "COMPLETES";
+            case DISCONNECTED:
+                return "DISCONNECTED";
+            case DENIED:
+                return "DENIED";
+            case FATAL_ERROR:
+                return "FAILED";
+            default:
+                return "UNKNOWN";
+        }
     }
 
     @Override
