@@ -200,7 +200,7 @@ RCT_REMAP_METHOD(getLastMessages, sidOrUniqueName:(NSString *)sidOrUniqueName co
      }];
 }
 
-RCT_REMAP_METHOD(sendMessage, sidOrUniqueName:(NSString *)sidOrUniqueName message:(NSString*)message send_message_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(sendMessage, sidOrUniqueName:(NSString *)sidOrUniqueName message:(NSString*)message attributes:(NSDictionary *)attributes send_message_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioChatChannels] sendMessage called with message: %@", message);
 
     if (message == nil) {
@@ -209,9 +209,15 @@ RCT_REMAP_METHOD(sendMessage, sidOrUniqueName:(NSString *)sidOrUniqueName messag
         [RNTwilioChatChannels loadChannelFromSidOrUniqueName:sidOrUniqueName :^(TCHResult *result, TCHChannel *channel) {
             if (result.isSuccessful) {
                 TCHMessageOptions *messageOptions = [[TCHMessageOptions new] withBody:message];
-                [channel.messages sendMessageWithOptions:messageOptions completion:^(TCHResult * _Nonnull result, TCHMessage * _Nullable message) {
+                [messageOptions withAttributes:attributes completion:^(TCHResult * _Nonnull result) {
                     if (result.isSuccessful) {
-                        resolve(@[@TRUE]);
+                        [channel.messages sendMessageWithOptions:messageOptions completion:^(TCHResult * _Nonnull result, TCHMessage * _Nullable message) {
+                            if (result.isSuccessful) {
+                                resolve([RCTConvert TCHMessage: message]);
+                            } else {
+                                reject(@"send-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
+                            }
+                        }];
                     } else {
                         reject(@"send-message-error", [result.error.userInfo objectForKey:@"NSLocalizedDescription"], result.error);
                     }
