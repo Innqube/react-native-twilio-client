@@ -318,15 +318,25 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void sendMessage(String channelSidOrUniqueName, final String message, final Promise promise) {
+    public void sendMessage(String channelSidOrUniqueName, final String message, ReadableMap attributes, final Promise promise) {
         Log.d(LOG_TAG, "sendMessage");
 
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             if (channel.getMessages() != null) {
+                Message.Options options = Message.options().withBody(message);
+
+                if (attributes != null) {
+                    try {
+                        options = options.withAttributes(Utils.convertMapToJson(attributes));
+                    } catch (JSONException e) {
+                        promise.reject(e);
+                    }
+                }
+
                 channel
                         .getMessages()
                         .sendMessage(
-                                Message.options().withBody(message),
+                                options,
                                 new PromiseCallbackListener<Message>(promise) {
                                     @Override
                                     public void onSuccess(Message message) {

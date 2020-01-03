@@ -60,7 +60,7 @@ class TwilioChatChannel {
 
     getLastConsumedMessageIndex = () => RNTwilioChatChannels.getLastConsumedMessageIndex(this.uniqueName);
 
-    sendMessage = (message) => RNTwilioChatChannels.sendMessage(this.uniqueName, message);
+    sendMessage = (message, attributes) => RNTwilioChatChannels.sendMessage(this.uniqueName, message, attributes);
 
     getMembers = () => RNTwilioChatChannels.getMembers(this.uniqueName);
 
