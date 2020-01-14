@@ -116,6 +116,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
 
         if (CHAT_CLIENT != null) {
             CHAT_CLIENT.shutdown();
+            CHAT_CLIENT = null;
         }
     }
 
