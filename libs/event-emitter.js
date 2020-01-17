@@ -16,8 +16,18 @@ class EventEmitter {
         this._events[name] = [
             ...this._events[name],
             handler
-        ]
+        ];
 
+        return {
+            name,
+            handler
+        }
+    };
+
+    removeListener = listener => {
+        if (this._events[listener.name]) {
+            this._events[listener.name] = this._events[listener.name].filter(handler => handler !== listener.handler);
+        }
     };
 
     removeAllListeners = (name) => {
