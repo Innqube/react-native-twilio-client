@@ -14,6 +14,8 @@ const _eventHandlers = {
     deviceDidReceiveIncoming: new Map(),
     connectionDidConnect: new Map(),
     connectionDidDisconnect: new Map(),
+    callDidReconnect: new Map(),
+    isReconnectingWithError: new Map(),
     performAnswerVoiceCall: new Map(),
     performAnswerVideoCall: new Map(),
     performEndVideoCall: new Map(),

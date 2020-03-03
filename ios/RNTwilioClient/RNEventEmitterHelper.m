@@ -17,6 +17,8 @@ RCT_EXPORT_MODULE();
   return @[
            @"connectionDidConnect",
            @"connectionDidDisconnect",
+           @"callDidReconnect",
+           @"isReconnectingWithError",
            @"callRejected",
            @"deviceReady",
            @"deviceNotReady",
