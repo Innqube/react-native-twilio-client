@@ -54,7 +54,7 @@ android {
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
     api 'com.twilio:voice-android:2.0.7'
-    api 'com.twilio:chat-android:4.2.7'
+    api 'com.twilio:chat-android:4.2.9'
     api 'com.android.support:appcompat-v7:27.0.2'
     api 'com.facebook.react:react-native:+' // should be api 'com.facebook.react:react-native:0.59.9'?
     api 'com.google.firebase:firebase-messaging:17.+'
