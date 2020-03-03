@@ -38,17 +38,20 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     }
 
     private void getChannel(String channelSidOrUniqueName, final GotChannel gotChannel) {
+        Log.d(LOG_TAG, "Looking for channel " + channelSidOrUniqueName);
         TwilioChatModule
                 .getChatClient()
                 .getChannels()
                 .getChannel(channelSidOrUniqueName, new CallbackListener<Channel>() {
                     @Override
                     public void onSuccess(Channel channel) {
+                        Log.d(LOG_TAG, "Get channel success: " + channelSidOrUniqueName);
                         gotChannel.gotChannel(channel);
                     }
 
                     @Override
                     public void onError(ErrorInfo errorInfo) {
+                        Log.d(LOG_TAG, "Get channel error: " + channelSidOrUniqueName);
                         Log.d(LOG_TAG, "Error getting channel. Code: " + errorInfo.getCode() +
                                 "Message: " + errorInfo.getMessage() + ", " +
                                 "Status: " + errorInfo.getStatus());
