@@ -289,7 +289,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void advanceLastConsumedMessage(String channelSidOrUniqueName, Integer index, final Promise promise) {
-        Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName + ", index: " + index);
+        Log.d(LOG_TAG, "advanceLastConsumedMessage for channel: " + channelSidOrUniqueName + ", index: " + index);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             if (channel.getMessages() != null) {
                 channel.getMessages().advanceLastConsumedMessageIndexWithResult(index, new PromiseCallbackListener<Long>(promise) {
@@ -306,7 +306,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void getLastConsumedMessageIndex(String channelSidOrUniqueName, final Promise promise) {
-        Log.d(LOG_TAG, "setNoMessagesConsumed for channel: " + channelSidOrUniqueName);
+        Log.d(LOG_TAG, "getLastConsumedMessageIndex for channel: " + channelSidOrUniqueName);
         getChannel(channelSidOrUniqueName, (Channel channel) -> {
             if (channel.getMessages() != null) {
                 Long index = channel.getMessages().getLastConsumedMessageIndex();
