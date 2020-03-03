@@ -443,13 +443,13 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     // Check the error: It could be either
     // TVOErrorSignalingConnectionDisconnectedError (53001) or
     // TVOErrorMediaConnectionError (53405).
-    [RNEventEmitterHelper emitEventWithName:@"isReconnectingWithError" andPayload:[error localizedDescription]];
+    [RNEventEmitterHelper emitEventWithName:@"isReconnectingWithError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
 }
 
 - (void)callDidReconnect:(TVOCall *)call {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidReconnect %@", call.uuid);
+    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidReconnect with uuid %@", call.uuid);
     self.call = call;
-    [RNEventEmitterHelper emitEventWithName:@"callDidReconnect" andPayload:[error localizedDescription]];
+    [RNEventEmitterHelper emitEventWithName:@"callDidReconnect" andPayload:@{@"uuid": call.uuid}];
 }
 
 #pragma mark - AVAudioSession
