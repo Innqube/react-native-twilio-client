@@ -63,6 +63,8 @@ RCT_EXPORT_MODULE()
 }
 
 - (id)init {
+    self.audioDevice = [TVODefaultAudioDevice audioDevice];
+    TwilioVoice.audioDevice = self.audioDevice;
     return [RNTwilioVoiceClient sharedInstance];
 }
 
