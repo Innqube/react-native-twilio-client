@@ -316,8 +316,8 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         // Receive Voice Call, Twilio handle this push
         NSLog(@"[IIMobile - RNTwilioVoiceClient] VOIP_VOICE_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
         [TwilioVoice handleNotification:payload.dictionaryPayload
-                                       delegate:self
-                                  delegateQueue:nil];
+                               delegate:self
+                          delegateQueue:nil];
         /*
     } else if ([msgType isEqualToString:@"twilio.voice.cancel"] && self.callInvite && self.callInvite.state == TVOCallInviteStatePending) {
         // Cancel Voice Call, Twilio handle this push
@@ -348,8 +348,11 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     [self handleCallInviteReceived:callInvite];
 }
 
-- (void)cancelledCallInviteReceived:(TVOCancelledCallInvite *)cancelledCallInvite {
-    [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect" andPayload:@{@"callSid":cancelledCallInvite.callSid}];
+- (void)cancelledCallInviteReceived:(TVOCancelledCallInvite *)cancelledCallInvite error:(NSError*)error {
+    [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect"
+                                 andPayload:@{@"callSid":cancelledCallInvite.callSid,
+                                              @"error": error ? error.localizedDescription : @""
+                                 }];
     self.callInvite = nil;
 }
 
