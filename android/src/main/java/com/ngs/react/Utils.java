@@ -175,7 +175,7 @@ public class Utils {
         json.put("sid", message.getSid());
         json.put("attributes", message.getAttributes());
         json.put("dateCreated", message.getDateCreated());
-        json.put("timestampAsDate", message.getDateCreatedAsDate().getTime());
+        json.put("timestamp", message.getDateCreatedAsDate() == null ? null : message.getDateCreatedAsDate().getTime());
         return json;
     }
 
