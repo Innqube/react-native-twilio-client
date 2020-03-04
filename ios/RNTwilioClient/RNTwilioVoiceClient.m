@@ -316,7 +316,8 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         // Receive Voice Call, Twilio handle this push
         NSLog(@"[IIMobile - RNTwilioVoiceClient] VOIP_VOICE_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
         [TwilioVoice handleNotification:payload.dictionaryPayload
-                               delegate:self];
+                                       delegate:self
+                                  delegateQueue:nil];
         /*
     } else if ([msgType isEqualToString:@"twilio.voice.cancel"] && self.callInvite && self.callInvite.state == TVOCallInviteStatePending) {
         // Cancel Voice Call, Twilio handle this push
