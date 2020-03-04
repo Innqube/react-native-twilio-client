@@ -355,6 +355,9 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
                                  andPayload:@{@"callSid":cancelledCallInvite.callSid,
                                               @"error": error ? error.localizedDescription : @""
                                  }];
+    if ([cancelledCallInvite.callSid isEqualToString:self.callInvite.callSid]) {
+        [self performEndCallActionWithUUID:self.callInvite.uuid];
+    }
     self.callInvite = nil;
 }
 
