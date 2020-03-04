@@ -348,8 +348,11 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     [self handleCallInviteReceived:callInvite];
 }
 
-- (void)cancelledCallInviteReceived:(TVOCancelledCallInvite *)cancelledCallInvite {
-    [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect" andPayload:@{@"callSid":cancelledCallInvite.callSid}];
+- (void)cancelledCallInviteReceived:(TVOCancelledCallInvite *)cancelledCallInvite error:(NSError*)error {
+    [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect"
+                                 andPayload:@{@"callSid":cancelledCallInvite.callSid,
+                                              @"error": error ? error.localizedDescription : @""
+                                 }];
     self.callInvite = nil;
 }
 
