@@ -315,6 +315,10 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                 Long index = channel.getMessages().getLastConsumedMessageIndex();
                 promise.resolve(index != null ? index.toString() : null);
             } else {
+                Log.d(LOG_TAG, "getLastConsumedMessageIndex: channelSid -> " + channel.getSid());
+                Log.d(LOG_TAG, "getLastConsumedMessageIndex: status -> " + channel.getStatus());
+                Log.d(LOG_TAG, "getLastConsumedMessageIndex: synchronizationStatus -> " + channel.getSynchronizationStatus());
+                Log.d(LOG_TAG, "getLastConsumedMessageIndex: messages -> " + channel.getMessages());
                 promise.reject("No messages instance obtained");
             }
         });
