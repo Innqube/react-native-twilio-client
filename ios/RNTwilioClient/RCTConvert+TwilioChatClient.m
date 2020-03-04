@@ -237,10 +237,8 @@ RCT_ENUM_CONVERTER(TCHClientConnectionState,(@{
            @"index": message.index,
            @"author": RCTNullIfNil(message.author),
            @"body": RCTNullIfNil(message.body),
-           @"timestamp": RCTNullIfNil(message.timestamp),
-           @"timestampAsDate": message.timestampAsDate == nil ? @"null" : @(message.timestampAsDate.timeIntervalSince1970 * 1000),
-           @"dateUpdated": RCTNullIfNil(message.dateUpdated),
-           @"dateUpdatedDate": message.dateUpdatedAsDate == nil ? @"null" : @(message.dateUpdatedAsDate.timeIntervalSince1970 * 1000),
+           @"timestamp": message.timestampAsDate == nil ? @"null" : @(message.timestampAsDate.timeIntervalSince1970 * 1000),
+           @"dateUpdated": message.dateUpdatedAsDate == nil ? @"null" : @(message.dateUpdatedAsDate.timeIntervalSince1970 * 1000),
            @"lastUpdatedBy": RCTNullIfNil(message.lastUpdatedBy),
            @"attributes": RCTNullIfNil(message.attributes)
            };
