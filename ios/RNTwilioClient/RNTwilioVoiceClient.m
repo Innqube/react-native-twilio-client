@@ -19,7 +19,6 @@
 @import TwilioVoice;
 @import UIKit;
 
-
 @interface RNTwilioVoiceClient () <PKPushRegistryDelegate, TVONotificationDelegate, TVOCallDelegate, CXProviderDelegate>
 @property(nonatomic, strong) NSString *deviceTokenString;
 @property(nonatomic, strong) NSDictionary *dictionaryPayload;
@@ -34,6 +33,7 @@
 @property(nonatomic, strong) CXProvider *callKitProvider;
 @property(nonatomic, strong) CXCallController *callKitCallController;
 @property(nonatomic, strong) TVODefaultAudioDevice *audioDevice;
+@property (nonatomic, strong) void(^incomingPushCompletionCallback)(void);
 @end
 
 @implementation RNTwilioVoiceClient {
@@ -282,13 +282,32 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     }
 }
 
+/**
+* Try using the `pushRegistry:didReceiveIncomingPushWithPayload:forType:withCompletionHandler:` method if
+* your application is targeting iOS 11. According to the docs, this delegate method is deprecated by Apple.
+*/
 - (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+    [self handleIncomingPushWithPayload:payload forType: type withCompletionHandler:nil];
+}
+
+/**
+ * This delegate method is available on iOS 11 and above. Call the completion handler once the
+ * notification payload is passed to the `TwilioVoice.handleNotification()` method.
+ */
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(PKPushType)type withCompletionHandler:(void (^)(void))completion {
+    [self handleIncomingPushWithPayload:payload forType: type withCompletionHandler:completion];
+}
+
+- (void)handleIncomingPushWithPayload:(PKPushPayload *)payload
+                              forType:(PKPushType)type
+                withCompletionHandler:(void (^)(void))completion {
     NSLog(@"[IIMobile - RNTwilioVoiceClient][didReceiveIncomingPushWithPayload] payload %@", payload.dictionaryPayload);
 
     NSString *mode = payload.dictionaryPayload[@"mode"];
     NSString *msgType = payload.dictionaryPayload[@"twi_message_type"];
     NSString *action = payload.dictionaryPayload[@"action"];
     self.dictionaryPayload = payload.dictionaryPayload;
+    self.incomingPushCompletionCallback = completion;
 
     if (![type isEqualToString:PKPushTypeVoIP]) {
         return;
@@ -296,8 +315,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
     if ([mode isEqualToString:@"video"]) {
         // Receive Video Call, handle by II
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] VOIP_VIDEO_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
-        NSLog(@"[IIMobile - RNTwilioVoiceClient][displayIncomingCall] uuidString = %@", payload.dictionaryPayload[@"session"]);
+        NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: VIDEO");
         int _handleType = [self getHandleType:@"generic"];
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:[payload.dictionaryPayload[@"session"] uppercaseString]];
         CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
@@ -314,18 +332,22 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         }];
     } else if ([msgType isEqualToString:@"twilio.voice.call"]) {
         // Receive Voice Call, Twilio handle this push
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] VOIP_VOICE_NOTIF: didReceiveIncomingPushWithPayload: %@", payload);
+        NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: VOICE");
         [TwilioVoice handleNotification:payload.dictionaryPayload
                                delegate:self
                           delegateQueue:nil];
-        /*
-    } else if ([msgType isEqualToString:@"twilio.voice.cancel"] && self.callInvite && self.callInvite.state == TVOCallInviteStatePending) {
-        // Cancel Voice Call, Twilio handle this push
-        [self performEndCallActionWithUUID:self.call.uuid];
-         */
     } else if ([action isEqualToString:@"cancel"]) {
         // Cancel Video or Voice Call, sent by II
+        NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: CANCEL");
         [self performEndCallActionWithUUID:self.call.uuid];
+    }
+
+    /**
+    * The Voice SDK processes the call notification and returns the call invite synchronously. Report the incoming call to
+    * CallKit and fulfill the completion before exiting this callback method.
+    */
+    if (completion != nil && [[NSProcessInfo processInfo] operatingSystemVersion].majorVersion >= 13) {
+        completion();
     }
 }
 
@@ -342,6 +364,13 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     return [hexString copy];
 }
 
+- (void)incomingPushHandled {
+    if (self.incomingPushCompletionCallback) {
+        self.incomingPushCompletionCallback();
+        self.incomingPushCompletionCallback = nil;
+    }
+}
+
 #pragma mark - TVONotificationDelegate
 
 - (void)callInviteReceived:(TVOCallInvite *)callInvite {
@@ -349,10 +378,14 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)cancelledCallInviteReceived:(TVOCancelledCallInvite *)cancelledCallInvite error:(NSError*)error {
+    NSLog(@"[IIMobile - RNTwilioVoiceClient] cancelledCallInviteReceived with error: %@", error ? error.localizedDescription : @"");
     [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect"
                                  andPayload:@{@"callSid":cancelledCallInvite.callSid,
                                               @"error": error ? error.localizedDescription : @""
                                  }];
+    if ([cancelledCallInvite.callSid isEqualToString:self.callInvite.callSid]) {
+        [self performEndCallActionWithUUID:self.callInvite.uuid];
+    }
     self.callInvite = nil;
 }
 
@@ -369,13 +402,17 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     }
 
     self.callInvite = callInvite;
-
     [self reportIncomingCallFrom:callInvite.from withUUID:callInvite.uuid];
+
+    if ([[NSProcessInfo processInfo] operatingSystemVersion].majorVersion < 13) {
+        [self incomingPushHandled];
+    }
 }
 
 #pragma mark - TVOCallDelegate
 
 - (void)callDidConnect:(TVOCall *)call {
+    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidConnect: %@", call.uuid);
     self.call = call;
     self.callKitCompletionCallback(YES);
     self.callKitCompletionCallback = nil;
@@ -414,6 +451,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)callDisconnected:(NSError *)error {
+    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDisconnected with error: %@", error ? error.localizedDescription : @"");
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     if (error) {
         NSString *errMsg = [error localizedDescription];
@@ -454,6 +492,17 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidReconnect with uuid %@", call.uuid);
     self.call = call;
     [RNEventEmitterHelper emitEventWithName:@"callDidReconnect" andPayload:@{@"uuid": call.uuid}];
+}
+
+- (void)callDidStartRinging:(TVOCall *)call {
+    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidStartRinging with uuid %@", call.uuid);
+
+    /*
+     When [answerOnBridge](https://www.twilio.com/docs/voice/twiml/dial#answeronbridge) is enabled in the
+     <Dial> TwiML verb, the caller will not hear the ringback while the call is ringing and awaiting to be
+     accepted on the callee's side. The application can use the `AVAudioPlayer` to play custom audio files
+     between the `[TVOCallDelegate callDidStartRinging:]` and the `[TVOCallDelegate callDidConnect:]` callbacks.
+     */
 }
 
 #pragma mark - AVAudioSession
@@ -709,6 +758,10 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     NSLog(@"[IIMobile - RNTwilioVoiceClient] sendPerformAnswerVoiceCallEvent called with UUID: %@", uuid.UUIDString);
     [RNEventEmitterHelper emitEventWithName:@"performAnswerVoiceCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString}];
     [RNEventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:self.callParams];
+
+    if ([[NSProcessInfo processInfo] operatingSystemVersion].majorVersion < 13) {
+        [self incomingPushHandled];
+    }
 }
 
 - (void)performAnswerVideoCallWithUUID:(NSUUID *)uuid
