@@ -104,7 +104,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                 });
 
                 WritableMap json = new WritableNativeMap();
-                json.putString("status", null);
+                json.putString("status", "COMPLETED");
                 promise.resolve(json);
             }
         });
