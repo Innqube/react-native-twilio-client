@@ -101,6 +101,12 @@ public class TwilioChatClientListener implements ChatClientListener {
         Log.d(LOG_TAG, "onClientSynchronization: " + synchronizationStatus);
         WritableMap json = new WritableNativeMap();
         json.putString("status", synchronizationStatus.name());
+
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Utils.sendEvent(reactApplicationContext, "synchronizationStatusUpdated", json);
     }
 
