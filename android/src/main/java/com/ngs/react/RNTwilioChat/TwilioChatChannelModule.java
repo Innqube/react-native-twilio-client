@@ -560,7 +560,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         Log.d(LOG_TAG, "onSynchronizationChanged");
         WritableMap wrapper = new WritableNativeMap();
         wrapper.putString("channelSid", channel.getSid());
-        wrapper.putString("status", channel.getSynchronizationStatus().name());
+        wrapper.putString("status", channel.getSynchronizationStatus() == null ? null : channel.getSynchronizationStatus().name());
         Utils.sendEvent(getReactApplicationContext(), "channelSynchronizationStatusUpdated", wrapper);
     }
 }
