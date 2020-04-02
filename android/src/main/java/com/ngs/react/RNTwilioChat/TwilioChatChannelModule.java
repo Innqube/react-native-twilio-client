@@ -45,7 +45,9 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     private void addListener(Channel channel) {
         if (!channelListeners.contains(channel.getSid())) {
+            channel.removeAllListeners();
             channel.addListener(this);
+            channelListeners.remove(channel.getSid());
             channelListeners.add(channel.getSid());
         }
     }
@@ -64,6 +66,8 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                     @Override
                     public void onSuccess(Channel channel) {
                         Log.d(LOG_TAG, "Get channel success: " + channelSidOrUniqueName);
+                        Log.d(LOG_TAG, "Get channel success - friendly name: " + channel.getFriendlyName());
+                        Log.d(LOG_TAG, "Get channel success - unique name: " + channel.getUniqueName());
                         gotChannel.gotChannel(channel);
                     }
 
@@ -71,8 +75,8 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                     public void onError(ErrorInfo errorInfo) {
                         Log.d(LOG_TAG, "Get channel error: " + channelSidOrUniqueName);
                         String msg = "Error getting channel. Code: " + errorInfo.getCode() +
-                                "Message: " + errorInfo.getMessage() + ", " +
-                                "Status: " + errorInfo.getStatus();
+                                ", Message: " + errorInfo.getMessage() +
+                                ", Status: " + errorInfo.getStatus();
                         Log.d(LOG_TAG, msg);
                         gotChannel.onError(msg);
                     }
@@ -628,10 +632,12 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @Override
     public void onSynchronizationChanged(Channel channel) {
-        Log.d(LOG_TAG, "onSynchronizationChanged");
+        String newStatus = channel.getSynchronizationStatus() == null ? null : channel.getSynchronizationStatus().name();
+
+        Log.d(LOG_TAG, "onSynchronizationChanged: " + newStatus);
         WritableMap wrapper = new WritableNativeMap();
         wrapper.putString("channelSid", channel.getSid());
-        wrapper.putString("status", channel.getSynchronizationStatus() == null ? null : channel.getSynchronizationStatus().name());
+        wrapper.putString("status", newStatus);
         Utils.sendEvent(getReactApplicationContext(), "channelSynchronizationStatusUpdated", wrapper);
     }
 }
