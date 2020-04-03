@@ -103,13 +103,17 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
                     @Override
                     public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
                         super.onClientSynchronization(synchronizationStatus);
+
+                        if (synchronizationStatus == ChatClient.SynchronizationStatus.COMPLETED) {
+                            // Client is now ready for business, start working
+                            WritableMap json = new WritableNativeMap();
+                            json.putString("status", "COMPLETED");
+                            promise.resolve(json);
+                        }
+
                         SYNCHRONIZATION_STATUS = synchronizationStatus;
                     }
                 });
-
-                WritableMap json = new WritableNativeMap();
-                json.putString("status", "COMPLETED");
-                promise.resolve(json);
             }
         });
     }
