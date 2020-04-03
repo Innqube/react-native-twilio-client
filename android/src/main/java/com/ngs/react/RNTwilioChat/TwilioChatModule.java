@@ -45,6 +45,10 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         return CHAT_CLIENT;
     }
 
+    static ChatClient.SynchronizationStatus getSynchronizationStatus() {
+        return SYNCHRONIZATION_STATUS;
+    }
+
     TwilioChatModule(ReactApplicationContext context) {
         super(context);
         Log.i(LOG_TAG, "TwilioChatModule instantiated");

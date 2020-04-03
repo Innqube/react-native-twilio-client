@@ -59,6 +59,19 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
         }
 
         Log.d(LOG_TAG, "Looking for channel " + channelSidOrUniqueName);
+
+        if (TwilioChatModule.getChatClient().getConnectionState() == null) {
+            Log.d(LOG_TAG, "Chat client state: null");
+        } else {
+            Log.d(LOG_TAG, "Chat client state: " + TwilioChatModule.getChatClient().getConnectionState().name());
+        }
+
+        if (TwilioChatModule.getSynchronizationStatus() == null) {
+            Log.d(LOG_TAG, "SynchronizationStatus: null");
+        } else {
+            Log.d(LOG_TAG, "SynchronizationStatus: " + TwilioChatModule.getSynchronizationStatus().name());
+        }
+
         TwilioChatModule
                 .getChatClient()
                 .getChannels()
