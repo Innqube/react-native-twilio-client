@@ -327,6 +327,10 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         callUpdate.hasVideo = true;
         callUpdate.localizedCallerName = payload.dictionaryPayload[@"displayName"];
 
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+        [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVoiceChat error:nil];
+        [[AVAudioSession sharedInstance] setActive: YES error: nil];
+
         [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *_Nullable error) {
             [RNEventEmitterHelper emitEventWithName:@"displayIncomingCall" andPayload:@{@"error": error ? error.localizedDescription : @""}];
         }];
@@ -528,7 +532,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
 - (void)providerDidReset:(CXProvider *)provider {
     NSLog(@"[IIMobile - RNTwilioVoiceClient] providerDidReset");
-    self.audioDevice.enabled = YES;
+    //self.audioDevice.enabled = YES;
 }
 
 - (void)providerDidBegin:(CXProvider *)provider {
@@ -537,12 +541,12 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
     NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:didActivateAudioSession");
-    self.audioDevice.enabled = YES;
+    //self.audioDevice.enabled = YES;
 }
 
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession {
     NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:didDeactivateAudioSession");
-    self.audioDevice.enabled = NO;
+    //self.audioDevice.enabled = NO;
 }
 
 - (void)provider:(CXProvider *)provider timedOutPerformingAction:(CXAction *)action {
@@ -551,7 +555,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
     NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:performStartCallAction");
-    self.audioDevice.enabled = NO;
+    //self.audioDevice.enabled = NO;
 
     [self.callKitProvider reportOutgoingCallWithUUID:action.callUUID startedConnectingAtDate:[NSDate date]];
 
@@ -571,7 +575,6 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:performAnswerCallAction wioth UUID: %@", [action.callUUID UUIDString]);
 
     NSString *mode = self.dictionaryPayload[@"mode"];
-    self.audioDevice.enabled = NO;
     self.callUuid = action.callUUID;
 
     if ([mode isEqualToString:@"video"]) {
@@ -596,7 +599,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
 - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
     NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:performEndCallAction with UUID: %@", [action.callUUID UUIDString]);
-    self.audioDevice.enabled = NO;
+    //self.audioDevice.enabled = YES;
 
     // Pending Voice Call
     if (self.callInvite) {
@@ -754,6 +757,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     self.callInvite = nil;
     self.callKitCompletionCallback = completionHandler;
     self.callMode = @"voice";
+    //self.audioDevice.enabled = NO;
 
     NSLog(@"[IIMobile - RNTwilioVoiceClient] sendPerformAnswerVoiceCallEvent called with UUID: %@", uuid.UUIDString);
     [RNEventEmitterHelper emitEventWithName:@"performAnswerVoiceCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString}];
@@ -770,7 +774,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     self.callInvite = nil;
     self.callKitCompletionCallback = completionHandler;
     self.callMode = @"video";
-    self.audioDevice.enabled = YES;
+    //self.audioDevice.enabled = YES;
 
     NSLog(@"[IIMobile - RNTwilioVoiceClient] sendPerformAnswerVideoCallEvent called with UUID: %@", uuid.UUIDString);
 
