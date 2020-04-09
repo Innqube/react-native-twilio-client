@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'React'
   s.dependency 'TwilioVoice', '~> 5.2.0'
-  s.dependency 'TwilioChatClient', '~> 2.6.2'
+  s.dependency 'TwilioChatClient', '~> 3.0.2'
 
   s.xcconfig = {'FRAMEWORK_SEARCH_PATHS' => '${PODS_ROOT}/TwilioVoice' '${PODS_ROOT}/TwilioChatClient'}
 end
