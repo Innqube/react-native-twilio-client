@@ -760,7 +760,12 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     //self.audioDevice.enabled = NO;
 
     NSLog(@"[IIMobile - RNTwilioVoiceClient] sendPerformAnswerVoiceCallEvent called with UUID: %@", uuid.UUIDString);
-    [RNEventEmitterHelper emitEventWithName:@"performAnswerVoiceCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString}];
+    [RNEventEmitterHelper emitEventWithName:@"performAnswerVoiceCall"
+                                 andPayload:@{
+                                     @"voipPush": self.dictionaryPayload,
+                                     @"uuid": uuid.UUIDString,
+                                     @"timestamp":  @([[NSDate date] timeIntervalSince1970] * 1000)
+                                 }];
     [RNEventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:self.callParams];
 
     if ([[NSProcessInfo processInfo] operatingSystemVersion].majorVersion < 13) {
