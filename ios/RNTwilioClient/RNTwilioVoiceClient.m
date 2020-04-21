@@ -212,7 +212,8 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)configureCallKit {
-    NSDictionary *options = @{@"appName": @"Interpreter Intelligence", @"imageName": @"ii-logo", @"ringtoneSound": @"incoming.mp3"};
+    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    NSDictionary *options = @{@"appName": appName, @"imageName": @"ii-logo", @"ringtoneSound": @"incoming.mp3"};
     self.callKitCallController = [[CXCallController alloc] init];
     _settings = [[NSMutableDictionary alloc] initWithDictionary:options];
     self.callKitProvider = [[CXProvider alloc] initWithConfiguration:[self getProviderConfiguration]];
