@@ -24,6 +24,7 @@
 @property(nonatomic, strong) NSDictionary *dictionaryPayload;
 @property(nonatomic, strong) NSString *type;
 @property(nonatomic, strong) TVOCallInvite *callInvite;
+@property(nonatomic, strong) NSString *videoCallInvite;
 @property(nonatomic, strong) TVOCall *call;
 @property(nonatomic, strong) NSUUID *callUuid;
 @property(nonatomic, strong) NSString *callMode;
@@ -310,12 +311,8 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     self.dictionaryPayload = payload.dictionaryPayload;
     self.incomingPushCompletionCallback = completion;
 
-    if (![type isEqualToString:PKPushTypeVoIP]) {
-        return;
-    }
-
     if ([mode isEqualToString:@"video"]) {
-        // Receive Video Call, handle by II
+        // Receive Video Call
         NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: VIDEO");
         int _handleType = [self getHandleType:@"generic"];
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:[payload.dictionaryPayload[@"session"] uppercaseString]];
@@ -333,18 +330,40 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         [[AVAudioSession sharedInstance] setActive: YES error: nil];
 
         [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *_Nullable error) {
+            self.videoCallInvite = @"true";
             [RNEventEmitterHelper emitEventWithName:@"displayIncomingCall" andPayload:@{@"error": error ? error.localizedDescription : @""}];
         }];
     } else if ([msgType isEqualToString:@"twilio.voice.call"]) {
-        // Receive Voice Call, Twilio handle this push
+        // Receive Voice Call
         NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: VOICE");
         [TwilioVoice handleNotification:payload.dictionaryPayload
                                delegate:self
                           delegateQueue:nil];
     } else if ([action isEqualToString:@"cancel"]) {
-        // Cancel Video or Voice Call, sent by II
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: CANCEL");
-        [self performEndCallActionWithUUID:self.call.uuid];
+        // Cancel Video Call
+        if (self.callUuid != nil || self.videoCallInvite != nil) {
+            NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: CANCEL");
+            [self performEndCallActionWithUUID:self.callUuid];
+        } else {
+            CXHandle *callHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:@"bot"];
+
+            CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
+            callUpdate.remoteHandle = callHandle;
+            callUpdate.supportsDTMF = YES;
+            callUpdate.supportsHolding = YES;
+            callUpdate.supportsGrouping = NO;
+            callUpdate.supportsUngrouping = NO;
+            callUpdate.hasVideo = NO;
+
+            NSUUID *uuid = [NSUUID UUID];
+
+            [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *error) {
+            }];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self performEndCallActionWithUUID:uuid];
+            });
+        }
     }
 
     /**
@@ -777,7 +796,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 - (void)performAnswerVideoCallWithUUID:(NSUUID *)uuid
                             completion:(void (^)(BOOL success))completionHandler {
     self.call = [self.callInvite acceptWithDelegate:self];
-    self.callInvite = nil;
+    self.videoCallInvite = nil;
     self.callKitCompletionCallback = completionHandler;
     self.callMode = @"video";
     //self.audioDevice.enabled = YES;
