@@ -1,24 +1,21 @@
-package com.ngs.react.RNTwilioClient.fcm;
+package com.ngs.react.RNTwilioVoice.fcm;
 
 import android.annotation.TargetApi;
-
 import android.app.ActivityManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ngs.react.RNTwilioClient.BuildConfig;
-import com.ngs.react.RNTwilioClient.CallNotificationManager;
+import com.ngs.react.RNTwilioVoice.CallNotificationManager;
+import com.ngs.react.RNTwilioVoice.SoundPoolManager;
 import com.twilio.voice.CallInvite;
 import com.twilio.voice.MessageException;
 import com.twilio.voice.MessageListener;
@@ -27,12 +24,7 @@ import com.twilio.voice.Voice;
 import java.util.Map;
 import java.util.Random;
 
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.TAG;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.ACTION_INCOMING_CALL;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.INCOMING_CALL_INVITE;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.INCOMING_CALL_NOTIFICATION_ID;
-
-import com.ngs.react.RNTwilioClient.SoundPoolManager;
+import static com.ngs.react.RNTwilioVoice.TwilioClientModule.*;
 
 public class VoiceFirebaseMessagingService extends FirebaseMessagingService {
 

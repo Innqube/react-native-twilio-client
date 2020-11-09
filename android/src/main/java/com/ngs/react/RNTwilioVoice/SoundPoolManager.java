@@ -1,4 +1,4 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
 import android.content.Context;
 import android.media.Ringtone;

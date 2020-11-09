@@ -1,13 +1,13 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
 import android.support.annotation.Nullable;
 import android.util.Log;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.ngs.react.RNTwilioClient.BuildConfig;
 
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.TAG;
+import static com.ngs.react.RNTwilioVoice.TwilioClientModule.TAG;
 
 public class EventManager {
 

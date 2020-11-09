@@ -1,4 +1,4 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
+import com.ngs.react.RNTwilioClient.BuildConfig;
 
-import static com.ngs.react.RNTwilioClient.EventManager.EVENT_WIRED_HEADSET;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.TAG;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_WIRED_HEADSET;
+import static com.ngs.react.RNTwilioVoice.TwilioClientModule.TAG;
 
 public class HeadsetManager {
 

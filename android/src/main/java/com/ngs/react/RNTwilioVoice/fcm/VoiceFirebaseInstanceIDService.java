@@ -1,13 +1,13 @@
-package com.ngs.react.RNTwilioClient.fcm;
+package com.ngs.react.RNTwilioVoice.fcm;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.ACTION_FCM_TOKEN;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.TAG;
+
+import static com.ngs.react.RNTwilioVoice.TwilioClientModule.ACTION_FCM_TOKEN;
+import static com.ngs.react.RNTwilioVoice.TwilioClientModule.TAG;
 
 public class VoiceFirebaseInstanceIDService extends FirebaseInstanceIdService {
 

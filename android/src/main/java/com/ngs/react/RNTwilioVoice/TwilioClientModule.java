@@ -1,4 +1,4 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
 import android.Manifest;
 import android.app.Activity;
@@ -24,11 +24,11 @@ import com.twilio.voice.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ngs.react.RNTwilioClient.EventManager.*;
+import static com.ngs.react.RNTwilioVoice.EventManager.*;
 
 public class TwilioClientModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
-    public static String TAG = "RNTwilioClient";
+    public static String TAG = "RNTwilioVoiceClient";
     private static final int MIC_PERMISSION_REQUEST_CODE = 1;
     private AudioManager audioManager;
     private int originalAudioMode = AudioManager.MODE_NORMAL;
@@ -36,16 +36,16 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     private VoiceBroadcastReceiver voiceBroadcastReceiver;
     private HashMap<String, String> twiMLParams = new HashMap<>();
 
-    public static final String INCOMING_CALL_INVITE          = "INCOMING_CALL_INVITE";
+    public static final String INCOMING_CALL_INVITE = "INCOMING_CALL_INVITE";
     public static final String INCOMING_CALL_NOTIFICATION_ID = "INCOMING_CALL_NOTIFICATION_ID";
-    public static final String NOTIFICATION_TYPE             = "NOTIFICATION_TYPE";
+    public static final String NOTIFICATION_TYPE = "NOTIFICATION_TYPE";
     public static final String ACTION_INCOMING_CALL = "com.ngs.react.TwilioClient.INCOMING_CALL";
-    public static final String ACTION_FCM_TOKEN     = "com.ngs.react.TwilioClient.ACTION_FCM_TOKEN";
-    public static final String ACTION_MISSED_CALL   = "com.ngs.react.TwilioClient.MISSED_CALL";
-    public static final String ACTION_ANSWER_CALL   = "com.ngs.react.TwilioClient.ANSWER_CALL";
-    public static final String ACTION_ANSWER_VIDEO_CALL   = "com.ngs.react.TwilioClient.ANSWER_VIDEO_CALL";
-    public static final String ACTION_REJECT_CALL   = "com.ngs.react.TwilioClient.REJECT_CALL";
-    public static final String ACTION_HANGUP_CALL   = "com.ngs.react.TwilioClient.HANGUP_CALL";
+    public static final String ACTION_FCM_TOKEN = "com.ngs.react.TwilioClient.ACTION_FCM_TOKEN";
+    public static final String ACTION_MISSED_CALL = "com.ngs.react.TwilioClient.MISSED_CALL";
+    public static final String ACTION_ANSWER_CALL = "com.ngs.react.TwilioClient.ANSWER_CALL";
+    public static final String ACTION_ANSWER_VIDEO_CALL = "com.ngs.react.TwilioClient.ANSWER_VIDEO_CALL";
+    public static final String ACTION_REJECT_CALL = "com.ngs.react.TwilioClient.REJECT_CALL";
+    public static final String ACTION_HANGUP_CALL = "com.ngs.react.TwilioClient.HANGUP_CALL";
     public static final String ACTION_CLEAR_MISSED_CALLS_COUNT = "com.ngs.react.TwilioClient.CLEAR_MISSED_CALLS_COUNT";
     public static final String CALL_SID_KEY = "CALL_SID";
     public static final String INCOMING_NOTIFICATION_PREFIX = "Incoming_";
@@ -167,7 +167,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
             @Override
             public void onConnected(Call call) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "CALL CONNECTED callListener().onConnected call state = "+call.getState());
+                    Log.d(TAG, "CALL CONNECTED callListener().onConnected call state = " + call.getState());
                 }
                 setAudioFocus();
                 proximityManager.startProximitySensor();
@@ -175,7 +175,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
 
                 WritableMap params = Arguments.createMap();
                 if (call != null) {
-                    params.putString("call_sid",   call.getSid());
+                    params.putString("call_sid", call.getSid());
                     params.putString("call_state", call.getState().name());
                     params.putString("call_from", call.getFrom());
                     params.putString("call_to", call.getTo());
@@ -236,7 +236,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
                 }
 
                 Log.e(TAG, String.format("CallListener onDisconnected error: %d, %s",
-                    error.getErrorCode(), error.getMessage()));
+                        error.getErrorCode(), error.getMessage()));
 
                 WritableMap params = Arguments.createMap();
                 params.putString("err", error.getMessage());
@@ -411,7 +411,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
             String action = intent.getAction();
             if (action.equals(ACTION_INCOMING_CALL)) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "VoiceBroadcastReceiver.onReceive ACTION_INCOMING_CALL. Intent "+ intent.getExtras());
+                    Log.d(TAG, "VoiceBroadcastReceiver.onReceive ACTION_INCOMING_CALL. Intent " + intent.getExtras());
                 }
                 handleIncomingCallIntent(intent);
             } else if (action.equals(ACTION_MISSED_CALL)) {
@@ -432,7 +432,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
             return;
         }
 
-        if(!checkPermissionForMicrophone()) {
+        if (!checkPermissionForMicrophone()) {
             promise.reject(new AssertionException("Can't init without microphone permission"));
         }
 
@@ -448,7 +448,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
 
     private void clearIncomingNotification(CallInvite callInvite) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "clearIncomingNotification() callInvite state: "+ callInvite.getState());
+            Log.d(TAG, "clearIncomingNotification() callInvite state: " + callInvite.getState());
         }
         if (callInvite != null && callInvite.getCallSid() != null) {
             // remove incoming call notification
@@ -501,7 +501,8 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
                     .setAcceptsDelayedFocusGain(true)
                     .setOnAudioFocusChangeListener(new AudioManager.OnAudioFocusChangeListener() {
                         @Override
-                        public void onAudioFocusChange(int i) { }
+                        public void onAudioFocusChange(int i) {
+                        }
                     })
                     .build();
             audioManager.requestAudioFocus(focusRequest);
@@ -552,7 +553,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     public void accept() {
         callAccepted = true;
         SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
-        if (activeCallInvite != null){
+        if (activeCallInvite != null) {
             if (activeCallInvite.getState() == CallInvite.State.PENDING) {
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "accept() activeCallInvite.getState() PENDING");
@@ -564,9 +565,9 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
                 // is completely initialised, and the first event has been skipped
                 // re-send connectionDidConnect message to JS
                 WritableMap params = Arguments.createMap();
-                params.putString("call_sid",   activeCallInvite.getCallSid());
-                params.putString("call_from",  activeCallInvite.getFrom());
-                params.putString("call_to",    activeCallInvite.getTo());
+                params.putString("call_sid", activeCallInvite.getCallSid());
+                params.putString("call_from", activeCallInvite.getFrom());
+                params.putString("call_to", activeCallInvite.getTo());
                 params.putString("call_state", activeCallInvite.getState().name());
                 callNotificationManager.createHangupLocalNotification(getReactApplicationContext(),
                         activeCallInvite.getCallSid(),
@@ -595,10 +596,10 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
         callAccepted = false;
         SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
         WritableMap params = Arguments.createMap();
-        if (activeCallInvite != null){
-            params.putString("call_sid",   activeCallInvite.getCallSid());
-            params.putString("call_from",  activeCallInvite.getFrom());
-            params.putString("call_to",    activeCallInvite.getTo());
+        if (activeCallInvite != null) {
+            params.putString("call_sid", activeCallInvite.getCallSid());
+            params.putString("call_from", activeCallInvite.getFrom());
+            params.putString("call_to", activeCallInvite.getTo());
             params.putString("call_state", activeCallInvite.getState().name());
             activeCallInvite.reject(getReactApplicationContext());
             clearIncomingNotification(activeCallInvite);
@@ -611,10 +612,10 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
         callAccepted = false;
         SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
         WritableMap params = Arguments.createMap();
-        if (activeCallInvite != null){
-            params.putString("call_sid",   activeCallInvite.getCallSid());
-            params.putString("call_from",  activeCallInvite.getFrom());
-            params.putString("call_to",    activeCallInvite.getTo());
+        if (activeCallInvite != null) {
+            params.putString("call_sid", activeCallInvite.getCallSid());
+            params.putString("call_from", activeCallInvite.getFrom());
+            params.putString("call_to", activeCallInvite.getTo());
             params.putString("call_state", activeCallInvite.getState().name());
             clearIncomingNotification(activeCallInvite);
         }
@@ -624,7 +625,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     @ReactMethod
     public void connect(ReadableMap params) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "connect params: "+params);
+            Log.d(TAG, "connect params: " + params);
         }
         WritableMap errParams = Arguments.createMap();
         if (accessToken == null) {
@@ -679,24 +680,24 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     public void getActiveCall(Promise promise) {
         if (activeCall != null) {
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Active call found state = "+activeCall.getState());
+                Log.d(TAG, "Active call found state = " + activeCall.getState());
             }
             WritableMap params = Arguments.createMap();
-            params.putString("call_sid",   activeCall.getSid());
-            params.putString("call_from",  activeCall.getFrom());
-            params.putString("call_to",    activeCall.getTo());
+            params.putString("call_sid", activeCall.getSid());
+            params.putString("call_from", activeCall.getFrom());
+            params.putString("call_to", activeCall.getTo());
             params.putString("call_state", activeCall.getState().name());
             promise.resolve(params);
             return;
         }
         if (activeCallInvite != null) {
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Active call invite found state = "+activeCallInvite.getState());
+                Log.d(TAG, "Active call invite found state = " + activeCallInvite.getState());
             }
             WritableMap params = Arguments.createMap();
-            params.putString("call_sid",   activeCallInvite.getCallSid());
-            params.putString("call_from",  activeCallInvite.getFrom());
-            params.putString("call_to",    activeCallInvite.getTo());
+            params.putString("call_sid", activeCallInvite.getCallSid());
+            params.putString("call_from", activeCallInvite.getFrom());
+            params.putString("call_to", activeCallInvite.getTo());
             params.putString("call_state", activeCallInvite.getState().name());
             promise.resolve(params);
             return;
@@ -707,6 +708,19 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     @ReactMethod
     public void setSpeakerPhone(Boolean value) {
         audioManager.setSpeakerphoneOn(value);
+    }
+
+    @ReactMethod
+    public void sendMessage(String message) {
+    }
+
+    @ReactMethod
+    public void getDeviceToken(Promise promise) {
+        promise.resolve("");
+    }
+
+    @ReactMethod
+    public void deviceReadyForCalls() {
     }
 
     // *** End TwilioClient public methods ****

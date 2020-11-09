@@ -1,10 +1,6 @@
-package com.ngs.react.RNTwilioClient;
+package com.ngs.react.RNTwilioVoice;
 
-import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,16 +14,17 @@ import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.WindowManager;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.ngs.react.RNTwilioClient.BuildConfig;
+import com.ngs.react.RNTwilioClient.R;
 import com.twilio.voice.CallInvite;
 
 import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static com.ngs.react.RNTwilioClient.TwilioClientModule.*;
+import static com.ngs.react.RNTwilioVoice.TwilioClientModule.*;
 
 
 public class CallNotificationManager {

@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "38F71DF41E9C333F0067E86F"
                BuildableName = "libRNTwilioClient.a"
-               BlueprintName = "RNTwilioClient"
-               ReferencedContainer = "container:RNTwilioClient.xcodeproj">
+               BlueprintName = "RNTwilioVoiceClient"
+               ReferencedContainer = "container:RNTwilioVoiceClient.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,8 +47,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "38F71DF41E9C333F0067E86F"
             BuildableName = "libRNTwilioClient.a"
-            BlueprintName = "RNTwilioClient"
-            ReferencedContainer = "container:RNTwilioClient.xcodeproj">
+            BlueprintName = "RNTwilioVoiceClient"
+            ReferencedContainer = "container:RNTwilioVoiceClient.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -65,8 +65,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "38F71DF41E9C333F0067E86F"
             BuildableName = "libRNTwilioClient.a"
-            BlueprintName = "RNTwilioClient"
-            ReferencedContainer = "container:RNTwilioClient.xcodeproj">
+            BlueprintName = "RNTwilioVoiceClient"
+            ReferencedContainer = "container:RNTwilioVoiceClient.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
