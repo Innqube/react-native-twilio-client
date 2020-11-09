@@ -4,47 +4,22 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
-
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.AssertionException;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.ReadableMap;
-
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
-
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-
+import com.facebook.react.bridge.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.twilio.voice.Call;
-import com.twilio.voice.CallException;
-import com.twilio.voice.CallInvite;
-import com.twilio.voice.LogLevel;
-import com.twilio.voice.RegistrationException;
-import com.twilio.voice.RegistrationListener;
-import com.twilio.voice.Voice;
+import com.twilio.voice.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -455,11 +430,11 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
         if (accessToken.equals("")) {
             promise.reject(new JSApplicationIllegalArgumentException("Invalid access token"));
             return;
-        }        
-        
+        }
+
         if(!checkPermissionForMicrophone()) {
             promise.reject(new AssertionException("Can't init without microphone permission"));
-        }        
+        }
 
         TwilioClientModule.this.accessToken = accessToken;
         if (BuildConfig.DEBUG) {
@@ -732,11 +707,6 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     @ReactMethod
     public void setSpeakerPhone(Boolean value) {
         audioManager.setSpeakerphoneOn(value);
-    }
-
-    @ReactMethod
-    public void sendMessage(String message) {
-
     }
 
     // *** End TwilioClient public methods ****

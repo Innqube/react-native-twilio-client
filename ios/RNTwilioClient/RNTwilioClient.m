@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(initWithAccessToken:
 (NSString *) token) {
     _token = token;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppTerminateNotification) name:UIApplicationWillTerminateNotification object:nil];
-    
+
     if ([self.type isEqualToString:PKPushTypeVoIP]) {
 
         // Twilio Voice
@@ -588,7 +588,6 @@ RCT_REMAP_METHOD(getActiveCall,
         params[@"reservationSid"] = self.dictionaryPayload[@"reservationSid"];
         [EventEmitterHelper emitEventWithName:@"performEndVideoCall" andPayload:params];
     }
-    self.callUuid = nil;
 
     [action fulfill];
 }
@@ -722,7 +721,7 @@ RCT_REMAP_METHOD(getActiveCall,
     self.callInvite = nil;
     self.callKitCompletionCallback = completionHandler;
     self.callMode = @"voice";
-    
+
     NSLog(@"[IIMobile - RNTwilioClient] sendPerformAnswerVoiceCallEvent called with UUID: %@", uuid.UUIDString);
     [EventEmitterHelper emitEventWithName:@"performAnswerVoiceCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString}];
     [EventEmitterHelper emitEventWithName:@"connectionDidConnect" andPayload:self.callParams];
@@ -735,9 +734,9 @@ RCT_REMAP_METHOD(getActiveCall,
     self.callKitCompletionCallback = completionHandler;
     self.callMode = @"video";
     TwilioVoice.audioEnabled = YES;
-    
+
     NSLog(@"[IIMobile - RNTwilioClient] sendPerformAnswerVideoCallEvent called with UUID: %@", uuid.UUIDString);
-    
+
     [EventEmitterHelper emitEventWithName:@"performAnswerVideoCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString} ];
 }
 
