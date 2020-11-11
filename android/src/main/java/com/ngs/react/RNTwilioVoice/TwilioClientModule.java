@@ -426,7 +426,7 @@ public class TwilioClientModule extends ReactContextBaseJavaModule implements Ac
     }
 
     @ReactMethod
-    public void initWithAccessToken(final String accessToken, Promise promise) {
+    public void init(final String accessToken, Promise promise) {
         if (accessToken.equals("")) {
             promise.reject(new JSApplicationIllegalArgumentException("Invalid access token"));
             return;
