@@ -12,7 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.ngs.react.RNTwilioClient.BuildConfig;
 
 import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_WIRED_HEADSET;
-import static com.ngs.react.RNTwilioVoice.TwilioClientModule.TAG;
+import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.TAG;
 
 public class HeadsetManager {
 

@@ -76,11 +76,12 @@ public class TwilioNotificationsService extends Service {
     }
 
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        if (delegate != null) {
-            delegate.onMessageReceived(remoteMessage);
-        } else {
-            Log.w(LOG_TAG, "No MessageReceivedDelegate found!");
-        }
+        Log.d(LOG_TAG, "onMessageReceived: " + remoteMessage.toString());
+//        if (delegate != null) {
+//            delegate.onMessageReceived(remoteMessage);
+//        } else {
+//            Log.w(LOG_TAG, "No MessageReceivedDelegate found!");
+//        }
     }
 
 }

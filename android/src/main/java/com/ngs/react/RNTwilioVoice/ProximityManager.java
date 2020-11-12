@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_PROXIMITY;
-import static com.ngs.react.RNTwilioVoice.TwilioClientModule.TAG;
+import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.TAG;
 
 public class ProximityManager {
 
@@ -146,6 +146,10 @@ public class ProximityManager {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "register proximity listener");
             }
+            // SensorManager.SENSOR_DELAY_FASTEST(0 ms),
+            // SensorManager.SENSOR_DELAY_GAME(20 ms),
+            // SensorManager.SENSOR_DELAY_UI(60 ms),
+            // SensorManager.SENSOR_DELAY_NORMAL(200 ms)
             sensorManager.registerListener(
                 proximityListener,
                 proximitySensor,

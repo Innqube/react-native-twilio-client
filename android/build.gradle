@@ -2,11 +2,8 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
@@ -19,26 +16,29 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
     }
 }
 
 apply plugin: 'com.android.library'
 
+def DEFAULT_MIN_SDK_VERSION = 23
+def DEFAULT_COMPILE_SDK_VERSION = 30
+def DEFAULT_BUILD_TOOLS_VERSION = "29.0.3"
+def DEFAULT_TARGET_SDK_VERSION = 29
+def DEFAULT_SUPPORT_LIB_VERSION = "29.0.3"
+
 android {
+    compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
+    buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
-    compileSdkVersion 27
-    buildToolsVersion "28.0.3"
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 27
+        minSdkVersion rootProject.hasProperty('minSdkVersion') ? rootProject.minSdkVersion : DEFAULT_MIN_SDK_VERSION
+        targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
@@ -52,11 +52,13 @@ android {
 }
 
 dependencies {
+    def supportLibVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
+
     api fileTree(include: ['*.jar'], dir: 'libs')
-    api 'com.twilio:voice-android:2.0.7'
+    api 'com.twilio:voice-android:4.5.0'
     api 'com.twilio:chat-android:4.2.9'
-    api 'com.android.support:appcompat-v7:27.0.2'
-    api 'com.facebook.react:react-native:+' // should be api 'com.facebook.react:react-native:0.59.9'?
-    api 'com.google.firebase:firebase-messaging:17.+'
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation 'com.facebook.react:react-native:+' // should be api 'com.facebook.react:react-native:0.59.9'?
+    implementation 'com.google.firebase:firebase-messaging:17.6.+'
     testImplementation 'junit:junit:4.12'
 }

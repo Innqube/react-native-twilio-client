@@ -9,7 +9,7 @@ public class SoundPoolManager {
 
     private boolean playing = false;
     private static SoundPoolManager instance;
-    private Ringtone ringtone;
+    private Ringtone ringtone = null;
 
     private SoundPoolManager(Context context) {
         Uri ringtoneSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
