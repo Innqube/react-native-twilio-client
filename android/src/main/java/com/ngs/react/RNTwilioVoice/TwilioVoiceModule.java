@@ -50,14 +50,14 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
     public static final String CANCELLED_CALL_INVITE         = "CANCELLED_CALL_INVITE";
 
 
-    public static final String ACTION_INCOMING_CALL = "com.hoxfon.react.TwilioVoice.INCOMING_CALL";
-    public static final String ACTION_FCM_TOKEN     = "com.hoxfon.react.TwilioVoice.ACTION_FCM_TOKEN";
-    public static final String ACTION_MISSED_CALL   = "com.hoxfon.react.TwilioVoice.MISSED_CALL";
-    public static final String ACTION_ANSWER_CALL   = "com.hoxfon.react.TwilioVoice.ANSWER_CALL";
-    public static final String ACTION_REJECT_CALL   = "com.hoxfon.react.TwilioVoice.REJECT_CALL";
-    public static final String ACTION_HANGUP_CALL   = "com.hoxfon.react.TwilioVoice.HANGUP_CALL";
-    public static final String ACTION_CANCEL_CALL_INVITE = "com.hoxfon.react.TwilioVoice.CANCEL_CALL_INVITE";
-    public static final String ACTION_CLEAR_MISSED_CALLS_COUNT = "com.hoxfon.react.TwilioVoice.CLEAR_MISSED_CALLS_COUNT";
+    public static final String ACTION_INCOMING_CALL = "com.ngs.react.TwilioVoice.INCOMING_CALL";
+    public static final String ACTION_FCM_TOKEN     = "com.ngs.react.TwilioVoice.ACTION_FCM_TOKEN";
+    public static final String ACTION_MISSED_CALL   = "com.ngs.react.TwilioVoice.MISSED_CALL";
+    public static final String ACTION_ANSWER_CALL   = "com.ngs.react.TwilioVoice.ANSWER_CALL";
+    public static final String ACTION_REJECT_CALL   = "com.ngs.react.TwilioVoice.REJECT_CALL";
+    public static final String ACTION_HANGUP_CALL   = "com.ngs.react.TwilioVoice.HANGUP_CALL";
+    public static final String ACTION_CANCEL_CALL_INVITE = "com.ngs.react.TwilioVoice.CANCEL_CALL_INVITE";
+    public static final String ACTION_CLEAR_MISSED_CALLS_COUNT = "com.ngs.react.TwilioVoice.CLEAR_MISSED_CALLS_COUNT";
 
     public static final String CALL_SID_KEY = "CALL_SID";
     public static final String INCOMING_NOTIFICATION_PREFIX = "Incoming_";
@@ -66,7 +66,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
     public static final int HANGUP_NOTIFICATION_ID = 11;
     public static final int CLEAR_MISSED_CALLS_NOTIFICATION_ID = 21;
 
-    public static final String PREFERENCE_KEY = "com.hoxfon.react.TwilioVoice.PREFERENCE_FILE_KEY";
+    public static final String PREFERENCE_KEY = "com.ngs.react.TwilioVoice.PREFERENCE_FILE_KEY";
 
     private NotificationManager notificationManager;
     private CallNotificationManager callNotificationManager;

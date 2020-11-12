@@ -1,4 +1,3 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ngs.react.RNTwilioClient">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.ngs.react">
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
 </manifest>

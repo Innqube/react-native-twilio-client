@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import androidx.core.app.NotificationCompat;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.ngs.react.BuildConfig;
 import com.twilio.voice.CallInvite;
 import com.twilio.voice.CancelledCallInvite;
 
@@ -30,7 +31,8 @@ public class CallNotificationManager {
 
     private NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-    public CallNotificationManager() {}
+    public CallNotificationManager() {
+    }
 
     public int getApplicationImportance(ReactApplicationContext context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
@@ -94,10 +96,9 @@ public class CallNotificationManager {
     public void createIncomingCallNotification(ReactApplicationContext context,
                                                CallInvite callInvite,
                                                int notificationId,
-                                               Intent launchIntent)
-    {
+                                               Intent launchIntent) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "createIncomingCallNotification intent "+launchIntent.getFlags());
+            Log.d(TAG, "createIncomingCallNotification intent " + launchIntent.getFlags());
         }
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -158,7 +159,7 @@ public class CallNotificationManager {
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
 
         notificationManager.notify(notificationId, notificationBuilder.build());
-        TwilioVoiceModule.callNotificationMap.put(INCOMING_NOTIFICATION_PREFIX+callInvite.getCallSid(), notificationId);
+        TwilioVoiceModule.callNotificationMap.put(INCOMING_NOTIFICATION_PREFIX + callInvite.getCallSid(), notificationId);
     }
 
     public void initCallNotificationsChannel(NotificationManager notificationManager) {
@@ -224,7 +225,7 @@ public class CallNotificationManager {
         } else {
             inboxStyle.setBigContentTitle(String.valueOf(missedCalls) + " missed calls");
         }
-        inboxStyle.addLine("from: " +callInvite.getFrom());
+        inboxStyle.addLine("from: " + callInvite.getFrom());
         sharedPrefEditor.putInt(MISSED_CALLS_GROUP, missedCalls);
         sharedPrefEditor.commit();
 
@@ -318,7 +319,7 @@ public class CallNotificationManager {
             if (notificationId != 0) {
                 notificationManager.cancel(notificationId);
             } else if (callInvite != null) {
-                String notificationKey = INCOMING_NOTIFICATION_PREFIX+callInvite.getCallSid();
+                String notificationKey = INCOMING_NOTIFICATION_PREFIX + callInvite.getCallSid();
                 if (TwilioVoiceModule.callNotificationMap.containsKey(notificationKey)) {
                     notificationId = TwilioVoiceModule.callNotificationMap.get(notificationKey);
                     notificationManager.cancel(notificationId);

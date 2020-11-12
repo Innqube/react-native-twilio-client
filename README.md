@@ -2,6 +2,8 @@
 This is a React Native wrapper for Twilio Programmable Voice SDK & CallKit & PushKit.
 TwilioVideo compatible.
 
+Based on [react-native-twilio-programmable-voice](https://github.com/hoxfon/react-native-twilio-programmable-voice) for twilio voice and [react-native-twilio-video-webrtc](https://github.com/blackuy/react-native-twilio-video-webrtc) 
+
 # Twilio Voice Framework
 - iOS 2.0.4 (specified by the app's own podfile)
 - Android not available

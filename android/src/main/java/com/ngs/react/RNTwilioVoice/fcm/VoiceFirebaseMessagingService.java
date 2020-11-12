@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.ngs.react.RNTwilioClient.BuildConfig;
+import com.ngs.react.BuildConfig;
 import com.ngs.react.RNTwilioVoice.CallNotificationManager;
 import com.ngs.react.RNTwilioVoice.SoundPoolManager;
 import com.twilio.voice.CallInvite;

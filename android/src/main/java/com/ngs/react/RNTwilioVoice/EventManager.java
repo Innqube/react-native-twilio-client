@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.ngs.react.RNTwilioClient.BuildConfig;
+import com.ngs.react.BuildConfig;
 
 import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.TAG;
 
