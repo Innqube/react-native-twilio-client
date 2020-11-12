@@ -1,9 +1,9 @@
-import {NativeEventEmitter, NativeModules, Platform,} from 'react-native'
+import {NativeEventEmitter, NativeModules, Platform} from 'react-native'
 
 const ANDROID = 'android'
 const IOS = 'ios'
 
-const {RNTwilioVoiceClient, RNEventEmitterHelper} = NativeModules;
+const {RNTwilioVoice: TwilioVoice, RNEventEmitterHelper} = NativeModules;
 
 const NativeAppEventEmitter = new NativeEventEmitter(RNEventEmitterHelper);
 
@@ -13,12 +13,11 @@ const _eventHandlers = {
     deviceNotReady: new Map(),
     deviceDidReceiveIncoming: new Map(),
     connectionDidConnect: new Map(),
+    connectionIsReconnecting: new Map(),
+    connectionDidReconnect: new Map(),
     connectionDidDisconnect: new Map(),
-    performAnswerVoiceCall: new Map(),
-    performAnswerVideoCall: new Map(),
-    performEndVideoCall: new Map(),
-    requestTransactionError: new Map(),
-    callRejected: new Map(),
+    callStateRinging: new Map(),
+    callInviteCancelled: new Map(),
     // Events for TwilioVideo
     voipRemoteNotificationsRegistered: new Map()
 }
@@ -29,8 +28,8 @@ const TwilioVoiceClient = {
         return new Promise(((resolve, reject) => {
             tokenCallback()
                 .then(token => {
-                    RNTwilioVoiceClient
-                        .init(token)
+                    TwilioVoice
+                        .initWithAccessToken(token)
                         .then(result => resolve(result))
                         .catch(error => reject(error));
                 })
@@ -40,42 +39,42 @@ const TwilioVoiceClient = {
     connect(params = {}, tokenCallback) {
         tokenCallback()
             .then(token => {
-                return RNTwilioVoiceClient.connect(params, token)
+                return TwilioVoice.connect(params, token)
             })
     },
     disconnect(uuid) {
-        RNTwilioVoiceClient.disconnect(uuid)
+        TwilioVoice.disconnect(uuid)
     },
     accept() {
         if (Platform.OS === IOS) {
             return
         }
-        RNTwilioVoiceClient.accept()
+        TwilioVoice.accept()
     },
     reject() {
         if (Platform.OS === IOS) {
             return
         }
-        RNTwilioVoiceClient.reject()
+        TwilioVoice.reject()
     },
     ignore() {
         if (Platform.OS === IOS) {
             return
         }
-        RNTwilioVoiceClient.ignore()
+        TwilioVoice.ignore()
     },
     setMuted(isMuted) {
-        RNTwilioVoiceClient.setMuted(isMuted)
+        TwilioVoice.setMuted(isMuted)
     },
     setSpeakerPhone(value) {
-        RNTwilioVoiceClient.setSpeakerPhone(value)
+        TwilioVoice.setSpeakerPhone(value)
     },
     sendDigits(digits) {
-        RNTwilioVoiceClient.sendDigits(digits)
+        TwilioVoice.sendDigits(digits)
     },
     requestPermissions(senderId) {
         if (Platform.OS === ANDROID) {
-            RNTwilioVoiceClient.requestPermissions(senderId)
+            TwilioVoice.requestPermissions(senderId)
         }
     },
     unregister(tokenCallback) {
@@ -83,7 +82,7 @@ const TwilioVoiceClient = {
             return new Promise(((resolve, reject) => {
                 tokenCallback()
                     .then(token => {
-                        RNTwilioVoiceClient
+                        TwilioVoice
                             .unregister(token)
                             .then(result => resolve(result))
                             .catch(error => reject(error));
@@ -108,13 +107,13 @@ const TwilioVoiceClient = {
         _eventHandlers[type].delete(handler)
     },
     log(message) {
-        RNTwilioVoiceClient.sendMessage(message)
+        TwilioVoice.sendMessage(message)
     },
     deviceReadyForCalls() {
-        RNTwilioVoiceClient.deviceReadyForCalls()
+        TwilioVoice.deviceReadyForCalls()
     },
     getDeviceToken() {
-        return RNTwilioVoiceClient.getDeviceToken();
+        return TwilioVoice.getDeviceToken();
     }
 }
 
