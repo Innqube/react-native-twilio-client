@@ -18,6 +18,7 @@ const _eventHandlers = {
     connectionDidDisconnect: new Map(),
     callStateRinging: new Map(),
     callInviteCancelled: new Map(),
+    callRejected: new Map(),
     // Events for TwilioVideo
     voipRemoteNotificationsRegistered: new Map()
 }
@@ -42,9 +43,7 @@ const TwilioVoiceClient = {
                 return TwilioVoice.connect(params, token)
             })
     },
-    disconnect(uuid) {
-        TwilioVoice.disconnect(uuid)
-    },
+    disconnect: TwilioVoice.disconnect,
     accept() {
         if (Platform.OS === IOS) {
             return
@@ -63,41 +62,48 @@ const TwilioVoiceClient = {
         }
         TwilioVoice.ignore()
     },
-    setMuted(isMuted) {
-        TwilioVoice.setMuted(isMuted)
-    },
-    setSpeakerPhone(value) {
-        TwilioVoice.setSpeakerPhone(value)
-    },
-    sendDigits(digits) {
-        TwilioVoice.sendDigits(digits)
-    },
+    setMuted: TwilioVoice.setMuted,
+    setSpeakerPhone: TwilioVoice.setSpeakerPhone,
+    sendDigits: TwilioVoice.sendDigits,
+    hold: TwilioVoice.hold,
     requestPermissions(senderId) {
         if (Platform.OS === ANDROID) {
             TwilioVoice.requestPermissions(senderId)
         }
     },
-    unregister(tokenCallback) {
+    getActiveCall: TwilioVoice.getActiveCall,
+    getCallInvite: TwilioVoice.getCallInvite,
+    configureCallKit(params = {}) {
         if (Platform.OS === IOS) {
-            return new Promise(((resolve, reject) => {
-                tokenCallback()
-                    .then(token => {
-                        TwilioVoice
-                            .unregister(token)
-                            .then(result => resolve(result))
-                            .catch(error => reject(error));
-                    })
-                    .catch(error => reject(error));
-            }));
+            TwilioVoice.configureCallKit(params)
+        }
+    },
+    unregister(tokenCallback) {
+        // if (Platform.OS === IOS) {
+        //     return new Promise(((resolve, reject) => {
+        //         tokenCallback()
+        //             .then(token => {
+        //                 TwilioVoice
+        //                     .unregister(token)
+        //                     .then(result => resolve(result))
+        //                     .catch(error => reject(error));
+        //             })
+        //             .catch(error => reject(error));
+        //     }));
+        // }
+        if (Platform.OS === IOS) {
+            TwilioVoice.unregister()
         }
     },
     addEventListener(type, handler) {
-        if (_eventHandlers[type].has(handler)) {
-            return
+        if (!_eventHandlers.hasOwnProperty(type)) {
+            throw new Error('Event handler not found: ' + type)
         }
-        _eventHandlers[type].set(handler, NativeAppEventEmitter.addListener(type, rtn => {
-            handler(rtn)
-        }))
+        if (_eventHandlers[type])
+            if (_eventHandlers[type].has(handler)) {
+                return
+            }
+        _eventHandlers[type].set(handler, NativeAppEventEmitter.addListener(type, rtn => { handler(rtn) }))
     },
     removeEventListener(type, handler) {
         if (!_eventHandlers[type].has(handler)) {
@@ -106,15 +112,15 @@ const TwilioVoiceClient = {
         _eventHandlers[type].get(handler).remove()
         _eventHandlers[type].delete(handler)
     },
-    log(message) {
-        TwilioVoice.sendMessage(message)
-    },
-    deviceReadyForCalls() {
-        TwilioVoice.deviceReadyForCalls()
-    },
-    getDeviceToken() {
-        return TwilioVoice.getDeviceToken();
-    }
+    // log(message) {
+    //     TwilioVoice.sendMessage(message)
+    // },
+    // deviceReadyForCalls() {
+    //     TwilioVoice.deviceReadyForCalls()
+    // },
+    // getDeviceToken() {
+    //     return TwilioVoice.getDeviceToken();
+    // }
 }
 
 export default TwilioVoiceClient
