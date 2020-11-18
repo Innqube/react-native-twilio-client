@@ -91,9 +91,6 @@ const TwilioVoiceClient = {
                     .catch(error => reject(error));
             }));
         }
-        // if (Platform.OS === IOS) {
-        //     TwilioVoice.unregister()
-        // }
     },
     addEventListener(type, handler) {
         if (!_eventHandlers.hasOwnProperty(type)) {
@@ -112,15 +109,11 @@ const TwilioVoiceClient = {
         _eventHandlers[type].get(handler).remove()
         _eventHandlers[type].delete(handler)
     },
-    // log(message) {
-    //     TwilioVoice.sendMessage(message)
-    // },
-    // deviceReadyForCalls() {
-    //     TwilioVoice.deviceReadyForCalls()
-    // },
-    // getDeviceToken() {
-    //     return TwilioVoice.getDeviceToken();
-    // }
+    getDeviceToken() {
+        if (Platform.OS === IOS) {
+            return TwilioVoice.getDeviceToken();
+        }
+    }
 }
 
 export default TwilioVoiceClient
