@@ -3,7 +3,7 @@ import {NativeEventEmitter, NativeModules, Platform} from 'react-native'
 const ANDROID = 'android'
 const IOS = 'ios'
 
-const {RNTwilioVoiceClient: TwilioVoice, RNEventEmitterHelper} = NativeModules;
+const {RNTwilioVoice: TwilioVoice, RNEventEmitterHelper} = NativeModules;
 
 const NativeAppEventEmitter = new NativeEventEmitter(RNEventEmitterHelper);
 
