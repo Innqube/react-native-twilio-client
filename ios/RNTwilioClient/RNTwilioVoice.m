@@ -1,5 +1,5 @@
 //
-//  RNTwilioVoiceClient.m
+//  RNTwilioVoice.m
 //  Interpreter Intelligence
 //
 //  Created by Enrique Viard.
@@ -7,7 +7,7 @@
 //
 
 
-#import "RNTwilioVoiceClient.h"
+#import "RNTwilioVoice.h"
 #import <React/RCTLog.h>
 #import <PushKit/PushKit.h>
 #import <CallKit/CallKit.h>
@@ -19,7 +19,7 @@
 @import TwilioVoice;
 @import UIKit;
 
-@interface RNTwilioVoiceClient () <PKPushRegistryDelegate, TVONotificationDelegate, TVOCallDelegate, CXProviderDelegate>
+@interface RNTwilioVoice () <PKPushRegistryDelegate, TVONotificationDelegate, TVOCallDelegate, CXProviderDelegate>
 @property(nonatomic, strong) NSString *deviceTokenString;
 @property(nonatomic, strong) NSDictionary *dictionaryPayload;
 @property(nonatomic, strong) NSString *type;
@@ -34,10 +34,10 @@
 @property(nonatomic, strong) CXProvider *callKitProvider;
 @property(nonatomic, strong) CXCallController *callKitCallController;
 @property(nonatomic, strong) TVODefaultAudioDevice *audioDevice;
-@property (nonatomic, strong) void(^incomingPushCompletionCallback)(void);
+@property(nonatomic, strong) void(^incomingPushCompletionCallback)(void);
 @end
 
-@implementation RNTwilioVoiceClient {
+@implementation RNTwilioVoice {
     NSMutableDictionary *_settings;
     NSMutableDictionary *_callParams;
     NSString *_token;
@@ -45,7 +45,7 @@
 
 RCT_EXPORT_MODULE()
 
-        static RNTwilioVoiceClient *sharedInstance = nil;
+        static RNTwilioVoice *sharedInstance = nil;
                 NSString *const StatePending = @"PENDING";
                 NSString *const StateConnecting = @"CONNECTING";
                 NSString *const StateConnected = @"CONNECTED";
@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (id)init {
-    return [RNTwilioVoiceClient sharedInstance];
+    return [RNTwilioVoice sharedInstance];
 }
 
 - (void)dealloc {
@@ -80,14 +80,14 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(sendMessage:(NSString *) message) {
     if (message != nil) {
-        NSLog(@"[IIMobile - RNTwilioVoiceClient][Message from ReactNative] %@", message);
+        NSLog(@"[IIMobile - RNTwilioVoice][Message from ReactNative] %@", message);
     } else {
-        NSLog(@"[IIMobile - RNTwilioVoiceClient][Message from ReactNative] NULL");
+        NSLog(@"[IIMobile - RNTwilioVoice][Message from ReactNative] NULL");
     }
 }
 
 RCT_REMAP_METHOD(init, withToken:(NSString*)token init_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] init with token: %@", token);
+    NSLog(@"[IIMobile - RNTwilioVoice] init with token: %@", token);
 
     #if TARGET_IPHONE_SIMULATOR
         self.deviceTokenString = @"device-token-simulator";
@@ -99,17 +99,17 @@ RCT_REMAP_METHOD(init, withToken:(NSString*)token init_resolver:(RCTPromiseResol
                              deviceToken:self.deviceTokenString
                               completion:^(NSError *error) {
                                   if (error) {
-                                      NSLog(@"[IIMobile - RNTwilioVoiceClient] An error occurred while registering: %@", [error localizedDescription]);
+                                      NSLog(@"[IIMobile - RNTwilioVoice] An error occurred while registering: %@", [error localizedDescription]);
                                       reject(@"init-client-error", [error localizedDescription], nil);
                                   } else {
-                                      NSLog(@"[IIMobile - RNTwilioVoiceClient] Successfully registered for VoIP push notifications.");
+                                      NSLog(@"[IIMobile - RNTwilioVoice] Successfully registered for VoIP push notifications.");
                                       resolve(@{@"status": @"null"});
                                   }
                               }];
 }
 
 RCT_EXPORT_METHOD(connect: (NSDictionary *)params andToken: (NSString *) token) {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][connect] Calling phone number %@", [params valueForKey:@"To"]);
+    NSLog(@"[IIMobile - RNTwilioVoice][connect] Calling phone number %@", [params valueForKey:@"To"]);
 
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
@@ -126,43 +126,43 @@ RCT_EXPORT_METHOD(connect: (NSDictionary *)params andToken: (NSString *) token) 
 
 RCT_EXPORT_METHOD(disconnect:(NSString *) uuidStr) {
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidStr];
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][disconnect] Disconnecting call with UUID: %@", uuidStr);
+    NSLog(@"[IIMobile - RNTwilioVoice][disconnect] Disconnecting call with UUID: %@", uuidStr);
     [self performEndCallActionWithUUID:(uuid != nil ? uuid : self.call.uuid)];
 }
 
 RCT_EXPORT_METHOD(setMuted:(BOOL *) muted) {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] setMuted");
+    NSLog(@"[IIMobile - RNTwilioVoice] setMuted");
     self.call.muted = (BOOL) muted;
 }
 
 RCT_EXPORT_METHOD(setSpeakerPhone:(BOOL *) speaker) {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] setSpeakerPhone");
+    NSLog(@"[IIMobile - RNTwilioVoice] setSpeakerPhone");
     [self toggleAudioRoute:speaker];
 }
 
 RCT_EXPORT_METHOD(sendDigits: (NSString *) digits) {
     if (self.call && self.call.state == TVOCallStateConnected) {
-        NSLog(@"[IIMobile - RNTwilioVoiceClient][sendDigits] %@", digits);
+        NSLog(@"[IIMobile - RNTwilioVoice][sendDigits] %@", digits);
         [self.call sendDigits:digits];
     }
 }
 
 RCT_EXPORT_METHOD(unregister: (NSString *) token) {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] unregister with accessToken: %@", token);
+    NSLog(@"[IIMobile - RNTwilioVoice] unregister with accessToken: %@", token);
 
     [TwilioVoice unregisterWithAccessToken:token
                                deviceToken:self.deviceTokenString
                                 completion:^(NSError *_Nullable error) {
                                     if (error) {
-                                        NSLog(@"[IIMobile - RNTwilioVoiceClient] An error occurred while unregistering: %@", [error localizedDescription]);
+                                        NSLog(@"[IIMobile - RNTwilioVoice] An error occurred while unregistering: %@", [error localizedDescription]);
                                     } else {
-                                        NSLog(@"[IIMobile - RNTwilioVoiceClient] Successfully unregistered for VoIP push notifications.");
+                                        NSLog(@"[IIMobile - RNTwilioVoice] Successfully unregistered for VoIP push notifications.");
                                     }
                                 }];
 }
 
 RCT_REMAP_METHOD(getDeviceToken, tokenResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][getDeviceToken] %@", self.deviceTokenString);
+    NSLog(@"[IIMobile - RNTwilioVoice][getDeviceToken] %@", self.deviceTokenString);
 
     #if TARGET_IPHONE_SIMULATOR
         resolve(@"iphone-simulator-token");
@@ -176,7 +176,7 @@ RCT_REMAP_METHOD(getDeviceToken, tokenResolver: (RCTPromiseResolveBlock)resolve 
 }
 
 RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock) reject) {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][getActiveCall]");
+    NSLog(@"[IIMobile - RNTwilioVoice][getActiveCall]");
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     if (self.callInvite) {
         if (self.callInvite.callSid) {
@@ -243,7 +243,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (CXProviderConfiguration *)getProviderConfiguration {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][getProviderConfiguration]");
+    NSLog(@"[IIMobile - RNTwilioVoice][getProviderConfiguration]");
     CXProviderConfiguration *providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:_settings[@"appName"]];
     providerConfiguration.supportsVideo = YES;
     providerConfiguration.maximumCallGroups = 1;
@@ -263,20 +263,20 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
     self.deviceTokenString = [self stringFromDeviceToken:credentials.token];
     self.type = type;
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][didUpdatePushCredentials][DeviceToken: %@]", self.deviceTokenString);
+    NSLog(@"[IIMobile - RNTwilioVoice][didUpdatePushCredentials][DeviceToken: %@]", self.deviceTokenString);
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry didInvalidatePushTokenForType:(PKPushType)type {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][didInvalidatePushTokenForType]");
+    NSLog(@"[IIMobile - RNTwilioVoice][didInvalidatePushTokenForType]");
     if ([type isEqualToString:PKPushTypeVoIP]) {
         /*
         [TwilioVoice unregisterWithAccessToken:token
                                    deviceToken:self.deviceTokenString
                                     completion:^(NSError *_Nullable error) {
                                         if (error) {
-                                            NSLog(@"[IIMobile - RNTwilioVoiceClient] An error occurred while unregistering: %@", [error localizedDescription]);
+                                            NSLog(@"[IIMobile - RNTwilioVoice] An error occurred while unregistering: %@", [error localizedDescription]);
                                         } else {
-                                            NSLog(@"[IIMobile - RNTwilioVoiceClient] Successfully unregistered for VoIP push notifications.");
+                                            NSLog(@"[IIMobile - RNTwilioVoice] Successfully unregistered for VoIP push notifications.");
                                         }
                                     }];
         */
@@ -303,7 +303,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 - (void)handleIncomingPushWithPayload:(PKPushPayload *)payload
                               forType:(PKPushType)type
                 withCompletionHandler:(void (^)(void))completion {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient][didReceiveIncomingPushWithPayload] payload %@", payload.dictionaryPayload);
+    NSLog(@"[IIMobile - RNTwilioVoice][didReceiveIncomingPushWithPayload] payload %@", payload.dictionaryPayload);
 
     NSString *mode = payload.dictionaryPayload[@"mode"];
     NSString *msgType = payload.dictionaryPayload[@"twi_message_type"];
@@ -313,7 +313,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
     if ([mode isEqualToString:@"video"]) {
         // Receive Video Call
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: VIDEO");
+        NSLog(@"[IIMobile - RNTwilioVoice] handleIncomingPushWithPayload: VIDEO");
         int _handleType = [self getHandleType:@"generic"];
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:[payload.dictionaryPayload[@"session"] uppercaseString]];
         CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
@@ -335,14 +335,14 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         }];
     } else if ([msgType isEqualToString:@"twilio.voice.call"]) {
         // Receive Voice Call
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: VOICE");
+        NSLog(@"[IIMobile - RNTwilioVoice] handleIncomingPushWithPayload: VOICE");
         [TwilioVoice handleNotification:payload.dictionaryPayload
                                delegate:self
                           delegateQueue:nil];
     } else if ([action isEqualToString:@"cancel"]) {
         // Cancel Video Call
         if (self.callUuid != nil || self.videoCallInvite != nil) {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] handleIncomingPushWithPayload: CANCEL");
+            NSLog(@"[IIMobile - RNTwilioVoice] handleIncomingPushWithPayload: CANCEL");
             [self performEndCallActionWithUUID:self.callUuid];
         } else {
             CXHandle *callHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:@"bot"];
@@ -402,7 +402,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)cancelledCallInviteReceived:(TVOCancelledCallInvite *)cancelledCallInvite error:(NSError*)error {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] cancelledCallInviteReceived with error: %@", error ? error.localizedDescription : @"");
+    NSLog(@"[IIMobile - RNTwilioVoice] cancelledCallInviteReceived with error: %@", error ? error.localizedDescription : @"");
     [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect"
                                  andPayload:@{@"callSid":cancelledCallInvite.callSid,
                                               @"error": error ? error.localizedDescription : @""
@@ -414,14 +414,14 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)handleCallInviteReceived:(TVOCallInvite *)callInvite {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] callInviteReceived with UUID: %@", [callInvite.uuid UUIDString]);
+    NSLog(@"[IIMobile - RNTwilioVoice] callInviteReceived with UUID: %@", [callInvite.uuid UUIDString]);
     if (self.callInvite) {
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] Already a pending incoming call invite.");
-        NSLog(@"[IIMobile - RNTwilioVoiceClient]   >> Ignoring call from %@", callInvite.from);
+        NSLog(@"[IIMobile - RNTwilioVoice] Already a pending incoming call invite.");
+        NSLog(@"[IIMobile - RNTwilioVoice]   >> Ignoring call from %@", callInvite.from);
         return;
     } else if (self.call) {
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] Already an active call.");
-        NSLog(@"[IIMobile - RNTwilioVoiceClient]   >> Ignoring call from %@", callInvite.from);
+        NSLog(@"[IIMobile - RNTwilioVoice] Already an active call.");
+        NSLog(@"[IIMobile - RNTwilioVoice]   >> Ignoring call from %@", callInvite.from);
         return;
     }
 
@@ -436,7 +436,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 #pragma mark - TVOCallDelegate
 
 - (void)callDidConnect:(TVOCall *)call {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidConnect: %@", call.uuid);
+    NSLog(@"[IIMobile - RNTwilioVoice] callDidConnect: %@", call.uuid);
     self.call = call;
     self.callKitCompletionCallback(YES);
     self.callKitCompletionCallback = nil;
@@ -461,7 +461,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)call:(TVOCall *)call didFailToConnectWithError:(NSError *)error {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] Call failed to connect: %@", error);
+    NSLog(@"[IIMobile - RNTwilioVoice] Call failed to connect: %@", error);
     [RNEventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
     self.callKitCompletionCallback(NO);
     [self performEndCallActionWithUUID:call.uuid];
@@ -469,13 +469,13 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)call:(TVOCall *)call didDisconnectWithError:(NSError *)error {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] Call disconnected with error: %@", error);
+    NSLog(@"[IIMobile - RNTwilioVoice] Call disconnected with error: %@", error);
     [self performEndCallActionWithUUID:call.uuid];
     [self callDisconnected:error];
 }
 
 - (void)callDisconnected:(NSError *)error {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDisconnected with error: %@", error ? error.localizedDescription : @"");
+    NSLog(@"[IIMobile - RNTwilioVoice] callDisconnected with error: %@", error ? error.localizedDescription : @"");
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     if (error) {
         NSString *errMsg = [error localizedDescription];
@@ -504,7 +504,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)call:(TVOCall *)call isReconnectingWithError:(NSError *)error {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] isReconnectingWithError %@", [error localizedDescription]);
+    NSLog(@"[IIMobile - RNTwilioVoice] isReconnectingWithError %@", [error localizedDescription]);
     // Update UI
     // Check the error: It could be either
     // TVOErrorSignalingConnectionDisconnectedError (53001) or
@@ -513,13 +513,13 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)callDidReconnect:(TVOCall *)call {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidReconnect with uuid %@", call.uuid);
+    NSLog(@"[IIMobile - RNTwilioVoice] callDidReconnect with uuid %@", call.uuid);
     self.call = call;
     [RNEventEmitterHelper emitEventWithName:@"callDidReconnect" andPayload:@{@"uuid": call.uuid}];
 }
 
 - (void)callDidStartRinging:(TVOCall *)call {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] callDidStartRinging with uuid %@", call.uuid);
+    NSLog(@"[IIMobile - RNTwilioVoice] callDidStartRinging with uuid %@", call.uuid);
 
     /*
      When [answerOnBridge](https://www.twilio.com/docs/voice/twiml/dial#answeronbridge) is enabled in the
@@ -533,17 +533,17 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
 - (void)toggleAudioRoute:(BOOL *)toSpeaker {
     NSError *error = nil;
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] toggleAudioRoute");
+    NSLog(@"[IIMobile - RNTwilioVoice] toggleAudioRoute");
 
     if (toSpeaker) {
         if (![[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
                                                                 error:&error]) {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] Unable to reroute audio: %@", [error localizedDescription]);
+            NSLog(@"[IIMobile - RNTwilioVoice] Unable to reroute audio: %@", [error localizedDescription]);
         }
     } else {
         if (![[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone
                                                                 error:&error]) {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] Unable to reroute audio: %@", [error localizedDescription]);
+            NSLog(@"[IIMobile - RNTwilioVoice] Unable to reroute audio: %@", [error localizedDescription]);
         }
     }
 }
@@ -551,30 +551,30 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 #pragma mark - CXProviderDelegate
 
 - (void)providerDidReset:(CXProvider *)provider {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] providerDidReset");
+    NSLog(@"[IIMobile - RNTwilioVoice] providerDidReset");
     //self.audioDevice.enabled = YES;
 }
 
 - (void)providerDidBegin:(CXProvider *)provider {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] providerDidBegin");
+    NSLog(@"[IIMobile - RNTwilioVoice] providerDidBegin");
 }
 
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:didActivateAudioSession");
+    NSLog(@"[IIMobile - RNTwilioVoice] provider:didActivateAudioSession");
     //self.audioDevice.enabled = YES;
 }
 
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:didDeactivateAudioSession");
+    NSLog(@"[IIMobile - RNTwilioVoice] provider:didDeactivateAudioSession");
     //self.audioDevice.enabled = NO;
 }
 
 - (void)provider:(CXProvider *)provider timedOutPerformingAction:(CXAction *)action {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:timedOutPerformingAction");
+    NSLog(@"[IIMobile - RNTwilioVoice] provider:timedOutPerformingAction");
 }
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:performStartCallAction");
+    NSLog(@"[IIMobile - RNTwilioVoice] provider:performStartCallAction");
     //self.audioDevice.enabled = NO;
 
     [self.callKitProvider reportOutgoingCallWithUUID:action.callUUID startedConnectingAtDate:[NSDate date]];
@@ -592,7 +592,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:performAnswerCallAction wioth UUID: %@", [action.callUUID UUIDString]);
+    NSLog(@"[IIMobile - RNTwilioVoice] provider:performAnswerCallAction wioth UUID: %@", [action.callUUID UUIDString]);
 
     NSString *mode = self.dictionaryPayload[@"mode"];
     self.callUuid = action.callUUID;
@@ -618,7 +618,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 }
 
 - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] provider:performEndCallAction with UUID: %@", [action.callUUID UUIDString]);
+    NSLog(@"[IIMobile - RNTwilioVoice] provider:performEndCallAction with UUID: %@", [action.callUUID UUIDString]);
     //self.audioDevice.enabled = YES;
 
     // Pending Voice Call
@@ -667,10 +667,10 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
     [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
         if (error) {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] StartCallAction transaction request failed: %@", [error localizedDescription]);
+            NSLog(@"[IIMobile - RNTwilioVoice] StartCallAction transaction request failed: %@", [error localizedDescription]);
             [RNEventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": error ? error.localizedDescription : @""}];
         } else {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] StartCallAction transaction request successful");
+            NSLog(@"[IIMobile - RNTwilioVoice] StartCallAction transaction request successful");
 
             CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
             callUpdate.remoteHandle = callHandle;
@@ -698,9 +698,9 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
     [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *error) {
         if (!error) {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] Incoming call successfully reported with UUID: %@", [uuid UUIDString]);
+            NSLog(@"[IIMobile - RNTwilioVoice] Incoming call successfully reported with UUID: %@", [uuid UUIDString]);
         } else {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] Failed to report incoming call successfully: %@.", [error localizedDescription]);
+            NSLog(@"[IIMobile - RNTwilioVoice] Failed to report incoming call successfully: %@.", [error localizedDescription]);
         }
     }];
 }
@@ -712,9 +712,9 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
             CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
             [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
                 if (error) {
-                    NSLog(@"[IIMobile - RNTwilioVoiceClient] EndCallAction transaction request failed: %@", [error localizedDescription]);
+                    NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request failed: %@", [error localizedDescription]);
                 } else {
-                    NSLog(@"[IIMobile - RNTwilioVoiceClient] EndCallAction transaction request successful");
+                    NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request successful");
                 }
             }];
         }
@@ -729,24 +729,24 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
     [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
         if (error) {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] EndCallAction transaction request failed for UUID %@: %@", [uuid UUIDString], [error localizedDescription]);
+            NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request failed for UUID %@: %@", [uuid UUIDString], [error localizedDescription]);
             if (uuid == nil) {
                 for (CXCall *call in self.callKitCallController.callObserver.calls) {
                     CXEndCallAction *endCallAction = [[CXEndCallAction alloc] initWithCallUUID:call.UUID];
                     CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
                     [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
                         if (error) {
-                            NSLog(@"[IIMobile - RNTwilioVoiceClient] EndCallAction transaction request failed: %@", [error localizedDescription]);
+                            NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request failed: %@", [error localizedDescription]);
 
                         } else {
-                            NSLog(@"[IIMobile - RNTwilioVoiceClient] EndCallAction transaction request successful");
+                            NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request successful");
                         }
                     }];
                 }
                 return;
             }
         } else {
-            NSLog(@"[IIMobile - RNTwilioVoiceClient] EndCallAction transaction request successful");
+            NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request successful");
         }
     }];
 
@@ -779,7 +779,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     self.callMode = @"voice";
     //self.audioDevice.enabled = NO;
 
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] sendPerformAnswerVoiceCallEvent called with UUID: %@", uuid.UUIDString);
+    NSLog(@"[IIMobile - RNTwilioVoice] sendPerformAnswerVoiceCallEvent called with UUID: %@", uuid.UUIDString);
     [RNEventEmitterHelper emitEventWithName:@"performAnswerVoiceCall"
                                  andPayload:@{
                                      @"voipPush": self.dictionaryPayload,
@@ -801,15 +801,15 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     self.callMode = @"video";
     //self.audioDevice.enabled = YES;
 
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] sendPerformAnswerVideoCallEvent called with UUID: %@", uuid.UUIDString);
+    NSLog(@"[IIMobile - RNTwilioVoice] sendPerformAnswerVideoCallEvent called with UUID: %@", uuid.UUIDString);
 
     [RNEventEmitterHelper emitEventWithName:@"performAnswerVideoCall" andPayload:@{@"voipPush": self.dictionaryPayload, @"uuid": uuid.UUIDString}];
 }
 
 - (void)handleAppTerminateNotification {
-    NSLog(@"[IIMobile - RNTwilioVoiceClient] handleAppTerminateNotification called");
+    NSLog(@"[IIMobile - RNTwilioVoice] handleAppTerminateNotification called");
     if (self.call) {
-        NSLog(@"[IIMobile - RNTwilioVoiceClient] handleAppTerminateNotification disconnecting an active call");
+        NSLog(@"[IIMobile - RNTwilioVoice] handleAppTerminateNotification disconnecting an active call");
         [self.call disconnect];
     }
 }

@@ -11,7 +11,7 @@
 #import <React/RCTEventEmitter.h>
 #import <PushKit/PushKit.h>
 
-@interface RNTwilioVoiceClient: NSObject<RCTBridgeModule>
+@interface RNTwilioVoice: NSObject<RCTBridgeModule>
 -(void)didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type withState:(NSString *)pending;
 -(void)didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type;
 -(void)initPushRegistry;
