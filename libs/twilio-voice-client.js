@@ -79,21 +79,16 @@ const TwilioVoiceClient = {
         }
     },
     unregister(tokenCallback) {
-        if (Platform.OS === IOS) {
-            return new Promise(((resolve, reject) => {
-                tokenCallback()
-                    .then(token => {
-                        TwilioVoice
-                            .unregister(token)
-                            .then(result => resolve(result))
-                            .catch(error => reject(error));
-                    })
-                    .catch(error => reject(error));
-            }));
-        }
-        // if (Platform.OS === IOS) {
-        //     TwilioVoice.unregister()
-        // }
+        return new Promise(((resolve, reject) => {
+            tokenCallback()
+                .then(token => {
+                    TwilioVoice
+                        .unregister(token)
+                        .then(result => resolve(result))
+                        .catch(error => reject(error));
+                })
+                .catch(error => reject(error));
+        }));
     },
     addEventListener(type, handler) {
         if (!_eventHandlers.hasOwnProperty(type)) {
