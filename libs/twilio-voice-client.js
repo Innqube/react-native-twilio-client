@@ -107,15 +107,11 @@ const TwilioVoiceClient = {
         _eventHandlers[type].get(handler).remove()
         _eventHandlers[type].delete(handler)
     },
-    // log(message) {
-    //     TwilioVoice.sendMessage(message)
-    // },
-    // deviceReadyForCalls() {
-    //     TwilioVoice.deviceReadyForCalls()
-    // },
-    // getDeviceToken() {
-    //     return TwilioVoice.getDeviceToken();
-    // }
+    getDeviceToken() {
+        if (Platform.OS === IOS) {
+            return TwilioVoice.getDeviceToken();
+        }
+    }
 }
 
 export default TwilioVoiceClient
