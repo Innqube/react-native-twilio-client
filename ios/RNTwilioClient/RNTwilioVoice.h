@@ -1,5 +1,5 @@
 //
-//  RNTwilioVoiceClient.m
+//  RNTwilioVoice.m
 //  Interpreter Intelligence
 //
 //  Created by Enrique Viard.
