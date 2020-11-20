@@ -43,7 +43,9 @@ const TwilioVoiceClient = {
                 return TwilioVoice.connect(params, token)
             })
     },
-    disconnect: TwilioVoice.disconnect,
+    disconnect(uuid) {
+        TwilioVoice.disconnect(Platform.OS === IOS ? uuid : undefined);
+    },
     accept() {
         if (Platform.OS === IOS) {
             return
