@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.ngs.react.RNLogHelper.LogHelperModule;
 import com.ngs.react.RNNotifications.NotificationsModule;
+import com.ngs.react.RNTwilioChat.TwilioChatChannelModule;
 import com.ngs.react.RNTwilioChat.TwilioChatModule;
 import com.ngs.react.RNTwilioVoice.TwilioVoiceModule;
 
@@ -39,6 +40,7 @@ public class TwilioClientPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new TwilioVoiceModule(reactContext, mShouldAskForPermission));
         modules.add(new TwilioChatModule(reactContext));
+        modules.add(new TwilioChatChannelModule(reactContext));
         modules.add(new LogHelperModule(reactContext));
         modules.add(new NotificationsModule(reactContext));
         return modules;
