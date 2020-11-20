@@ -44,7 +44,11 @@ const TwilioVoiceClient = {
             })
     },
     disconnect(uuid) {
-        TwilioVoice.disconnect(Platform.OS === IOS ? uuid : undefined);
+        if (Platform.OS === IOS) {
+            TwilioVoice.disconnect(uuid);
+        } else {
+            TwilioVoice.disconnect();
+        }
     },
     accept() {
         if (Platform.OS === IOS) {
