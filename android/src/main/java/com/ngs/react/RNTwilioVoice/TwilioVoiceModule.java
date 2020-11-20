@@ -567,9 +567,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                         // Get new Instance ID token
                         String fcmToken = task.getResult().getToken();
                         if (fcmToken != null) {
-                            if (BuildConfig.DEBUG) {
-                                Log.d(TAG, "Registering with FCM");
-                            }
+                            Log.d(TAG, "Registering with FCM token " + fcmToken);
                             Voice.register(accessToken, Voice.RegistrationChannel.FCM, fcmToken, registrationListener);
                         }
                     }
@@ -843,5 +841,43 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         } else {
             ActivityCompat.requestPermissions(getCurrentActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, MIC_PERMISSION_REQUEST_CODE);
         }
+    }
+
+    @ReactMethod
+    public void unregister(String token, Promise promise) {
+        Log.d(TAG, "unregistering with token: " + token);
+
+        FirebaseInstanceId
+            .getInstance()
+            .getInstanceId()
+            .addOnCompleteListener(task -> {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "getInstanceId failed", task.getException());
+                    promise.reject("666", "getInstanceId failed");
+                    return;
+                }
+
+                // Get new Instance ID token
+                String fcmToken = task.getResult().getToken();
+                if (fcmToken != null) {
+
+                    Log.d(TAG, "Unregistering with FCM token: " + fcmToken + " and access token: " + accessToken);
+
+                    Voice.unregister(token, Voice.RegistrationChannel.FCM, fcmToken, new UnregistrationListener() {
+                        @Override
+                        public void onUnregistered(String accessToken, String fcmToken) {
+                            WritableMap json = new WritableNativeMap();
+                            json.putString("accessToken", accessToken);
+                            json.putString("fcmToken", fcmToken);
+                            promise.resolve(json);
+                        }
+
+                        @Override
+                        public void onError(RegistrationException registrationException, String accessToken, String fcmToken) {
+                            promise.reject(registrationException);
+                        }
+                    });
+                }
+            });
     }
 }
