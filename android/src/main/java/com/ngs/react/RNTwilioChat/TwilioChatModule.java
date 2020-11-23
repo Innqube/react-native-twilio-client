@@ -49,7 +49,7 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
         return SYNCHRONIZATION_STATUS;
     }
 
-    TwilioChatModule(ReactApplicationContext context) {
+    public TwilioChatModule(ReactApplicationContext context) {
         super(context);
         Log.i(LOG_TAG, "TwilioChatModule instantiated");
         TwilioChatModule.INSTANCE = this;

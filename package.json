@@ -60,7 +60,7 @@
   },
   "rnpm": {
     "android": {
-      "packageInstance": "new TwilioVoicePackage()"
+      "packageInstance": "new TwilioClientPackage()"
     }
   },
   "scripts": {

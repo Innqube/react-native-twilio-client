@@ -1,23 +1,28 @@
-package com.ngs.react.RNTwilioVoice;
+package com.ngs.react;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.ngs.react.RNLogHelper.LogHelperModule;
+import com.ngs.react.RNNotifications.NotificationsModule;
+import com.ngs.react.RNTwilioChat.TwilioChatChannelModule;
+import com.ngs.react.RNTwilioChat.TwilioChatModule;
+import com.ngs.react.RNTwilioVoice.TwilioVoiceModule;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TwilioVoicePackage implements ReactPackage {
+public class TwilioClientPackage implements ReactPackage {
 
     private boolean mShouldAskForPermission;
-    public TwilioVoicePackage() {
+    public TwilioClientPackage() {
         mShouldAskForPermission = true;
     }
 
-    public TwilioVoicePackage(boolean shouldAskForPermissions) {
+    public TwilioClientPackage(boolean shouldAskForPermissions) {
         mShouldAskForPermission = shouldAskForPermissions;
     }
     // Deprecated in RN 0.47.0
@@ -34,6 +39,10 @@ public class TwilioVoicePackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new TwilioVoiceModule(reactContext, mShouldAskForPermission));
+        modules.add(new TwilioChatModule(reactContext));
+        modules.add(new TwilioChatChannelModule(reactContext));
+        modules.add(new LogHelperModule(reactContext));
+        modules.add(new NotificationsModule(reactContext));
         return modules;
     }
 }
