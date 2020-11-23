@@ -1,20 +1,21 @@
-package com.ngs.react.RNTwilioVoice.fcm;
+package com.ngs.react.RNTwilioVoice;
 
 import android.app.ActivityManager;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
+import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ngs.react.BuildConfig;
-import com.ngs.react.RNTwilioVoice.CallNotificationManager;
-import com.ngs.react.RNTwilioVoice.SoundPoolManager;
 import com.twilio.voice.CallInvite;
 import com.twilio.voice.CancelledCallInvite;
 import com.twilio.voice.MessageListener;
@@ -25,23 +26,46 @@ import java.util.Random;
 
 import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.*;
 
-public class VoiceFirebaseMessagingService extends FirebaseMessagingService {
+public class VoiceFirebaseMessagingService extends Service {
 
+    private static final String TAG = "[VoiceMessagingService]";
     private CallNotificationManager callNotificationManager;
+    private ServiceHandler handler;
+
+    private final class ServiceHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.d(TAG, "Handling message");
+            onMessageReceived(new RemoteMessage(msg.getData()));
+            Log.d(TAG, "About to stop VoiceFirebaseMessagingService");
+            stopSelf(msg.arg1);
+        }
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "VoiceFirebaseMessagingService created");
         callNotificationManager = new CallNotificationManager();
+        handler = new ServiceHandler();
     }
 
     @Override
-    public void onNewToken(String token) {
-        Log.d(TAG, "Refreshed token: " + token);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
 
-        // Notify Activity of FCM token
-        Intent intent = new Intent(ACTION_FCM_TOKEN);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        Message msg = handler.obtainMessage();
+        msg.arg1 = startId;
+        msg.setData(intent.getExtras());
+        handler.sendMessage(msg);
+
+        return START_STICKY;
     }
 
     /**
@@ -49,7 +73,6 @@ public class VoiceFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
-    @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Bundle data: " + remoteMessage.getData());
@@ -78,12 +101,12 @@ public class VoiceFirebaseMessagingService extends FirebaseMessagingService {
                             ReactContext context = mReactInstanceManager.getCurrentReactContext();
                             // If it's constructed, send a notification
                             if (context != null) {
-                                int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext)context);
+                                int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
                                 if (BuildConfig.DEBUG) {
                                     Log.d(TAG, "CONTEXT present appImportance = " + appImportance);
                                 }
                                 Intent launchIntent = callNotificationManager.getLaunchIntent(
-                                        (ReactApplicationContext)context,
+                                        (ReactApplicationContext) context,
                                         notificationId,
                                         callInvite,
                                         false,
@@ -101,11 +124,11 @@ public class VoiceFirebaseMessagingService extends FirebaseMessagingService {
                                 // Otherwise wait for construction, then handle the incoming call
                                 mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                                     public void onReactContextInitialized(ReactContext context) {
-                                        int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext)context);
+                                        int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
                                         if (BuildConfig.DEBUG) {
                                             Log.d(TAG, "CONTEXT not present appImportance = " + appImportance);
                                         }
-                                        Intent launchIntent = callNotificationManager.getLaunchIntent((ReactApplicationContext)context, notificationId, callInvite, true, appImportance);
+                                        Intent launchIntent = callNotificationManager.getLaunchIntent((ReactApplicationContext) context, notificationId, callInvite, true, appImportance);
                                         context.startActivity(launchIntent);
                                         Intent intent = new Intent(ACTION_INCOMING_CALL);
                                         intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);

@@ -60,7 +60,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
         Log.d(LOG_TAG, "Looking for channel " + channelSidOrUniqueName);
 
-        if (TwilioChatModule.getChatClient().getConnectionState() == null) {
+        if (TwilioChatModule.getChatClient() == null || TwilioChatModule.getChatClient().getConnectionState() == null) {
             Log.d(LOG_TAG, "Chat client state: null");
         } else {
             Log.d(LOG_TAG, "Chat client state: " + TwilioChatModule.getChatClient().getConnectionState().name());
