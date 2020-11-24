@@ -26,7 +26,7 @@ import java.util.Random;
 
 import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.*;
 
-public class VoiceFirebaseMessagingService extends Service {
+public class VoiceMessagingService extends Service {
 
     private static final String TAG = "[VoiceMessagingService]";
     private CallNotificationManager callNotificationManager;
@@ -153,7 +153,7 @@ public class VoiceFirebaseMessagingService extends Service {
                     Handler handler = new Handler(Looper.getMainLooper());
                     handler.post(new Runnable() {
                         public void run() {
-                            VoiceFirebaseMessagingService.this.sendCancelledCallInviteToActivity(cancelledCallInvite);
+                            VoiceMessagingService.this.sendCancelledCallInviteToActivity(cancelledCallInvite);
                         }
                     });
                 }
