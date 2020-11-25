@@ -1,7 +1,4 @@
-import {
-    NativeModules,
-    NativeEventEmitter,
-} from 'react-native'
+import {NativeEventEmitter, NativeModules,} from 'react-native'
 
 const {RNEventEmitterHelper} = NativeModules;
 
@@ -22,6 +19,11 @@ const _eventHandlers = {
     requestTransactionError: new Map(),
     callRejected: new Map(),
     voipRemoteNotificationsRegistered: new Map(),
+
+    // Video events
+    videoConnectionDidDisconnect: new Map(),
+    videoDeviceDidReceiveIncoming: new Map(),
+    videoCallInviteCancelled: new Map(),
 
     // ChatClient events
     connectionStateUpdated: new Map(),
@@ -50,10 +52,6 @@ const _eventHandlers = {
     typingStarted: new Map(),
     typingEnded: new Map()
 };
-
-
-
-
 
 const EventEmitterHelper = {
     addEventListener(type, handler) {

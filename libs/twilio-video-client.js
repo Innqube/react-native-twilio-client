@@ -23,7 +23,7 @@ const _eventHandlers = {
     voipRemoteNotificationsRegistered: new Map()
 }
 
-const TwilioVoiceClient = {
+const TwilioVideoClient = {
 
     // initialize(tokenCallback) {
     //     return new Promise(((resolve, reject) => {
@@ -120,4 +120,4 @@ const TwilioVoiceClient = {
     // }
 }
 
-export default TwilioVoiceClient
+export default TwilioVideoClient
