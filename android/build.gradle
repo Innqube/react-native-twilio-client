@@ -55,7 +55,7 @@ dependencies {
     def supportLibVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
 
     api fileTree(include: ['*.jar'], dir: 'libs')
-    api 'com.twilio:voice-android:4.5.0'
+    api 'com.twilio:voice-android:5.6.0'
     api 'com.twilio:chat-android:4.2.9'
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation 'com.facebook.react:react-native:+' // should be api 'com.facebook.react:react-native:0.59.9'?
