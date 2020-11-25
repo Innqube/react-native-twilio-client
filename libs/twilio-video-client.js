@@ -43,13 +43,13 @@ const TwilioVoiceClient = {
     //             return TwilioVideo.connect(params, token)
     //         })
     // },
-    // disconnect(uuid) {
-    //     if (Platform.OS === IOS) {
-    //         TwilioVideo.disconnect(uuid);
-    //     } else {
-    //         TwilioVideo.disconnect();
-    //     }
-    // },
+    disconnect() {
+        if (Platform.OS === IOS) {
+            return;
+        }
+
+        TwilioVideo.disconnect();
+    },
     accept() {
         if (Platform.OS === IOS) {
             return
@@ -77,8 +77,8 @@ const TwilioVoiceClient = {
     //         TwilioVideo.requestPermissions(senderId)
     //     }
     // },
-    // getActiveCall: TwilioVideo.getActiveCall,
-    // getCallInvite: TwilioVideo.getCallInvite,
+    getActiveCall: TwilioVideo.getActiveCall,
+    getCallInvite: TwilioVideo.getCallInvite,
     // configureCallKit(params = {}) {
     //     if (Platform.OS === IOS) {
     //         TwilioVideo.configureCallKit(params)

@@ -77,6 +77,10 @@ public class VideoCallInvite implements Parcelable, CallInvite {
         }
     }
 
+    public Map<String, String> getData() {
+        return data;
+    }
+
     @Override
     public String getCallSid() {
         return this.data != null ? this.data.get("twi_call_sid") : null;

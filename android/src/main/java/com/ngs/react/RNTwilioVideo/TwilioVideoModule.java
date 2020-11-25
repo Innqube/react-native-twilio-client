@@ -2,25 +2,50 @@ package com.ngs.react.RNTwilioVideo;
 
 import android.app.ActivityManager;
 import android.app.NotificationManager;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-import com.facebook.react.bridge.*;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 import com.ngs.react.RNTwilioVoice.SoundPoolManager;
 import com.twilio.voice.BuildConfig;
 import com.twilio.voice.Call;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static com.ngs.react.RNTwilioVideo.EventManager.*;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.*;
+import static com.ngs.react.RNTwilioVideo.EventManager.EVENT_CALL_INVITE_CANCELLED;
+import static com.ngs.react.RNTwilioVideo.EventManager.EVENT_CONNECTION_DID_DISCONNECT;
+import static com.ngs.react.RNTwilioVideo.EventManager.EVENT_DEVICE_DID_RECEIVE_INCOMING;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_ANSWER_CALL;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_CANCEL_CALL_INVITE;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_CLEAR_MISSED_CALLS_COUNT;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_HANGUP_CALL;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_INCOMING_CALL;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_MISSED_CALL;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_REJECT_CALL;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.CANCELLED_CALL_INVITE;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_INVITE;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_NOTIFICATION_ID;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_NOTIFICATION_PREFIX;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.MISSED_CALLS_GROUP;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.PREFERENCE_KEY;
 
 public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     public static String TAG = "RNTwilioVideo";
-    public static Map<String, Integer> callNotificationMap;
+    public static Map<String, Integer> callNotificationMap = new HashMap<>();
 
     private final EventManager eventManager;
     private final CallNotificationManager callNotificationManager;
@@ -28,6 +53,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
     private final VideoBroadcastReceiver videoBroadcastReceiver;
 
     private VideoCallInvite activeCallInvite;
+    private VideoCall activeCall;
     private boolean callAccepted = false;
     private boolean isReceiverRegistered = false;
 
@@ -109,6 +135,16 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "accept()");
             }
+            activeCall = new VideoCall(
+                    activeCallInvite.getCallSid(),
+                    activeCallInvite.getFrom()
+            );
+
+            WritableMap params = Arguments.createMap();
+            for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
+                params.putString(entry.getKey(), entry.getValue());
+            }
+            eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, params);
 //            AcceptOptions acceptOptions = new AcceptOptions.Builder()
 //                    .enableDscp(true)
 //                    .build();
@@ -125,14 +161,49 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
         WritableMap params = Arguments.createMap();
         if (activeCallInvite != null) {
-            params.putString("call_sid",   activeCallInvite.getCallSid());
-            params.putString("call_from",  activeCallInvite.getFrom());
-//            params.putString("call_to",    activeCallInvite.getTo());
+            for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
+                params.putString(entry.getKey(), entry.getValue());
+            }
             params.putString("call_state", "DISCONNECTED");
-//            activeCallInvite.reject(getReactApplicationContext());
             clearIncomingNotification(activeCallInvite.getCallSid());
         }
         eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, params);
+    }
+
+    @ReactMethod
+    public void disconnect() {
+        activeCall = null;
+    }
+
+    @ReactMethod
+    public void getActiveCall(Promise promise) {
+        if (activeCall != null) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Active call found = " + activeCall.getCallSid());
+            }
+            WritableMap params = Arguments.createMap();
+            params.putString("call_sid", activeCall.getCallSid());
+            params.putString("call_from", activeCall.getFrom());
+            promise.resolve(params);
+            return;
+        }
+        promise.resolve(null);
+    }
+
+    @ReactMethod
+    public void getCallInvite(Promise promise) {
+        if (activeCallInvite != null) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Call invite found "+ activeCallInvite);
+            }
+            WritableMap params = Arguments.createMap();
+            for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
+                params.putString(entry.getKey(), entry.getValue());
+            }
+            promise.resolve(params);
+            return;
+        }
+        promise.resolve(null);
     }
 
     private class VideoBroadcastReceiver extends BroadcastReceiver {
@@ -164,9 +235,9 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
     private WritableMap buildRNNotification(CallInvite ci) {
         WritableMap params = Arguments.createMap();
         if (ci != null) {
-            params.putString("call_sid", ci.getCallSid());
-            params.putString("call_from", ci.getFrom());
-            // params.putString("call_to", cancelledCallInvite.getTo());
+            for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
+                params.putString(entry.getKey(), entry.getValue());
+            }
         }
         return params;
     }
@@ -228,7 +299,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     private void clearIncomingNotification(String callSid) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "clearIncomingNotification() callSid: "+ callSid);
+            Log.d(TAG, "clearIncomingNotification() callSid: " + callSid);
         }
         // remove incoming call notification
         String notificationKey = INCOMING_NOTIFICATION_PREFIX + callSid;
