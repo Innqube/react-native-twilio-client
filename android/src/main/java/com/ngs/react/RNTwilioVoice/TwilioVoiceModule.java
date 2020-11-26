@@ -4,7 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.NotificationManager;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
@@ -13,21 +17,55 @@ import android.os.Build;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.facebook.react.bridge.*;
+
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.AssertionException;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.twilio.voice.*;
+import com.twilio.voice.AcceptOptions;
+import com.twilio.voice.BuildConfig;
+import com.twilio.voice.Call;
+import com.twilio.voice.CallException;
+import com.twilio.voice.CallInvite;
+import com.twilio.voice.CancelledCallInvite;
+import com.twilio.voice.ConnectOptions;
+import com.twilio.voice.LogLevel;
+import com.twilio.voice.RegistrationException;
+import com.twilio.voice.RegistrationListener;
+import com.twilio.voice.UnregistrationListener;
+import com.twilio.voice.Voice;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ngs.react.RNTwilioVoice.EventManager.*;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_CALL_INVITE_CANCELLED;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_CALL_STATE_RINGING;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_CONNECTION_DID_CONNECT;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_CONNECTION_DID_DISCONNECT;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_CONNECTION_DID_RECONNECT;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_CONNECTION_IS_RECONNECTING;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_DEVICE_DID_RECEIVE_INCOMING;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_DEVICE_NOT_READY;
+import static com.ngs.react.RNTwilioVoice.EventManager.EVENT_DEVICE_READY;
 
 public class TwilioVoiceModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
@@ -512,7 +550,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
 
     @ReactMethod
     public void initWithAccessToken(final String accessToken, Promise promise) {
-        if (accessToken.equals("")) {
+        if (accessToken == null || accessToken.equals("")) {
             promise.reject(new JSApplicationIllegalArgumentException("Invalid access token"));
             return;
         }

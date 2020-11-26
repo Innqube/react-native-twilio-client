@@ -1,7 +1,9 @@
 package com.ngs.react.RNTwilioVideo;
 
 import android.util.Log;
+
 import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -10,21 +12,12 @@ import com.ngs.react.BuildConfig;
 public class EventManager {
 
     private static final String TAG = "RNTwilioVideo";
-    private ReactApplicationContext mContext;
+    private final ReactApplicationContext mContext;
 
-//    public static final String EVENT_PROXIMITY = "proximity";
-//    public static final String EVENT_WIRED_HEADSET = "wiredHeadset";
-
-//    public static final String EVENT_DEVICE_READY = "deviceReady";
-//    public static final String EVENT_DEVICE_NOT_READY = "deviceNotReady";
-//    public static final String EVENT_CONNECTION_DID_CONNECT = "connectionDidConnect";
-    public static final String EVENT_CONNECTION_DID_DISCONNECT = "videoConnectionDidDisconnect";
+    public static final String EVENT_CONNECTION_DID_CONNECT = "videoConnectionDidConnect";
+    public static final String EVENT_CONNECTION_DID_REJECT = "videoConnectionDidReject";
     public static final String EVENT_DEVICE_DID_RECEIVE_INCOMING = "videoDeviceDidReceiveIncoming";
-//    public static final String EVENT_CALL_STATE_RINGING = "callStateRinging";
     public static final String EVENT_CALL_INVITE_CANCELLED = "videoCallInviteCancelled";
-//    public static final String EVENT_CONNECTION_IS_RECONNECTING = "connectionIsReconnecting";
-//    public static final String EVENT_CONNECTION_DID_RECONNECT = "connectionDidReconnect";
-
 
     public EventManager(ReactApplicationContext context) {
         mContext = context;

@@ -9,18 +9,19 @@ const NativeAppEventEmitter = new NativeEventEmitter(RNEventEmitterHelper);
 
 // Supported events
 const _eventHandlers = {
-    deviceReady: new Map(),
-    deviceNotReady: new Map(),
-    deviceDidReceiveIncoming: new Map(),
-    connectionDidConnect: new Map(),
-    connectionIsReconnecting: new Map(),
-    connectionDidReconnect: new Map(),
-    connectionDidDisconnect: new Map(),
-    callStateRinging: new Map(),
-    callInviteCancelled: new Map(),
-    callRejected: new Map(),
+    // deviceReady: new Map(),
+    // deviceNotReady: new Map(),
+    videoDeviceDidReceiveIncoming: new Map(),
+    videoConnectionDidConnect: new Map(),
+    videoConnectionDidReject: new Map(),
+    // connectionIsReconnecting: new Map(),
+    // connectionDidReconnect: new Map(),
+    // connectionDidDisconnect: new Map(),
+    // callStateRinging: new Map(),
+    videoCallInviteCancelled: new Map(),
+    // callRejected: new Map(),
     // Events for TwilioVideo
-    voipRemoteNotificationsRegistered: new Map()
+    // voipRemoteNotificationsRegistered: new Map()
 }
 
 const TwilioVideoClient = {
