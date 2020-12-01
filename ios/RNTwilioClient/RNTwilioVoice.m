@@ -86,7 +86,7 @@ RCT_EXPORT_METHOD(sendMessage:(NSString *) message) {
     }
 }
 
-RCT_REMAP_METHOD(init, withToken:(NSString*)token init_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_REMAP_METHOD(initWithAccessToken, withToken:(NSString*)token init_resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioVoice] init with token: %@", token);
 
     #if TARGET_IPHONE_SIMULATOR
