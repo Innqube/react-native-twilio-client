@@ -15,6 +15,7 @@ RCT_EXPORT_MODULE();
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[
+           @"connectionIsReconnecting",
            @"connectionDidConnect",
            @"connectionDidDisconnect",
            @"callDidReconnect",
@@ -59,7 +60,7 @@ RCT_EXPORT_MODULE();
 - (id) init {
     self = [super init];
     if (!self) return nil;
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(emitEventInternal:)
                                                  name:@"event-emitted"
@@ -77,7 +78,7 @@ RCT_EXPORT_MODULE();
   NSArray *eventDetails = [notification.userInfo valueForKey:@"detail"];
   NSString *eventName = [eventDetails objectAtIndex:0];
   NSDictionary *eventData = [eventDetails objectAtIndex:1];
-  
+
     if (eventName != nil) {
         [self sendEventWithName:eventName
                            body:eventData];
@@ -88,13 +89,13 @@ RCT_EXPORT_MODULE();
 {
   // userInfo requires a dictionary so we wrap out name and payload into an array and stick
   // that into the dictionary with a key of 'detail'
-    
+
     NSDictionary *eventDetail;
-    
+
     if (payload != nil) {
         eventDetail = @{@"detail":@[name,payload]};
     }
-    
+
     dispatch_async(dispatch_get_main_queue(),^{
         [[NSNotificationCenter defaultCenter] postNotificationName:@"event-emitted"
                                                             object:self
