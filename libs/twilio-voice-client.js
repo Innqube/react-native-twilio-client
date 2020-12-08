@@ -77,7 +77,7 @@ const TwilioVoiceClient = {
             TwilioVoice.requestPermissions(senderId)
         }
     },
-    getActiveCall: TwilioVoice.getActiveCall,
+    getActiveCall: Platform.OS === ANDROID ? TwilioVoice.getActiveCall : null,
     getCallInvite: TwilioVoice.getCallInvite,
     configureCallKit(params = {}) {
         if (Platform.OS === IOS) {

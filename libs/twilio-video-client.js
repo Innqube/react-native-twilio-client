@@ -78,8 +78,8 @@ const TwilioVideoClient = {
     //         TwilioVideo.requestPermissions(senderId)
     //     }
     // },
-    getActiveCall: TwilioVideo.getActiveCall,
-    getCallInvite: TwilioVideo.getCallInvite,
+    getActiveCall: Platform.OS === IOS ? null : TwilioVideo.getActiveCall,
+    getCallInvite: Platform.OS === IOS ? null : TwilioVideo.getCallInvite,
     // configureCallKit(params = {}) {
     //     if (Platform.OS === IOS) {
     //         TwilioVideo.configureCallKit(params)

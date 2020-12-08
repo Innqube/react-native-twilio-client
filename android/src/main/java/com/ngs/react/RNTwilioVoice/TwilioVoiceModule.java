@@ -677,7 +677,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
     }
 
     @ReactMethod
-    public void connect(ReadableMap params) {
+    public void connect(ReadableMap params, String accessToken) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "connect params: "+params);
         }
