@@ -16,7 +16,7 @@ public class SoundPoolManager {
     private static SoundPoolManager instance;
     private static final Long MAX_RING_TIME = 90 * 1000L;
     private Ringtone ringtone = null;
-    private Timer timer = new Timer();
+    private Timer timer;
     private Long startTime;
 
     private SoundPoolManager(Context context) {
@@ -39,6 +39,7 @@ public class SoundPoolManager {
             startTime = System.currentTimeMillis();
             ringtone.play();
             playing = true;
+            timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -49,6 +50,10 @@ public class SoundPoolManager {
                     if (!ringtone.isPlaying() && playing && !timeExceeded) {
                         ringtone.play();
                     }
+
+                    if (timeExceeded) {
+                        cancel();
+                    }
                 }
             }, 1000, 500);
         }
@@ -58,7 +63,10 @@ public class SoundPoolManager {
         if (playing) {
             ringtone.stop();
             playing = false;
-            timer.cancel();
+
+            if (timer != null) {
+                timer.cancel();
+            }
         }
     }
 
@@ -66,7 +74,10 @@ public class SoundPoolManager {
         if (!playing) {
             ringtone.stop();
             playing = false;
-            timer.cancel();
+
+            if (timer != null) {
+                timer.cancel();
+            }
         }
     }
 
