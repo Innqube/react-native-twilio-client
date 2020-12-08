@@ -1,4 +1,4 @@
-package com.ngs.react.RNTwilioVoice;
+package com.ngs.react.RNTwilioVideo;
 
 import android.content.ContentResolver;
 import android.content.Context;

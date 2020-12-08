@@ -2,44 +2,18 @@ package com.ngs.react.RNTwilioVideo;
 
 import android.app.ActivityManager;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
-import com.ngs.react.RNTwilioVoice.SoundPoolManager;
+import com.facebook.react.bridge.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ngs.react.RNTwilioVideo.EventManager.EVENT_CALL_INVITE_CANCELLED;
-import static com.ngs.react.RNTwilioVideo.EventManager.EVENT_CONNECTION_DID_CONNECT;
-import static com.ngs.react.RNTwilioVideo.EventManager.EVENT_CONNECTION_DID_REJECT;
-import static com.ngs.react.RNTwilioVideo.EventManager.EVENT_DEVICE_DID_RECEIVE_INCOMING;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_ANSWER_CALL;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_CANCEL_CALL_INVITE;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_CLEAR_MISSED_CALLS_COUNT;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_HANGUP_CALL;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_INCOMING_CALL;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_MISSED_CALL;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_REJECT_CALL;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.CANCELLED_CALL_INVITE;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_INVITE;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_NOTIFICATION_ID;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_NOTIFICATION_PREFIX;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.MISSED_CALLS_GROUP;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.PREFERENCE_KEY;
+import static com.ngs.react.RNTwilioVideo.EventManager.*;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.*;
 
 public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
