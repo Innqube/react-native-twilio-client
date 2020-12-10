@@ -57,10 +57,10 @@ public class VideoMessagingService extends Service {
 
         Message msg = handler.obtainMessage();
         msg.arg1 = startId;
-        msg.setData(intent.getExtras());
+        msg.setData(intent.getExtras()); // intent may be null???
         handler.sendMessage(msg);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     /**
@@ -81,60 +81,56 @@ public class VideoMessagingService extends Service {
             Random randomNumberGenerator = new Random(System.currentTimeMillis());
             final int notificationId = randomNumberGenerator.nextInt();
 
-//            Handler handler = new Handler(Looper.getMainLooper());
-//            handler.post(new Runnable() {
-//                public void run() {
-                    // Construct and load our normal React JS code bundle
-                    ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-                    ReactContext context = mReactInstanceManager.getCurrentReactContext();
-                    VideoCallInvite callInvite = VideoCallInvite.create(remoteMessage.getData());
-                    // If it's constructed, send a notification
-                    if (context != null) {
+            // Construct and load our normal React JS code bundle
+            ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+            ReactContext context = mReactInstanceManager.getCurrentReactContext();
+            VideoCallInvite callInvite = VideoCallInvite.create(remoteMessage.getData());
+
+            // If it's constructed, send a notification
+            if (context != null) {
+                int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "CONTEXT present appImportance = " + appImportance);
+                }
+                Intent launchIntent = callNotificationManager.getLaunchIntent(
+                        (ReactApplicationContext) context,
+                        notificationId,
+                        callInvite,
+                        false,
+                        appImportance
+                );
+                // app is not in foreground
+                if (appImportance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    context.startActivity(launchIntent);
+                }
+                Intent intent = new Intent(ACTION_INCOMING_CALL);
+                intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
+                intent.putExtra(INCOMING_CALL_INVITE, callInvite);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            } else {
+                // Otherwise wait for construction, then handle the incoming call
+                mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+                    public void onReactContextInitialized(ReactContext context) {
                         int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
                         if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "CONTEXT present appImportance = " + appImportance);
+                            Log.d(TAG, "CONTEXT not present appImportance = " + appImportance);
                         }
-                        Intent launchIntent = callNotificationManager.getLaunchIntent(
-                                (ReactApplicationContext) context,
-                                notificationId,
-                                callInvite,
-                                false,
-                                appImportance
-                        );
-                        // app is not in foreground
-                        if (appImportance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                            context.startActivity(launchIntent);
-                        }
+                        Intent launchIntent = callNotificationManager.getLaunchIntent((ReactApplicationContext) context, notificationId, callInvite, true, appImportance);
+                        context.startActivity(launchIntent);
                         Intent intent = new Intent(ACTION_INCOMING_CALL);
                         intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
                         intent.putExtra(INCOMING_CALL_INVITE, callInvite);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    } else {
-                        // Otherwise wait for construction, then handle the incoming call
-                        mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
-                            public void onReactContextInitialized(ReactContext context) {
-                                int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
-                                if (BuildConfig.DEBUG) {
-                                    Log.d(TAG, "CONTEXT not present appImportance = " + appImportance);
-                                }
-                                Intent launchIntent = callNotificationManager.getLaunchIntent((ReactApplicationContext) context, notificationId, callInvite, true, appImportance);
-                                context.startActivity(launchIntent);
-                                Intent intent = new Intent(ACTION_INCOMING_CALL);
-                                intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
-                                intent.putExtra(INCOMING_CALL_INVITE, callInvite);
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                                callNotificationManager.createIncomingCallNotification(
-                                        (ReactApplicationContext) context, callInvite, notificationId,
-                                        launchIntent);
-                            }
-                        });
-                        if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
-                            // Construct it in the background
-                            mReactInstanceManager.createReactContextInBackground();
-                        }
+                        callNotificationManager.createIncomingCallNotification(
+                                (ReactApplicationContext) context, callInvite, notificationId,
+                                launchIntent);
                     }
-//                }
-//            });
+                });
+                if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
+                    // Construct it in the background
+                    mReactInstanceManager.createReactContextInBackground();
+                }
+            }
         }
 
         // Check if message contains a notification payload.

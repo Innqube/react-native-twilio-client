@@ -9,30 +9,20 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ngs.react.BuildConfig;
-import com.twilio.voice.CallException;
-import com.twilio.voice.CallInvite;
-import com.twilio.voice.CancelledCallInvite;
-import com.twilio.voice.MessageListener;
-import com.twilio.voice.Voice;
+import com.twilio.voice.*;
 
 import java.util.Map;
 import java.util.Random;
 
-import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.ACTION_CANCEL_CALL_INVITE;
-import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.ACTION_INCOMING_CALL;
-import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.CANCELLED_CALL_INVITE;
-import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.INCOMING_CALL_INVITE;
-import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.INCOMING_CALL_NOTIFICATION_ID;
+import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.*;
 
 public class VoiceMessagingService extends Service {
 
@@ -73,7 +63,7 @@ public class VoiceMessagingService extends Service {
         msg.setData(intent.getExtras());
         handler.sendMessage(msg);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     /**
