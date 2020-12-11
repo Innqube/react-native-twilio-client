@@ -79,6 +79,7 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                     @Override
                     public void onSuccess(Channel channel) {
                         Log.d(LOG_TAG, "Get channel success: " + channelSidOrUniqueName);
+                        Log.d(LOG_TAG, "Get channel success - sid: " + channel.getSid());
                         Log.d(LOG_TAG, "Get channel success - friendly name: " + channel.getFriendlyName());
                         Log.d(LOG_TAG, "Get channel success - unique name: " + channel.getUniqueName());
                         gotChannel.gotChannel(channel);
@@ -117,8 +118,8 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     }
 
     @ReactMethod
-    public void create(String friendlyName, String uniqueName, String type, ReadableMap attributes, final Promise promise) {
-        Log.d(LOG_TAG, "createChannel");
+    public void create(String uniqueName, String friendlyName, String type, ReadableMap attributes, final Promise promise) {
+        Log.d(LOG_TAG, "createChannel with friendlyName: " + friendlyName + " and uniqueName: " + uniqueName);
 
         if (friendlyName == null || uniqueName == null || type == null) {
             promise.resolve("Check that friendlyName, uniqueName and type are provided");
@@ -408,21 +409,29 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void sendMessage(String channelSidOrUniqueName, final String message, ReadableMap attributes, final Promise promise) {
-        Log.d(LOG_TAG, "sendMessage");
+        Log.d(LOG_TAG, "sendMessage to: " + channelSidOrUniqueName);
 
         getChannel(channelSidOrUniqueName, new GotChannel(promise) {
             @Override
             void gotChannel(Channel channel) {
+                Log.d(LOG_TAG, "gotChannel");
                 if (channel.getMessages() != null) {
+                    Log.d(LOG_TAG, "channel messages instance obtained");
                     Message.Options options = Message.options().withBody(message);
 
                     if (attributes != null) {
                         try {
                             options = options.withAttributes(Utils.convertMapToJson(attributes));
                         } catch (JSONException e) {
+                            Log.e(LOG_TAG, "could not convert attributes map");
                             promise.reject(e);
                         }
                     }
+
+                    Log.d(LOG_TAG, "about to send message with body: " + message);
+                    Log.d(LOG_TAG, "and attributes: " + attributes.toString());
+                    Log.d(LOG_TAG, "to channel with sid: " + channel.getSid());
+                    Log.d(LOG_TAG, "and friendly name: " + channel.getFriendlyName());
 
                     channel
                             .getMessages()
@@ -434,14 +443,17 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
                                             try {
                                                 JSONObject json = Utils.messageToJsonObject(message);
                                                 WritableMap map = Utils.convertJsonToMap(json);
+                                                Log.d(LOG_TAG, "message sent");
                                                 promise.resolve(map);
                                             } catch (JSONException e) {
+                                                Log.e(LOG_TAG, "error sending message", e);
                                                 promise.reject(e);
                                             }
                                         }
                                     }
                             );
                 } else {
+                    Log.e(LOG_TAG, "no channel messages instance obtained");
                     promise.reject("No messages instance obtained");
                 }
             }
