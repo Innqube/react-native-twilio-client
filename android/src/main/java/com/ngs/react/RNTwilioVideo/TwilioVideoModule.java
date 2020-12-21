@@ -9,7 +9,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import com.facebook.react.bridge.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.ngs.react.RNTwilioVideo.EventManager.*;
@@ -18,7 +17,6 @@ import static com.ngs.react.RNTwilioVideo.VideoConstants.*;
 public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     public static String TAG = "RNTwilioVideo";
-    public static Map<String, Integer> callNotificationMap = new HashMap<>();
 
     private final EventManager eventManager;
     private final CallNotificationManager callNotificationManager;
@@ -99,12 +97,14 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void accept() {
+        Log.d(TAG, "Call accepted. Got context?: " + (getReactApplicationContext() != null));
         callAccepted = true;
-        SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
+
+//        SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
         if (activeCallInvite != null) {
             Log.d(TAG, "accept()");
             activeCall = new VideoCall(
-                    activeCallInvite.getCallSid(),
+                    activeCallInvite.getSession(),
                     activeCallInvite.getFrom()
             );
 
@@ -113,21 +113,21 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
                 params.putString(entry.getKey(), entry.getValue());
             }
             eventManager.sendEvent(EVENT_CONNECTION_DID_CONNECT, params);
-            clearIncomingNotification(activeCallInvite.getCallSid());
+            clearIncomingNotification(activeCallInvite);
         }
     }
 
     @ReactMethod
     public void reject() {
         callAccepted = false;
-        SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
+//        SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
         WritableMap params = Arguments.createMap();
         if (activeCallInvite != null) {
             for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
                 params.putString(entry.getKey(), entry.getValue());
             }
             params.putString("call_state", "DISCONNECTED");
-            clearIncomingNotification(activeCallInvite.getCallSid());
+            clearIncomingNotification(activeCallInvite);
         }
         eventManager.sendEvent(EVENT_CONNECTION_DID_REJECT, params);
     }
@@ -197,18 +197,21 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     private void handleCancelledInvite(Intent intent) {
         CanceledVideoCallInvite cancelledCallInvite = intent.getParcelableExtra(CANCELLED_CALL_INVITE);
-        clearIncomingNotification(cancelledCallInvite.getCallSid());
+        clearIncomingNotification(cancelledCallInvite);
         WritableMap params = buildRNNotification(cancelledCallInvite);
         eventManager.sendEvent(EVENT_CALL_INVITE_CANCELLED, params);
-        clearIncomingNotification(activeCallInvite.getCallSid());
+        clearIncomingNotification(activeCallInvite);
     }
 
     private void handleIncomingCallIntent(Intent intent) {
         Log.d(TAG, "handleIncomingCallIntent");
         activeCallInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+
+        Log.d(TAG, "activeCallInvite: " + activeCallInvite.toString());
+
         if (activeCallInvite != null) {
             callAccepted = false;
-            SoundPoolManager.getInstance(getReactApplicationContext()).playRinging();
+//            SoundPoolManager.getInstance(getReactApplicationContext()).playRinging();
 
             if (getReactApplicationContext().getCurrentActivity() != null) {
                 Window window = getReactApplicationContext().getCurrentActivity().getWindow();
@@ -228,16 +231,9 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private void clearIncomingNotification(String callSid) {
-        Log.d(TAG, "clearIncomingNotification() callSid: " + callSid);
-        // remove incoming call notification
-        String notificationKey = INCOMING_NOTIFICATION_PREFIX + callSid;
-        int notificationId = 0;
-        if (TwilioVideoModule.callNotificationMap.containsKey(notificationKey)) {
-            notificationId = TwilioVideoModule.callNotificationMap.get(notificationKey);
-        }
-        callNotificationManager.removeIncomingCallNotification(getReactApplicationContext(), null, notificationId);
-        TwilioVideoModule.callNotificationMap.remove(notificationKey);
+    private void clearIncomingNotification(CallInvite invite) {
+        Log.d(TAG, "clearIncomingNotification()");
+        callNotificationManager.removeIncomingCallNotification(getReactApplicationContext(), invite);
         activeCallInvite = null;
     }
 

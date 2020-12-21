@@ -62,12 +62,16 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
 
         if (TwilioChatModule.getChatClient() == null || TwilioChatModule.getChatClient().getConnectionState() == null) {
             Log.d(LOG_TAG, "Chat client state: null");
+            gotChannel.onError("No healthy chat client instance available");
+            return;
         } else {
             Log.d(LOG_TAG, "Chat client state: " + TwilioChatModule.getChatClient().getConnectionState().name());
         }
 
         if (TwilioChatModule.getSynchronizationStatus() == null) {
             Log.d(LOG_TAG, "SynchronizationStatus: null");
+            gotChannel.onError("Synchronization status is null");
+            return;
         } else {
             Log.d(LOG_TAG, "SynchronizationStatus: " + TwilioChatModule.getSynchronizationStatus().name());
         }
@@ -100,8 +104,14 @@ public class TwilioChatChannelModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void get(String channelSidOrUniqueName, final Promise promise) {
         Log.d(LOG_TAG, "getChannel: " + channelSidOrUniqueName);
-        TwilioChatModule
-                .getChatClient()
+        ChatClient chatClient = TwilioChatModule.getChatClient();
+
+        if (chatClient == null) {
+            promise.reject("No chat client available");
+            return;
+        }
+
+        chatClient
                 .getChannels()
                 .getChannel(channelSidOrUniqueName, new PromiseCallbackListener<Channel>(promise) {
                     @Override

@@ -24,27 +24,6 @@ public class VideoCallInvite implements Parcelable, CallInvite {
         for (int i = 0; i < halfSize; i = i + 2) {
             data.put(values.get(i), values.get(i + 1));
         }
-//        String[] data = new String[4];
-//        in.readStringArray(data);
-//        from = data[0];
-//        to = data[1];
-//        callSid = data[2];
-//        bridgeToken = data[3];
-//        int size = in.readInt();
-//        this.data = new HashMap<>(size);
-//        for(int i = 0; i < size; i++){
-//            String key = in.readString();
-//            String value = in.readString();
-//            this.data.put(key,value);
-//        }
-//        int sizeOfCustomParams = in.readInt();
-//        customParameters = new HashMap<>(sizeOfCustomParams);
-//        for(int i = 0; i < sizeOfCustomParams; i++){
-//            String key = in.readString();
-//            String value = in.readString();
-//            customParameters.put(key,value);
-//        }
-//        publisher = null;
     }
 
     protected VideoCallInvite(Map<String, String> data) {
@@ -82,8 +61,8 @@ public class VideoCallInvite implements Parcelable, CallInvite {
     }
 
     @Override
-    public String getCallSid() {
-        return this.data != null ? this.data.get("twi_call_sid") : null;
+    public String getSession() {
+        return this.data != null ? this.data.get("teamSession") : null;
     }
 
     @Override
@@ -91,4 +70,10 @@ public class VideoCallInvite implements Parcelable, CallInvite {
         return this.data != null ? this.data.get("displayName") : null;
     }
 
+    @Override
+    public String toString() {
+        return "VideoCallInvite{" +
+                "data=" + data +
+                '}';
+    }
 }

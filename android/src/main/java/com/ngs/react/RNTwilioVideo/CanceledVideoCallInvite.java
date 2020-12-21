@@ -38,13 +38,13 @@ public class CanceledVideoCallInvite implements Parcelable, CallInvite {
     };
 
     @Override
-    public String getCallSid() {
-        return null;
+    public String getSession() {
+        return data.get("teamSession");
     }
 
     @Override
     public String getFrom() {
-        return null;
+        return data.get("displayName");
     }
 
     @Override

@@ -82,40 +82,46 @@ public class TwilioChatModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void createClient(String token, ReadableMap props, final Promise promise) {
         Log.d(LOG_TAG, "creating client. Token: " + token);
-        ChatClient.Properties.Builder builder = new ChatClient.Properties.Builder();
 
-        if (props != null) {
-            if (props.hasKey("region")) {
-                builder.setRegion(props.getString("region"));
+        if (token != null) {
+
+            ChatClient.Properties.Builder builder = new ChatClient.Properties.Builder();
+
+            if (props != null) {
+                if (props.hasKey("region")) {
+                    builder.setRegion(props.getString("region"));
+                }
+                if (props.hasKey("defer")) {
+                    builder.setDeferCertificateTrustToPlatform(props.getBoolean("defer"));
+                }
             }
-            if (props.hasKey("defer")) {
-                builder.setDeferCertificateTrustToPlatform(props.getBoolean("defer"));
-            }
-        }
 
-        ChatClient.create(getReactApplicationContext(), token, builder.createProperties(), new PromiseCallbackListener<ChatClient>(promise) {
-            @Override
-            public void onSuccess(ChatClient chatClient) {
-                Log.d(LOG_TAG, "Chat client created");
-                CHAT_CLIENT = chatClient;
+            ChatClient.create(getReactApplicationContext(), token, builder.createProperties(), new PromiseCallbackListener<ChatClient>(promise) {
+                @Override
+                public void onSuccess(ChatClient chatClient) {
+                    Log.d(LOG_TAG, "Chat client created");
+                    CHAT_CLIENT = chatClient;
 
-                chatClient.setListener(new TwilioChatClientListener(getReactApplicationContext()) {
-                    @Override
-                    public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
-                        super.onClientSynchronization(synchronizationStatus);
+                    chatClient.setListener(new TwilioChatClientListener(getReactApplicationContext()) {
+                        @Override
+                        public void onClientSynchronization(ChatClient.SynchronizationStatus synchronizationStatus) {
+                            super.onClientSynchronization(synchronizationStatus);
 
-                        if (synchronizationStatus == ChatClient.SynchronizationStatus.COMPLETED) {
-                            // Client is now ready for business, start working
-                            WritableMap json = new WritableNativeMap();
-                            json.putString("status", "COMPLETED");
-                            promise.resolve(json);
+                            if (synchronizationStatus == ChatClient.SynchronizationStatus.COMPLETED) {
+                                // Client is now ready for business, start working
+                                WritableMap json = new WritableNativeMap();
+                                json.putString("status", "COMPLETED");
+                                promise.resolve(json);
+                            }
+
+                            SYNCHRONIZATION_STATUS = synchronizationStatus;
                         }
-
-                        SYNCHRONIZATION_STATUS = synchronizationStatus;
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } else {
+            promise.reject("Token cannot be null");
+        }
     }
 
     @ReactMethod

@@ -18,7 +18,7 @@ public class VideoConstants {
     public static final String MISSED_CALLS_GROUP = "MISSED_CALLS";
     public static final String PREFERENCE_KEY = "com.ngs.react.TwilioVoice.PREFERENCE_FILE_KEY";
 
-    public static final String CALL_SID_KEY = "CALL_SID";
+    public static final String SESSION = "SESSION";
     public static final String INCOMING_NOTIFICATION_PREFIX = "Incoming_";
 
     public static final int MISSED_CALLS_NOTIFICATION_ID = 1;
