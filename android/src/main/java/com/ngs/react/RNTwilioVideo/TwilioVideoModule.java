@@ -78,7 +78,8 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
                 switch (action) {
                     case ACTION_ANSWER_CALL:
                         VideoCallInvite invite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
-                        internalAccept(invite);
+                        Integer notificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
+                        internalAccept(invite, notificationId);
                         break;
                     case ACTION_REJECT_CALL:
                         reject();
@@ -95,7 +96,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         }, intentFilter);
     }
 
-    private void internalAccept(VideoCallInvite invite) {
+    private void internalAccept(VideoCallInvite invite, Integer notificationId) {
         Log.d(TAG, "internalAccept()");
 
         activeCall = new VideoCall(invite.getSession(), invite.getFrom());
@@ -105,7 +106,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
             params.putString(entry.getKey(), entry.getValue());
         }
         eventManager.sendEvent(EVENT_CONNECTION_DID_CONNECT, params);
-        callNotificationManager.removeIncomingCallNotification(getReactApplicationContext(), invite);
+        callNotificationManager.removeNotification(getReactApplicationContext(), notificationId);
     }
 
     @ReactMethod
@@ -114,12 +115,13 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         Activity activity = getCurrentActivity();
         Intent intent = activity.getIntent();
         VideoCallInvite activeCallInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+        Integer notificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
 
         Log.d(TAG, "Active call invite: " + activeCallInvite);
 
         if (activeCallInvite != null) {
             intent.putExtra(INCOMING_CALL_INVITE, (String) null);
-            internalAccept(activeCallInvite);
+            internalAccept(activeCallInvite, notificationId);
         }
     }
 
@@ -129,6 +131,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         Activity activity = getCurrentActivity();
         Intent intent = activity.getIntent();
         VideoCallInvite invite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+        Integer notificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
 
         if (invite != null) {
             intent.putExtra(INCOMING_CALL_INVITE, (String) null);
@@ -137,7 +140,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
                 params.putString(entry.getKey(), entry.getValue());
             }
             params.putString("call_state", "DISCONNECTED");
-            callNotificationManager.removeIncomingCallNotification(getReactApplicationContext(), invite);
+            callNotificationManager.removeNotification(getReactApplicationContext(), notificationId);
         }
         eventManager.sendEvent(EVENT_CONNECTION_DID_REJECT, params);
     }

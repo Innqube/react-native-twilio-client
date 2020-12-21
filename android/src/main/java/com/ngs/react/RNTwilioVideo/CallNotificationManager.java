@@ -344,6 +344,11 @@ public class CallNotificationManager {
         notificationManager.notify(HANGUP_NOTIFICATION_ID, notification.build());
     }
 
+    public void removeNotification(Context context, Integer id) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(id);
+    }
+
     public void removeIncomingCallNotification(Context context,
                                                CallInvite callInvite) {
         if (BuildConfig.DEBUG) {
