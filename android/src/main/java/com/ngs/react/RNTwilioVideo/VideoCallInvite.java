@@ -4,12 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class VideoCallInvite implements Parcelable, CallInvite {
 
-    private static final String TAG = "RNTwilioVideo";
     private Map<String, String> data;
 
     static VideoCallInvite create(Map<String, String> data) {
@@ -17,12 +15,12 @@ public class VideoCallInvite implements Parcelable, CallInvite {
     }
 
     protected VideoCallInvite(Parcel in) {
-        List<String> values = in.createStringArrayList();
-        Integer halfSize = values.size() / 2;
-
+        int size = in.readInt();
         this.data = new HashMap<>();
-        for (int i = 0; i < halfSize; i = i + 2) {
-            data.put(values.get(i), values.get(i + 1));
+        for (int i = 0; i < size; i++) {
+            String key = in.readString();
+            String value = in.readString();
+            data.put(key, value);
         }
     }
 

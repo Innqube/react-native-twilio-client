@@ -8,9 +8,6 @@ import android.os.Message;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.facebook.react.ReactApplication;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ngs.react.BuildConfig;
 import org.json.JSONException;
@@ -76,18 +73,13 @@ public class VideoMessagingService extends Service {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            ReactContext context  = ((ReactApplication) getApplication())
-                    .getReactNativeHost()
-                    .getReactInstanceManager()
-                    .getCurrentReactContext();
-
             Map<String, String> data = parseData(remoteMessage);
             String action = data.get("action");
 
             if ("call".equals(action)) {
-                handleIncomingCallNotification(context, data);
+                handleIncomingCallNotification(data);
             } else if ("cancel".equals(action)) {
-                cancelIncomingCallNotification(context, data);
+                cancelIncomingCallNotification(data);
             }
         }
 
@@ -106,7 +98,7 @@ public class VideoMessagingService extends Service {
         return data;
     }
 
-    private void cancelIncomingCallNotification(ReactContext context, Map<String, String> data) {
+    private void cancelIncomingCallNotification(Map<String, String> data) {
         Log.d(TAG, "cancelIncomingCall");
         try {
             String taskAttributesString = data.get("taskAttributes");
@@ -125,7 +117,7 @@ public class VideoMessagingService extends Service {
             );
 
             callNotificationManager.removeIncomingCallNotification(
-                    (ReactApplicationContext) context,
+                    getApplicationContext(),
                     invite
             );
         } catch (JSONException e) {
@@ -135,80 +127,21 @@ public class VideoMessagingService extends Service {
 
     }
 
-    private void handleIncomingCallNotification(ReactContext context, Map<String, String> data) {
+    private void handleIncomingCallNotification(Map<String, String> data) {
         // If notification ID is not provided by the user for push notification, generate one at random
         Random randomNumberGenerator = new Random(System.currentTimeMillis());
         final int notificationId = randomNumberGenerator.nextInt();
 
         VideoCallInvite callInvite = VideoCallInvite.create(data);
 
-        int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
-        Intent launchIntent = callNotificationManager.getLaunchIntent(
-                (ReactApplicationContext) context,
-                notificationId,
-                callInvite,
-                false,
-                appImportance
-        );
-
         callNotificationManager.createIncomingCallNotification(
-                (ReactApplicationContext) context, callInvite, notificationId,
-                launchIntent);
+                getApplicationContext(), callInvite, notificationId
+        );
 
         Intent intent = new Intent(ACTION_INCOMING_CALL);
         intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
         intent.putExtra(INCOMING_CALL_INVITE, callInvite);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
-        // If it's constructed, send a notification
-//        if (context != null) {
-//            int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
-//            if (BuildConfig.DEBUG) {
-//                Log.d(TAG, "CONTEXT present appImportance = " + appImportance);
-//            }
-//            Intent launchIntent = callNotificationManager.getLaunchIntent(
-//                    (ReactApplicationContext) context,
-//                    notificationId,
-//                    callInvite,
-//                    false,
-//                    appImportance
-//            );
-//
-//            callNotificationManager.createIncomingCallNotification(
-//                    (ReactApplicationContext) context, callInvite, notificationId,
-//                    launchIntent);
-//
-//            Intent intent = new Intent(ACTION_INCOMING_CALL);
-//            intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
-//            intent.putExtra(INCOMING_CALL_INVITE, callInvite);
-//            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-//        } else {
-//            ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-//            // Otherwise wait for construction, then handle the incoming call
-//            mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
-//                public void onReactContextInitialized(ReactContext context) {
-//                    Log.d(TAG, "React context created");
-//                    int appImportance = callNotificationManager.getApplicationImportance((ReactApplicationContext) context);
-//                    if (BuildConfig.DEBUG) {
-//                        Log.d(TAG, "CONTEXT not present appImportance = " + appImportance);
-//                    }
-//                    Intent launchIntent = callNotificationManager.getLaunchIntent((ReactApplicationContext) context, notificationId, callInvite, true, appImportance);
-//                    /*context.startActivity(launchIntent);
-//                    Intent intent = new Intent(ACTION_INCOMING_CALL);
-//                    intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
-//                    intent.putExtra(INCOMING_CALL_INVITE, callInvite);
-//                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);*/
-//                    callNotificationManager.createIncomingCallNotification(
-//                            (ReactApplicationContext) context, callInvite, notificationId,
-//                            launchIntent);
-//                }
-//            });
-//            if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
-//                // Construct it in the background
-//                Log.d(TAG, "Create react context");
-//                mReactInstanceManager.createReactContextInBackground();
-//            }
-//        }
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
 }

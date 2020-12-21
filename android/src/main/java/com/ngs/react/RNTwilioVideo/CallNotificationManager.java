@@ -14,7 +14,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.service.notification.StatusBarNotification;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.WindowManager;
@@ -42,7 +42,7 @@ public class CallNotificationManager {
     public CallNotificationManager() {
     }
 
-    public int getApplicationImportance(ReactApplicationContext context) {
+    public int getApplicationImportance(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         if (activityManager == null) {
             return 0;
@@ -60,7 +60,7 @@ public class CallNotificationManager {
         return 0;
     }
 
-    public Class getMainActivityClass(ReactApplicationContext context) {
+    public Class getMainActivityClass(Context context) {
         String packageName = context.getPackageName();
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         String className = launchIntent.getComponent().getClassName();
@@ -101,15 +101,9 @@ public class CallNotificationManager {
         return launchIntent;
     }
 
-    public void createIncomingCallNotification(ReactApplicationContext context,
+    public void createIncomingCallNotification(Context context,
                                                VideoCallInvite callInvite,
-                                               int notificationId,
-                                               Intent launchIntent) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "createIncomingCallNotification intent " + launchIntent.getFlags());
-        }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+                                               int notificationId) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         /*
@@ -129,10 +123,6 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
-//        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-//                ? new NotificationCompat.Builder(context, VIDEO_CHANNEL)
-//                : new NotificationCompat.Builder(context)
-
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VIDEO_CHANNEL)
                 .setSmallIcon(R.drawable.ic_call_white_24dp)
                 .setContentTitle("Incoming video call")
@@ -140,7 +130,6 @@ public class CallNotificationManager {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setFullScreenIntent(pendingIntent, true)
                 .setAutoCancel(false)
                 .setSound(ringtoneSound, AudioManager.STREAM_RING)
                 .setExtras(extras)
@@ -160,10 +149,10 @@ public class CallNotificationManager {
         // Reject action
         Intent rejectIntent = new Intent(ACTION_REJECT_CALL)
                 .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
+                .putExtra(INCOMING_CALL_INVITE, callInvite)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingRejectIntent = PendingIntent.getBroadcast(context, 1, rejectIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        notificationBuilder.addAction(0, "DISMISS", pendingRejectIntent);
 
         // Answer action
         PendingIntent pendingAnswerIntent;
@@ -171,21 +160,23 @@ public class CallNotificationManager {
 
         if (importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
             // If the app is already in the foreground broadcast a notification so that an event is sent to the JS part
-            Intent answerIntent = new Intent(ACTION_ANSWER_CALL);
-            answerIntent
+            Intent answerIntent = new Intent(ACTION_ANSWER_CALL)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
-                    .putExtras(extras)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            pendingAnswerIntent = PendingIntent.getBroadcast(context, 0, answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-        } else {
-            // Start the app from the notification if it is in the background
-            Class clazz = getMainActivityClass(context);
-            Intent answerIntent = new Intent(context, clazz);
-            answerIntent.setFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+            pendingAnswerIntent = PendingIntent.getBroadcast(
+                    context,
+                    0,
+                    answerIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
             );
+        } else {
+            // Start the app from the notification as it is in the background currently
+            Class clazz = getMainActivityClass(context);
+            Intent answerIntent = new Intent(context, clazz)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
             pendingAnswerIntent = PendingIntent.getActivity(
                     context,
@@ -195,11 +186,20 @@ public class CallNotificationManager {
             );
         }
 
+        notificationBuilder.addAction(0, "DISMISS", pendingRejectIntent);
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
 
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT; // keep the phone ringing
         notification.sound = ringtoneSound; // fix no sound in older android versions
+
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isInteractive();
+        Log.d(TAG, "Screen on: " + isScreenOn);
+        if (!isScreenOn) {
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "com.ngs:notification-call-lock");
+            wl.acquire(3000);
+        }
 
         notificationManager.notify(notificationId, notification);
 
@@ -231,7 +231,7 @@ public class CallNotificationManager {
         notificationManager.createNotificationChannel(channel);
     }
 
-    public void createMissedCallNotification(ReactApplicationContext context, VideoCallInvite callInvite) {
+    public void createMissedCallNotification(Context context, VideoCallInvite callInvite) {
         SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor sharedPrefEditor = sharedPref.edit();
 
@@ -302,7 +302,7 @@ public class CallNotificationManager {
         notificationManager.notify(MISSED_CALLS_NOTIFICATION_ID, notification.build());
     }
 
-    public void createHangupLocalNotification(ReactApplicationContext context, String callSid, String caller) {
+    public void createHangupLocalNotification(Context context, String callSid, String caller) {
         PendingIntent pendingHangupIntent = PendingIntent.getBroadcast(
                 context,
                 0,
@@ -344,56 +344,63 @@ public class CallNotificationManager {
         notificationManager.notify(HANGUP_NOTIFICATION_ID, notification.build());
     }
 
-    public void removeIncomingCallNotification(ReactApplicationContext context,
+    public void removeIncomingCallNotification(Context context,
                                                CallInvite callInvite) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "removeIncomingCallNotification");
+            Log.d(TAG, "removeIncomingCallNotification for invite: " + callInvite);
         }
         if (context == null) {
             Log.e(TAG, "Context is null");
             return;
         }
 
+        // no support for multiple concurrent notifications right now...
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Integer notificationId = callNotificationMap.get(INCOMING_NOTIFICATION_PREFIX + callInvite.getSession());
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (callInvite != null && notificationId != null) {
-                /*
-                 * If the incoming call message was cancelled then remove the notification by matching
-                 * it with the call sid from the list of notifications in the notification drawer.
-                 */
-                StatusBarNotification[] activeNotifications = notificationManager.getActiveNotifications();
-                for (StatusBarNotification statusBarNotification : activeNotifications) {
-                    Notification notification = statusBarNotification.getNotification();
-                    String notificationType = notification.extras.getString(NOTIFICATION_TYPE);
-
-                    if (callInvite.getSession().equals(notification.extras.getString(SESSION)) &&
-                            notificationType != null && notificationType.equals(ACTION_INCOMING_CALL)) {
-
-//                        int notificationId = notification.extras.getInt(INCOMING_CALL_NOTIFICATION_ID);
-                        Log.d(TAG, "Removing (1) notification with id: " + notificationId);
-                        notificationManager.cancel(notificationId);
-                    }
-                }
-            } else if (notificationId != null) {
-                Log.d(TAG, "Removing (2) notification with id: " + notificationId);
-                notificationManager.cancel(notificationId);
-            }
-        } else {
-            if (notificationId != null) {
-                Log.d(TAG, "Removing (3) notification with id: " + notificationId);
-                notificationManager.cancel(notificationId);
-            } else if (callInvite != null) {
-                String notificationKey = INCOMING_NOTIFICATION_PREFIX + callInvite.getSession();
-                if (callNotificationMap.containsKey(notificationKey)) {
-                    notificationId = callNotificationMap.get(notificationKey);
-                    Log.d(TAG, "Removing (4) notification with id: " + notificationId);
-                    notificationManager.cancel(notificationId);
-                    callNotificationMap.remove(notificationKey);
-                }
-            }
+        for (Integer value : callNotificationMap.values()) {
+            notificationManager.cancel(value);
         }
+
+//        Integer notificationId = callNotificationMap.get(INCOMING_NOTIFICATION_PREFIX + callInvite.getSession());
+
+//        Log.d(TAG, "Notification id to remove: " + notificationId);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (callInvite != null && notificationId != null) {
+//                /*
+//                 * If the incoming call message was cancelled then remove the notification by matching
+//                 * it with the call sid from the list of notifications in the notification drawer.
+//                 */
+//                StatusBarNotification[] activeNotifications = notificationManager.getActiveNotifications();
+//                for (StatusBarNotification statusBarNotification : activeNotifications) {
+//                    Notification notification = statusBarNotification.getNotification();
+//                    String notificationType = notification.extras.getString(NOTIFICATION_TYPE);
+//
+//                    if (callInvite.getSession().equals(notification.extras.getString(SESSION)) &&
+//                            notificationType != null && notificationType.equals(ACTION_INCOMING_CALL)) {
+//
+////                        int notificationId = notification.extras.getInt(INCOMING_CALL_NOTIFICATION_ID);
+//                        Log.d(TAG, "Removing (1) notification with id: " + notificationId);
+//                        notificationManager.cancel(notificationId);
+//                    }
+//                }
+//            } else if (notificationId != null) {
+//                Log.d(TAG, "Removing (2) notification with id: " + notificationId);
+//                notificationManager.cancel(notificationId);
+//            }
+//        } else {
+//            if (notificationId != null) {
+//                Log.d(TAG, "Removing (3) notification with id: " + notificationId);
+//                notificationManager.cancel(notificationId);
+//            } else if (callInvite != null) {
+//                String notificationKey = INCOMING_NOTIFICATION_PREFIX + callInvite.getSession();
+//                if (callNotificationMap.containsKey(notificationKey)) {
+//                    notificationId = callNotificationMap.get(notificationKey);
+//                    Log.d(TAG, "Removing (4) notification with id: " + notificationId);
+//                    notificationManager.cancel(notificationId);
+//                    callNotificationMap.remove(notificationKey);
+//                }
+//            }
+//        }
     }
 
     public void removeHangupNotification(ReactApplicationContext context) {
