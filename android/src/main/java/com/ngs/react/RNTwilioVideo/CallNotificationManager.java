@@ -195,20 +195,11 @@ public class CallNotificationManager {
             );
         }
 
-//        launchIntent
-//                .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
-//                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-//        PendingIntent pendingAnswerIntent = PendingIntent.getActivity(
-//                context,
-//                0,
-//                launchIntent,
-//                PendingIntent.FLAG_UPDATE_CURRENT
-//        );
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
 
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT; // keep the phone ringing
+        notification.sound = ringtoneSound; // fix no sound in older android versions
 
         notificationManager.notify(notificationId, notification);
 

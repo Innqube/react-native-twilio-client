@@ -25,7 +25,6 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     private VideoCallInvite activeCallInvite;
     private VideoCall activeCall;
-    private boolean callAccepted = false;
     private boolean isReceiverRegistered = false;
 
     public TwilioVideoModule(ReactApplicationContext rc) {
@@ -98,9 +97,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void accept() {
         Log.d(TAG, "Call accepted. Got context?: " + (getReactApplicationContext() != null));
-        callAccepted = true;
 
-//        SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
         if (activeCallInvite != null) {
             Log.d(TAG, "accept()");
             activeCall = new VideoCall(
@@ -119,8 +116,6 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void reject() {
-        callAccepted = false;
-//        SoundPoolManager.getInstance(getReactApplicationContext()).stopRinging();
         WritableMap params = Arguments.createMap();
         if (activeCallInvite != null) {
             for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
@@ -210,9 +205,6 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         Log.d(TAG, "activeCallInvite: " + activeCallInvite.toString());
 
         if (activeCallInvite != null) {
-            callAccepted = false;
-//            SoundPoolManager.getInstance(getReactApplicationContext()).playRinging();
-
             if (getReactApplicationContext().getCurrentActivity() != null) {
                 Window window = getReactApplicationContext().getCurrentActivity().getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
