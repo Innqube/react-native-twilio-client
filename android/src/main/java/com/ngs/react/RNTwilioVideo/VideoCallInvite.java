@@ -14,7 +14,7 @@ public class VideoCallInvite implements Parcelable, CallInvite {
         return new VideoCallInvite(data);
     }
 
-    protected VideoCallInvite(Parcel in) {
+    public VideoCallInvite(Parcel in) {
         int size = in.readInt();
         this.data = new HashMap<>();
         for (int i = 0; i < size; i++) {
@@ -24,7 +24,7 @@ public class VideoCallInvite implements Parcelable, CallInvite {
         }
     }
 
-    protected VideoCallInvite(Map<String, String> data) {
+    public VideoCallInvite(Map<String, String> data) {
         this.data = data;
     }
 
@@ -67,6 +67,10 @@ public class VideoCallInvite implements Parcelable, CallInvite {
     public String getFrom() {
         return this.data != null ? this.data.get("displayName") : null;
     }
+
+    public String getTaskAttributes() { return data.get("taskAttributes"); }
+
+    public String getAction() { return data.get("action"); }
 
     @Override
     public String toString() {

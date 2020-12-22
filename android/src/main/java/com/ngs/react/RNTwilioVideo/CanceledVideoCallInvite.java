@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CanceledVideoCallInvite implements Parcelable, CallInvite {
@@ -12,12 +11,12 @@ public class CanceledVideoCallInvite implements Parcelable, CallInvite {
     private Map<String, String> data;
 
     public CanceledVideoCallInvite(Parcel in) {
-        List<String> values = in.createStringArrayList();
-        Integer halfSize = values.size() / 2;
-
+        int size = in.readInt();
         this.data = new HashMap<>();
-        for (int i = 0; i < halfSize; i = i + 2) {
-            data.put(values.get(i), values.get(i + 1));
+        for (int i = 0; i < size; i++) {
+            String key = in.readString();
+            String value = in.readString();
+            data.put(key, value);
         }
     }
 
@@ -47,6 +46,8 @@ public class CanceledVideoCallInvite implements Parcelable, CallInvite {
         return data.get("displayName");
     }
 
+    public String getTaskAttributes() { return data.get("taskAttributes"); }
+
     @Override
     public int describeContents() {
         return 0;
@@ -55,7 +56,7 @@ public class CanceledVideoCallInvite implements Parcelable, CallInvite {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.data.size());
-        for(Map.Entry<String,String> entry : this.data.entrySet()){
+        for (Map.Entry<String, String> entry : this.data.entrySet()) {
             dest.writeString(entry.getKey());
             dest.writeString(entry.getValue());
         }
