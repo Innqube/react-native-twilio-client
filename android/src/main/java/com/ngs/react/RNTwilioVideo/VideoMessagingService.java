@@ -100,7 +100,7 @@ public class VideoMessagingService extends Service {
                                         params.putString(entry.getKey(), entry.getValue());
                                     }
                                     em.sendEvent("performEndVideoCall", params);
-                                }, 3000);
+                                }, 4000);
                     });
                     break;
             }
