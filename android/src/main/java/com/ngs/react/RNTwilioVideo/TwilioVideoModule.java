@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.*;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.facebook.react.bridge.*;
 
 import java.util.Map;
