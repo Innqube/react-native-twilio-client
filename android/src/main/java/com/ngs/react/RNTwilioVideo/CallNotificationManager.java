@@ -81,6 +81,8 @@ public class CallNotificationManager {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setAutoCancel(false)
                 .setSound(ringtoneSound, AudioManager.STREAM_RING)
+                .setColor(Color.argb(255, 0, 147, 213))
+                .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
                 .setOngoing(true); // sorted above the regular notifications && do not have an 'X' close button, and are not affected by the "Clear all" button;
 
         // build notification large icon
@@ -97,7 +99,7 @@ public class CallNotificationManager {
         PendingIntent pendingRejectIntent = buildRejectIntent(context, callInvite, notificationId);
         PendingIntent pendingAnswerIntent = buildAnswerIntent(context, callInvite, notificationId);
 
-        notificationBuilder.addAction(0, "DISMISS", pendingRejectIntent);
+        notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
 
         Notification notification = notificationBuilder.build();
@@ -198,7 +200,7 @@ public class CallNotificationManager {
 
         NotificationChannel channel = new NotificationChannel(VIDEO_CHANNEL,
                 "On Demand video calls", NotificationManager.IMPORTANCE_HIGH);
-        channel.setLightColor(Color.GREEN);
+        channel.setLightColor(Color.argb(255, 0, 147, 213));
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         channel.setSound(ringtoneSound, audioAttributes);
         channel.setImportance(NotificationManager.IMPORTANCE_HIGH);

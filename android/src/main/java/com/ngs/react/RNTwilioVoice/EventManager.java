@@ -25,6 +25,7 @@ public class EventManager {
     public static final String EVENT_CALL_INVITE_CANCELLED = "callInviteCancelled";
     public static final String EVENT_CONNECTION_IS_RECONNECTING = "connectionIsReconnecting";
     public static final String EVENT_CONNECTION_DID_RECONNECT = "connectionDidReconnect";
+    public static final String EVENT_CALL_REJECTED = "voiceCallRejected";
 
 
     public EventManager(ReactApplicationContext context) {
