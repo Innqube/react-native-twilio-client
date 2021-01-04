@@ -4,18 +4,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.bridge.ReactContext;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ngs.react.BuildConfig;
-import com.twilio.voice.*;
+import com.twilio.voice.CancelledCallInvite;
 
 import java.util.Map;
 
@@ -78,48 +73,64 @@ public class VoiceMessagingService extends Service {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Map<String, String> data = remoteMessage.getData();
+            String action = data.get("action");
 
-            // If notification ID is not provided by the user for push notification, generate one at random
-            boolean valid = Voice.handleMessage(getApplicationContext(), data, new MessageListener() {
-                @Override
-                public void onCallInvite(final CallInvite callInvite) {
-                    Log.d(TAG, "onCallInvite");
-                    // We need to run this on the main thread, as the React code assumes that is true.
-                    // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
-                    // "Can't create handler inside thread that has not called Looper.prepare()"
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(() -> {
-                        ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-                        ReactContext context = mReactInstanceManager.getCurrentReactContext();
-
-                        if (context == null) {
-                            mReactInstanceManager.addReactInstanceEventListener(rc -> broadcastIncomingCallNotification(callInvite));
-                            mReactInstanceManager.createReactContextInBackground();
-                        } else {
-                            broadcastIncomingCallNotification(callInvite);
-                        }
-                    });
-                }
-
-                @Override
-                public void onCancelledCallInvite(@NonNull CancelledCallInvite cancelledCallInvite, @Nullable CallException callException) {
-                    Log.d(TAG, "onCancelledCallInvite");
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(() -> VoiceMessagingService.this.sendCancelledCallInviteToActivity(cancelledCallInvite));
-                }
-            });
-
-            if (!valid) {
-                Log.e(TAG, "The message was not a valid Twilio Voice SDK payload: " + remoteMessage.getData());
-
-                String action = data.get("action");
-
-                if ("reject".equals(action)) {
-                    Log.d(TAG, "Rejecting call");
-                    int notificationId = Integer.parseInt(data.get(INCOMING_CALL_NOTIFICATION_ID));
-                    callNotificationManager.removeNotification(getApplicationContext(), notificationId);
-                }
+            if (action == null) {
+                return;
             }
+
+            switch (action) {
+                case "call":
+                    VoiceCallInvite invite = VoiceCallInvite.create(data);
+                    handleIncomingCallNotification(invite);
+                    break;
+                case "cancel":
+                    break;
+                case "reject":
+                    break;
+            }
+
+//            // If notification ID is not provided by the user for push notification, generate one at random
+//            boolean valid = Voice.handleMessage(getApplicationContext(), data, new MessageListener() {
+//                @Override
+//                public void onCallInvite(final CallInvite callInvite) {
+//                    Log.d(TAG, "onCallInvite");
+//                    // We need to run this on the main thread, as the React code assumes that is true.
+//                    // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
+//                    // "Can't create handler inside thread that has not called Looper.prepare()"
+//                    Handler handler = new Handler(Looper.getMainLCallInviteooper());
+//                    handler.post(() -> {
+//                        ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+//                        ReactContext context = mReactInstanceManager.getCurrentReactContext();
+//
+//                        if (context == null) {
+//                            mReactInstanceManager.addReactInstanceEventListener(rc -> broadcastIncomingCallNotification(callInvite));
+//                            mReactInstanceManager.createReactContextInBackground();
+//                        } else {
+//                            broadcastIncomingCallNotification(callInvite);
+//                        }
+//                    });
+//                }
+//
+//                @Override
+//                public void onCancelledCallInvite(@NonNull CancelledCallInvite cancelledCallInvite, @Nullable CallException callException) {
+//                    Log.d(TAG, "onCancelledCallInvite");
+//                    Handler handler = new Handler(Looper.getMainLooper());
+//                    handler.post(() -> VoiceMessagingService.this.sendCancelledCallInviteToActivity(cancelledCallInvite));
+//                }
+//            });
+//
+//            if (!valid) {
+//                Log.e(TAG, "The message was not a valid Twilio Voice SDK payload: " + remoteMessage.getData());
+//
+//                String action = data.get("action");
+//
+//                if ("reject".equals(action)) {
+//                    Log.d(TAG, "Rejecting call");
+//                    int notificationId = Integer.parseInt(data.get(INCOMING_CALL_NOTIFICATION_ID));
+//                    callNotificationManager.removeNotification(getApplicationContext(), notificationId);
+//                }
+//            }
         }
 
         // Check if message contains a notification payload.
@@ -128,19 +139,34 @@ public class VoiceMessagingService extends Service {
         }
     }
 
-    private void broadcastIncomingCallNotification(CallInvite callInvite) {
-        int notificationId = callInvite.getCallSid().hashCode();
+    private void handleIncomingCallNotification(VoiceCallInvite invite) {
+        int notificationId = invite.getSession().hashCode();
         callNotificationManager.createIncomingCallNotification(
                 getApplicationContext(),
-                callInvite,
+                invite,
                 notificationId
         );
 
         Intent intent = new Intent(ACTION_INCOMING_CALL);
         intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
-        intent.putExtra(INCOMING_CALL_INVITE, callInvite);
+        intent.putExtra(INCOMING_CALL_INVITE, invite);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
+
+
+//    private void broadcastIncomingCallNotification(CallInvite callInvite) {
+//        int notificationId = callInvite.getCallSid().hashCode();
+//        callNotificationManager.createIncomingCallNotification(
+//                getApplicationContext(),
+//                callInvite,
+//                notificationId
+//        );
+//
+//        Intent intent = new Intent(ACTION_INCOMING_CALL);
+//        intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
+//        intent.putExtra(INCOMING_CALL_INVITE, callInvite);
+//        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//    }
 
     /*
      * Send the CancelledCallInvite to the TwilioVoiceModule
