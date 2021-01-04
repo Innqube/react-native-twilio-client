@@ -19,6 +19,7 @@ const _eventHandlers = {
     callStateRinging: new Map(),
     callInviteCancelled: new Map(),
     callRejected: new Map(),
+    voiceCallAccepted: new Map(),
     // Events for TwilioVideo
     voipRemoteNotificationsRegistered: new Map()
 }

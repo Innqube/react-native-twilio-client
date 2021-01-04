@@ -2,6 +2,8 @@ package com.ngs.react.RNTwilioVoice;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +61,15 @@ public class VoiceCallInvite implements Parcelable {
     }
 
     public String getSession() {
-        return this.data != null ? this.data.get("session") : null;
+        if (getTaskAttributes() == null) {
+            return null;
+        }
+        try {
+            JSONObject taskAttributes = new JSONObject(getTaskAttributes());
+            return taskAttributes.getString("teamSession");
+        } catch (JSONException e) {
+            return null;
+        }
     }
 
     public String getFrom() {
@@ -67,6 +77,18 @@ public class VoiceCallInvite implements Parcelable {
     }
 
     public String getTaskAttributes() { return data.get("taskAttributes"); }
+
+    public String getCallSid() {
+        if (getTaskAttributes() == null) {
+            return null;
+        }
+        try {
+            JSONObject taskAttributes = new JSONObject(getTaskAttributes());
+            return taskAttributes.getString("callSid");
+        } catch (JSONException e) {
+            return null;
+        }
+    }
 
     public String getAction() { return data.get("action"); }
 

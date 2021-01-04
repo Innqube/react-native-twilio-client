@@ -11,6 +11,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ngs.react.BuildConfig;
 import com.twilio.voice.CancelledCallInvite;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -81,10 +83,14 @@ public class VoiceMessagingService extends Service {
 
             switch (action) {
                 case "call":
-                    VoiceCallInvite invite = VoiceCallInvite.create(data);
-                    handleIncomingCallNotification(invite);
+                    handleIncomingCallNotification(
+                            VoiceCallInvite.create(data)
+                    );
                     break;
                 case "cancel":
+                    handleCancelCallNotification(
+                            VoiceCallInvite.create(data)
+                    );
                     break;
                 case "reject":
                     break;
@@ -140,7 +146,24 @@ public class VoiceMessagingService extends Service {
     }
 
     private void handleIncomingCallNotification(VoiceCallInvite invite) {
-        int notificationId = invite.getSession().hashCode();
+        String taskAttributesString = invite.getTaskAttributes();
+
+        if (taskAttributesString == null) {
+            Log.d(TAG, "no task attributes to cancel call");
+            return;
+        }
+
+        String teamSession;
+        try {
+            JSONObject taskAttributes = new JSONObject(taskAttributesString);
+            teamSession = taskAttributes.getString("teamSession");
+            Log.d(TAG, "teamSession: " + teamSession);
+        } catch (JSONException ex) {
+            Log.w(TAG, "No session found. Can not create incoming call notification. Invite data: " + invite);
+            return;
+        }
+
+        int notificationId = teamSession.hashCode();
         callNotificationManager.createIncomingCallNotification(
                 getApplicationContext(),
                 invite,
@@ -150,6 +173,36 @@ public class VoiceMessagingService extends Service {
         Intent intent = new Intent(ACTION_INCOMING_CALL);
         intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
         intent.putExtra(INCOMING_CALL_INVITE, invite);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+
+    private void handleCancelCallNotification(VoiceCallInvite invite) {
+        String taskAttributesString = invite.getTaskAttributes();
+
+        if (taskAttributesString == null) {
+            Log.d(TAG, "no task attributes to cancel call");
+            return;
+        }
+
+        String teamSession;
+        try {
+            JSONObject taskAttributes = new JSONObject(taskAttributesString);
+            teamSession = taskAttributes.getString("teamSession");
+            Log.d(TAG, "teamSession: " + teamSession);
+        } catch (JSONException ex) {
+            Log.w(TAG, "No session found. Can not remove incoming call notification. Invite data: " + invite);
+            return;
+        }
+
+        int notificationId = teamSession.hashCode();
+        callNotificationManager.removeNotification(
+                getApplicationContext(),
+                notificationId
+        );
+
+        Intent intent = new Intent(ACTION_CANCEL_CALL_INVITE);
+        intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
+        intent.putExtra(CANCELLED_CALL_INVITE, invite);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 

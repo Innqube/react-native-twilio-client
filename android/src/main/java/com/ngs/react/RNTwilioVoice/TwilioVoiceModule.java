@@ -488,13 +488,14 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             if (action.equals(ACTION_INCOMING_CALL)) {
                 handleIncomingCallIntent(intent);
             } else if (action.equals(ACTION_CANCEL_CALL_INVITE)) {
-                CancelledCallInvite cancelledCallInvite = intent.getParcelableExtra(CANCELLED_CALL_INVITE);
-                clearIncomingNotification(cancelledCallInvite.getCallSid());
+                VoiceCallInvite cancelledCallInvite = intent.getParcelableExtra(CANCELLED_CALL_INVITE);
+                clearIncomingNotification(cancelledCallInvite.getSession());
                 WritableMap params = Arguments.createMap();
                 if (cancelledCallInvite != null) {
+                    params.putString("teamSession", cancelledCallInvite.getSession());
                     params.putString("call_sid", cancelledCallInvite.getCallSid());
                     params.putString("call_from", cancelledCallInvite.getFrom());
-                    params.putString("call_to", cancelledCallInvite.getTo());
+//                    params.putString("call_to", cancelledCallInvite.getTo());
                 }
                 eventManager.sendEvent(EVENT_CALL_INVITE_CANCELLED, params);
             } else if (action.equals(ACTION_MISSED_CALL)) {
@@ -579,7 +580,8 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
 //                    .build();
 //            activeCallInvite.accept(getReactApplicationContext(), acceptOptions, callListener);
             WritableMap params = buildRNNotification(activeCallInvite);
-            eventManager.sendEvent(EVENT_CONNECTION_DID_CONNECT, params);
+//            eventManager.sendEvent(EVENT_CONNECTION_DID_CONNECT, params);
+            eventManager.sendEvent(EVENT_CALL_ACCEPTED, params);
 
             clearIncomingNotification(activeCallInvite.getSession());
 
