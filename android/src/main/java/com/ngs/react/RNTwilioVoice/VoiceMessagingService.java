@@ -5,18 +5,11 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.google.firebase.messaging.RemoteMessage;
-import com.ngs.react.BuildConfig;
-import com.twilio.voice.CancelledCallInvite;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Map;
-
-import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.*;
 
 public class VoiceMessagingService extends Service {
 
@@ -28,7 +21,9 @@ public class VoiceMessagingService extends Service {
         @Override
         public void handleMessage(Message msg) {
             Log.d(TAG, "Handling message");
-            onMessageReceived(new RemoteMessage(msg.getData()));
+            VoiceCallInvite invite = msg.getData().getParcelable(VoiceConstants.INCOMING_CALL_INVITE);
+            String action = msg.getData().getString("action");
+            onMessageReceived(action, invite);
             Log.d(TAG, "About to stop VoiceFirebaseMessagingService");
             stopSelf(msg.arg1);
         }
@@ -65,169 +60,93 @@ public class VoiceMessagingService extends Service {
      *
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Bundle data: " + remoteMessage.getData());
-        }
-
+    public void onMessageReceived(String action, VoiceCallInvite invite) {
         Log.d(TAG, "onMessageReceived");
 
         // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Map<String, String> data = remoteMessage.getData();
-            String action = data.get("action");
-
-            if (action == null) {
-                return;
-            }
-
-            switch (action) {
-                case "call":
-                    handleIncomingCallNotification(
-                            VoiceCallInvite.create(data)
-                    );
-                    break;
-                case "cancel":
-                    handleCancelCallNotification(
-                            VoiceCallInvite.create(data)
-                    );
-                    break;
-                case "reject":
-                    break;
-            }
-
-//            // If notification ID is not provided by the user for push notification, generate one at random
-//            boolean valid = Voice.handleMessage(getApplicationContext(), data, new MessageListener() {
-//                @Override
-//                public void onCallInvite(final CallInvite callInvite) {
-//                    Log.d(TAG, "onCallInvite");
-//                    // We need to run this on the main thread, as the React code assumes that is true.
-//                    // Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
-//                    // "Can't create handler inside thread that has not called Looper.prepare()"
-//                    Handler handler = new Handler(Looper.getMainLCallInviteooper());
-//                    handler.post(() -> {
-//                        ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
-//                        ReactContext context = mReactInstanceManager.getCurrentReactContext();
-//
-//                        if (context == null) {
-//                            mReactInstanceManager.addReactInstanceEventListener(rc -> broadcastIncomingCallNotification(callInvite));
-//                            mReactInstanceManager.createReactContextInBackground();
-//                        } else {
-//                            broadcastIncomingCallNotification(callInvite);
-//                        }
-//                    });
-//                }
-//
-//                @Override
-//                public void onCancelledCallInvite(@NonNull CancelledCallInvite cancelledCallInvite, @Nullable CallException callException) {
-//                    Log.d(TAG, "onCancelledCallInvite");
-//                    Handler handler = new Handler(Looper.getMainLooper());
-//                    handler.post(() -> VoiceMessagingService.this.sendCancelledCallInviteToActivity(cancelledCallInvite));
-//                }
-//            });
-//
-//            if (!valid) {
-//                Log.e(TAG, "The message was not a valid Twilio Voice SDK payload: " + remoteMessage.getData());
-//
-//                String action = data.get("action");
-//
-//                if ("reject".equals(action)) {
-//                    Log.d(TAG, "Rejecting call");
-//                    int notificationId = Integer.parseInt(data.get(INCOMING_CALL_NOTIFICATION_ID));
-//                    callNotificationManager.removeNotification(getApplicationContext(), notificationId);
-//                }
-//            }
+        if (action == null) {
+            return;
         }
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.e(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        switch (action) {
+            case "call":
+                handleIncomingCallNotification(invite);
+                break;
+            case "cancel":
+                handleCancelCallNotification(invite);
+                break;
+            case "reject":
+                handleRejectCall(invite);
+                break;
         }
     }
 
     private void handleIncomingCallNotification(VoiceCallInvite invite) {
-        String taskAttributesString = invite.getTaskAttributes();
+        Log.d(TAG, "handleIncomingCallNotification");
+        Integer notificationId = notificationIdFromInvite(invite);
 
-        if (taskAttributesString == null) {
-            Log.d(TAG, "no task attributes to cancel call");
+        if (notificationId == null) {
+            Log.d(TAG, "Could not create notificationId from invite");
             return;
         }
 
-        String teamSession;
-        try {
-            JSONObject taskAttributes = new JSONObject(taskAttributesString);
-            teamSession = taskAttributes.getString("teamSession");
-            Log.d(TAG, "teamSession: " + teamSession);
-        } catch (JSONException ex) {
-            Log.w(TAG, "No session found. Can not create incoming call notification. Invite data: " + invite);
-            return;
-        }
-
-        int notificationId = teamSession.hashCode();
         callNotificationManager.createIncomingCallNotification(
                 getApplicationContext(),
                 invite,
                 notificationId
         );
 
-        Intent intent = new Intent(ACTION_INCOMING_CALL);
-        intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
-        intent.putExtra(INCOMING_CALL_INVITE, invite);
+        Intent intent = new Intent(VoiceConstants.ACTION_INCOMING_CALL);
+        intent.putExtra(VoiceConstants.INCOMING_CALL_INVITE, invite);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
     private void handleCancelCallNotification(VoiceCallInvite invite) {
+        Log.d(TAG, "handleCancelCallNotification");
+        removeIncomingCallNotification(invite);
+
+        Intent intent = new Intent(VoiceConstants.ACTION_CANCEL_CALL_INVITE);
+        intent.putExtra(VoiceConstants.CANCELLED_CALL_INVITE, invite);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+
+    private void handleRejectCall(VoiceCallInvite invite) {
+        Log.d(TAG, "handleRejectCall");
+        removeIncomingCallNotification(invite);
+
+        Intent intent = new Intent(VoiceConstants.ACTION_REJECT_CALL);
+        intent.putExtra(VoiceConstants.REJECTED_CALL_INVITE, invite);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+
+    private void removeIncomingCallNotification(VoiceCallInvite invite) {
+        Integer notificationId = notificationIdFromInvite(invite);
+
+        if (notificationId != null) {
+            callNotificationManager.removeNotification(
+                    getApplicationContext(),
+                    notificationId
+            );
+        }
+    }
+
+    private Integer notificationIdFromInvite(VoiceCallInvite invite) {
         String taskAttributesString = invite.getTaskAttributes();
 
         if (taskAttributesString == null) {
             Log.d(TAG, "no task attributes to cancel call");
-            return;
+            return null;
         }
 
-        String teamSession;
         try {
             JSONObject taskAttributes = new JSONObject(taskAttributesString);
-            teamSession = taskAttributes.getString("teamSession");
+            String teamSession = taskAttributes.getString("teamSession");
             Log.d(TAG, "teamSession: " + teamSession);
+            return teamSession.hashCode();
         } catch (JSONException ex) {
             Log.w(TAG, "No session found. Can not remove incoming call notification. Invite data: " + invite);
-            return;
+            return null;
         }
-
-        int notificationId = teamSession.hashCode();
-        callNotificationManager.removeNotification(
-                getApplicationContext(),
-                notificationId
-        );
-
-        Intent intent = new Intent(ACTION_CANCEL_CALL_INVITE);
-        intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
-        intent.putExtra(CANCELLED_CALL_INVITE, invite);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
-
-//    private void broadcastIncomingCallNotification(CallInvite callInvite) {
-//        int notificationId = callInvite.getCallSid().hashCode();
-//        callNotificationManager.createIncomingCallNotification(
-//                getApplicationContext(),
-//                callInvite,
-//                notificationId
-//        );
-//
-//        Intent intent = new Intent(ACTION_INCOMING_CALL);
-//        intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
-//        intent.putExtra(INCOMING_CALL_INVITE, callInvite);
-//        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-//    }
-
-    /*
-     * Send the CancelledCallInvite to the TwilioVoiceModule
-     */
-    private void sendCancelledCallInviteToActivity(CancelledCallInvite cancelledCallInvite) {
-//        SoundPoolManager.getInstance((this)).stopRinging();
-        Intent intent = new Intent(ACTION_CANCEL_CALL_INVITE);
-        intent.putExtra(CANCELLED_CALL_INVITE, cancelledCallInvite);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
 }
