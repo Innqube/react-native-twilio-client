@@ -608,19 +608,19 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             eventManager.sendEvent(EVENT_DEVICE_NOT_READY, errParams);
             return;
         }
-        if (params == null) {
-            errParams.putString("err", "Invalid parameters");
-            eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, errParams);
-            return;
-        } else if (!params.hasKey("To")) {
-            errParams.putString("err", "Invalid To parameter");
-            eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, errParams);
-            return;
-        }
-        toNumber = params.getString("To");
-        if (params.hasKey("ToName")) {
-            toName = params.getString("ToName");
-        }
+//        if (params == null) {
+//            errParams.putString("err", "Invalid parameters");
+//            eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, errParams);
+//            return;
+//        } else if (!params.hasKey("To")) {
+//            errParams.putString("err", "Invalid To parameter");
+//            eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, errParams);
+//            return;
+//        }
+//        toNumber = params.getString("To");
+//        if (params.hasKey("ToName")) {
+//            toName = params.getString("ToName");
+//        }
 
         twiMLParams.clear();
 
