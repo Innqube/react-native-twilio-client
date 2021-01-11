@@ -134,7 +134,7 @@ public class VoiceMessagingService extends Service {
         String taskAttributesString = invite.getTaskAttributes();
 
         if (taskAttributesString == null) {
-            Log.d(TAG, "no task attributes to cancel call");
+            Log.d(TAG, "no task attributes for call");
             return null;
         }
 
