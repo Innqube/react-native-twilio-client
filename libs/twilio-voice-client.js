@@ -26,18 +26,6 @@ const _eventHandlers = {
 
 const TwilioVoiceClient = {
 
-    initialize(tokenCallback) {
-        return new Promise(((resolve, reject) => {
-            tokenCallback()
-                .then(token => {
-                    TwilioVoice
-                        .initWithAccessToken(token)
-                        .then(result => resolve(result))
-                        .catch(error => reject(error));
-                })
-                .catch(error => reject(error));
-        }));
-    },
     connect(params = {}, tokenCallback) {
         tokenCallback()
             .then(token => {
@@ -84,18 +72,6 @@ const TwilioVoiceClient = {
         if (Platform.OS === IOS) {
             TwilioVoice.configureCallKit(params)
         }
-    },
-    unregister(tokenCallback) {
-        return new Promise(((resolve, reject) => {
-            tokenCallback()
-                .then(token => {
-                    TwilioVoice
-                        .unregister(token)
-                        .then(result => resolve(result))
-                        .catch(error => reject(error));
-                })
-                .catch(error => reject(error));
-        }));
     },
     addEventListener(type, handler) {
         if (!_eventHandlers.hasOwnProperty(type)) {
