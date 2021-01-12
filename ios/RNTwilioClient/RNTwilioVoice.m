@@ -65,7 +65,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (id)init {
-    [TwilioVoice setLogLevel:TVOLogLevelAll];
+//     [TwilioVoice setLogLevel:TVOLogLevelAll];
     return [RNTwilioVoice sharedInstance];
 }
 
@@ -572,19 +572,20 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
     NSLog(@"[IIMobile - RNTwilioVoice] provider:performEndCallAction with UUID: %@", [action.callUUID UUIDString]);
 
-    // Pending Voice Call
     if (self.call) {
         [self.call disconnect];
     }
 
-    // Pending Video Call
     NSString *mode = self.dictionaryPayload[@"mode"];
-    if (self.callUuid == nil && [mode isEqualToString:@"video"]) {
+    if (self.callUuid == nil) {
         NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
         params[@"session"] = self.dictionaryPayload[@"session"];
         params[@"companyUuid"] = self.dictionaryPayload[@"companyUuid"];
         params[@"reservationSid"] = self.dictionaryPayload[@"reservationSid"];
-        [RNEventEmitterHelper emitEventWithName:@"performEndVideoCall" andPayload:params];
+
+        NSString *event = [mode isEqualToString:@"video"] ? @"performEndVideoCall" : @"performEndVoiceCall";
+
+        [RNEventEmitterHelper emitEventWithName:event andPayload:params];
     }
     self.callUuid = nil;
     self.callInvite = nil;

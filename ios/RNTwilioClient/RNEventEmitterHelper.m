@@ -26,6 +26,7 @@ RCT_EXPORT_MODULE();
            @"performAnswerVoiceCall",
            @"performAnswerVideoCall",
            @"performEndVideoCall",
+           @"performEndVoiceCall",
            @"requestTransactionError",
            @"displayIncomingCall",
            @"voipRemoteNotificationsRegistered",

@@ -16,6 +16,7 @@ const _eventHandlers = {
     performAnswerVoiceCall: new Map(),
     performAnswerVideoCall: new Map(),
     performEndVideoCall: new Map(),
+    performEndVoiceCall: new Map(),
     requestTransactionError: new Map(),
     callRejected: new Map(),
     voipRemoteNotificationsRegistered: new Map(),
