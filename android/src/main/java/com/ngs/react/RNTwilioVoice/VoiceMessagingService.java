@@ -8,8 +8,15 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ReactContext;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+interface ReactContextCallback {
+    void execute(ReactContext reactContext);
+}
 
 public class VoiceMessagingService extends Service {
 
@@ -68,17 +75,19 @@ public class VoiceMessagingService extends Service {
             return;
         }
 
-        switch (action) {
-            case "call":
-                handleIncomingCallNotification(invite);
-                break;
-            case "cancel":
-                handleCancelCallNotification(invite);
-                break;
-            case "reject":
-                handleRejectCall(invite);
-                break;
-        }
+        startReactContext((reactContext) -> {
+            switch (action) {
+                case "call":
+                    handleIncomingCallNotification(invite);
+                    break;
+                case "cancel":
+                    handleCancelCallNotification(invite);
+                    break;
+                case "reject":
+                    handleRejectCall(invite);
+                    break;
+            }
+        });
     }
 
     private void handleIncomingCallNotification(VoiceCallInvite invite) {
@@ -98,7 +107,7 @@ public class VoiceMessagingService extends Service {
 
         Intent intent = new Intent(VoiceConstants.ACTION_INCOMING_CALL);
         intent.putExtra(VoiceConstants.INCOMING_CALL_INVITE, invite);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        getApplicationContext().sendBroadcast(intent);
     }
 
     private void handleCancelCallNotification(VoiceCallInvite invite) {
@@ -146,6 +155,27 @@ public class VoiceMessagingService extends Service {
         } catch (JSONException ex) {
             Log.w(TAG, "No session found. Can not remove incoming call notification. Invite data: " + invite);
             return null;
+        }
+    }
+
+    private void startReactContext(ReactContextCallback callback) {
+        Log.d(TAG, "startReactContext");
+        ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+        ReactContext context = mReactInstanceManager.getCurrentReactContext();
+
+        if (context == null) {
+            Log.d(TAG, "React context null");
+            mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+                @Override
+                public void onReactContextInitialized(ReactContext context) {
+                    Log.d(TAG, "React context initialized");
+                    callback.execute(context);
+                }
+            });
+            mReactInstanceManager.createReactContextInBackground();
+        } else {
+            Log.d(TAG, "Got react context already");
+            callback.execute(context);
         }
     }
 

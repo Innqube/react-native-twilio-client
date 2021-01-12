@@ -130,6 +130,7 @@ public class CallNotificationManager {
     private PendingIntent buildAnswerIntent(Context context, VoiceCallInvite callInvite, Integer notificationId) {
         PendingIntent pendingIntent;
         if (isInForeground(context)) {
+            Log.d(TAG, "buildAnswerIntent app is in foreground");
             // If the app is already in the foreground broadcast a notification so that an event is sent to the JS part
             Intent answerIntent = new Intent(VoiceConstants.ACTION_ANSWER_CALL)
                     .putExtra(VoiceConstants.INCOMING_CALL_INVITE, callInvite)
@@ -142,6 +143,7 @@ public class CallNotificationManager {
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
+            Log.d(TAG, "buildAnswerIntent app is in background");
             // Start the app from the notification as it is in the background currently
             Class clazz = getMainActivityClass(context);
             Intent answerIntent = new Intent(context, clazz)
