@@ -14,11 +14,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.facebook.react.bridge.*;
 import com.twilio.voice.*;
 
 import java.util.HashMap;
@@ -143,14 +143,17 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
 
     @Override
     public void onHostPause() {
-        // the library needs to listen for events even when the app is paused
-        unregisterReceiver();
     }
 
     @Override
     public void onHostDestroy() {
         disconnect();
         unsetAudioFocus();
+    }
+
+    @Override
+    public void onCatalystInstanceDestroy() {
+        super.onCatalystInstanceDestroy();
         unregisterReceiver();
     }
 
@@ -408,6 +411,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "activeCallInvite was cancelled by " + activeCallInvite.getFrom());
         }
+        activeCallInvite = null;
         if (!callAccepted) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "creating a missed call");
@@ -506,9 +510,9 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             params.putString("call_state", "DISCONNECTED");
             // TODO check if DISCONNECTED should be REJECTED
             // params.putString("call_state", "REJECTED");
-//            activeCallInvite.reject(getReactApplicationContext());
             clearIncomingNotification(activeCallInvite.getSession());
             eventManager.sendEvent(EVENT_CALL_REJECTED, params);
+            activeCallInvite = null;
         }
     }
 
