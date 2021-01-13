@@ -124,11 +124,10 @@ public class VoiceMessagingService extends Service {
         removeIncomingCallNotification(invite);
 
         Intent intent = new Intent(VoiceConstants.ACTION_REJECT_CALL);
-        intent.putExtra(VoiceConstants.REJECTED_CALL_INVITE, invite);
+        intent.putExtra(VoiceConstants.INCOMING_CALL_INVITE, invite);
 
-        // give some time in case react context isn't fully initialized yet
         new Handler(Looper.getMainLooper())
-                .postDelayed(() -> getApplicationContext().sendBroadcast(intent), 4000);
+                .postDelayed(() -> getApplicationContext().sendBroadcast(intent), 3000);
     }
 
     private void removeIncomingCallNotification(VoiceCallInvite invite) {

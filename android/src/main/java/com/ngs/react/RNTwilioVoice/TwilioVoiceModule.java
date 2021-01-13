@@ -100,7 +100,8 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                         accept();
                         break;
                     case VoiceConstants.ACTION_REJECT_CALL:
-                        reject();
+                        VoiceCallInvite invite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
+                        rejectInternal(invite);
                         break;
                     case VoiceConstants.ACTION_HANGUP_CALL:
                         disconnect();
@@ -502,16 +503,18 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         }
     }
 
+    private void rejectInternal(VoiceCallInvite invite) {
+        WritableMap params = buildRNNotification(invite);
+        clearIncomingNotification(invite.getSession());
+        eventManager.sendEvent(EVENT_CALL_REJECTED, params);
+    }
+
     @ReactMethod
     public void reject() {
         callAccepted = false;
+        Log.d(TAG, "activeCallInvite != null: " + (activeCallInvite != null));
         if (activeCallInvite != null) {
-            WritableMap params = buildRNNotification(activeCallInvite);
-            params.putString("call_state", "DISCONNECTED");
-            // TODO check if DISCONNECTED should be REJECTED
-            // params.putString("call_state", "REJECTED");
-            clearIncomingNotification(activeCallInvite.getSession());
-            eventManager.sendEvent(EVENT_CALL_REJECTED, params);
+            rejectInternal(activeCallInvite);
             activeCallInvite = null;
         }
     }
