@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import androidx.annotation.Nullable;
@@ -124,7 +125,10 @@ public class VoiceMessagingService extends Service {
 
         Intent intent = new Intent(VoiceConstants.ACTION_REJECT_CALL);
         intent.putExtra(VoiceConstants.REJECTED_CALL_INVITE, invite);
-        getApplicationContext().sendBroadcast(intent);
+
+        // give some time in case react context isn't fully initialized yet
+        new Handler(Looper.getMainLooper())
+                .postDelayed(() -> getApplicationContext().sendBroadcast(intent), 4000);
     }
 
     private void removeIncomingCallNotification(VoiceCallInvite invite) {

@@ -167,7 +167,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "onNewIntent " + intent.toString());
         }
-        handleIncomingCallIntent(intent);
+//        handleIncomingCallIntent(intent);
     }
 
     private RegistrationListener registrationListener() {
@@ -591,8 +591,8 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         if (activeCall != null) {
             activeCall.disconnect();
             activeCall = null;
-            activeCallInvite = null;
         }
+        activeCallInvite = null;
     }
 
     @ReactMethod
@@ -634,20 +634,15 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
     public void getCallInvite(Promise promise) {
         Log.d(TAG, "getCallInvite");
 
-        if (activeCallInvite == null && getCurrentActivity() != null) {
-            Activity activity = getCurrentActivity();
-            Intent intent = activity.getIntent();
-            activeCallInvite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
-            intent.removeExtra(VoiceConstants.INCOMING_CALL_INVITE);
-            Log.d(TAG, "call invite from parcelable: " + activeCallInvite);
-        } else {
-            Log.d(TAG, "got activeCallInvite already: " + activeCallInvite);
-        }
+        Activity activity = getCurrentActivity();
+        Intent intent = activity.getIntent();
+        activeCallInvite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
 
         if (activeCallInvite != null) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Call invite found "+ activeCallInvite);
             }
+            intent.removeExtra(VoiceConstants.INCOMING_CALL_INVITE);
             WritableMap params = buildRNNotification(activeCallInvite);
             promise.resolve(params);
             return;
