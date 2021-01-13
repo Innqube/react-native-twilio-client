@@ -645,10 +645,9 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = NO;
 
-    CXEndCallAction *endCallAction = [[CXEndCallAction alloc] initWithCallUUID:uuid];
-    CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
-
     if (uuid != nil) {
+        CXEndCallAction *endCallAction = [[CXEndCallAction alloc] initWithCallUUID:uuid];
+        CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
         [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
             if (error) {
                 NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request failed for UUID %@: %@", [uuid UUIDString], [error localizedDescription]);
@@ -668,13 +667,21 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
                 NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request successful");
             }
         }];
+    } else if (self.callInvite != nil) {
+        for (CXCall *call in self.callKitCallController.callObserver.calls) {
+            CXEndCallAction *endCallAction = [[CXEndCallAction alloc] initWithCallUUID:call.UUID];
+            CXTransaction *transaction = [[CXTransaction alloc] initWithAction:endCallAction];
+            [self.callKitCallController requestTransaction:transaction completion:^(NSError *error) {
+                if (error) {
+                    NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request failed: %@", [error localizedDescription]);
+
+                } else {
+                    NSLog(@"[IIMobile - RNTwilioVoice] EndCallAction transaction request successful");
+                }
+            }];
+        }
     }
 
-    /*
-    if (self.call != nil) {
-        [self.call disconnect];
-    }
-     */
 }
 
 - (void)performVoiceCallWithUUID:(NSUUID *)uuid
