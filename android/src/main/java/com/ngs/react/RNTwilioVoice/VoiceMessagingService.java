@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactApplication;
@@ -116,7 +115,7 @@ public class VoiceMessagingService extends Service {
 
         Intent intent = new Intent(VoiceConstants.ACTION_CANCEL_CALL_INVITE);
         intent.putExtra(VoiceConstants.CANCELLED_CALL_INVITE, invite);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        getApplicationContext().sendBroadcast(intent);
     }
 
     private void handleRejectCall(VoiceCallInvite invite) {
@@ -125,7 +124,7 @@ public class VoiceMessagingService extends Service {
 
         Intent intent = new Intent(VoiceConstants.ACTION_REJECT_CALL);
         intent.putExtra(VoiceConstants.REJECTED_CALL_INVITE, invite);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+        getApplicationContext().sendBroadcast(intent);
     }
 
     private void removeIncomingCallNotification(VoiceCallInvite invite) {
