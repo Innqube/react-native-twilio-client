@@ -55,6 +55,7 @@ RCT_EXPORT_MODULE();
            @"messageDeleted",
            @"typingStarted",
            @"typingEnded",
+           @"voiceCallRejected",
            ];
 }
 
