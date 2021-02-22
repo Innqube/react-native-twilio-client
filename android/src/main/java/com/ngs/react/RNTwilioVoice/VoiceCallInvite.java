@@ -66,7 +66,7 @@ public class VoiceCallInvite implements Parcelable {
         }
         try {
             JSONObject taskAttributes = new JSONObject(getTaskAttributes());
-            return taskAttributes.getString("teamSession");
+            return taskAttributes.getString("session");
         } catch (JSONException e) {
             return null;
         }

@@ -151,9 +151,9 @@ public class VoiceMessagingService extends Service {
 
         try {
             JSONObject taskAttributes = new JSONObject(taskAttributesString);
-            String teamSession = taskAttributes.getString("teamSession");
-            Log.d(TAG, "teamSession: " + teamSession);
-            return teamSession.hashCode();
+            String session = taskAttributes.getString("session");
+            Log.d(TAG, "session: " + session);
+            return session.hashCode();
         } catch (JSONException ex) {
             Log.w(TAG, "No session found. Can not remove incoming call notification. Invite data: " + invite);
             return null;
