@@ -38,7 +38,7 @@ public class CanceledVideoCallInvite implements Parcelable, CallInvite {
 
     @Override
     public String getSession() {
-        return data.get("teamSession");
+        return data.get("session");
     }
 
     @Override

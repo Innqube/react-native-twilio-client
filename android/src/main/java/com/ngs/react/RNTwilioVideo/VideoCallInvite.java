@@ -60,7 +60,7 @@ public class VideoCallInvite implements Parcelable, CallInvite {
 
     @Override
     public String getSession() {
-        return this.data != null ? this.data.get("teamSession") : null;
+        return this.data != null ? this.data.get("session") : null;
     }
 
     @Override

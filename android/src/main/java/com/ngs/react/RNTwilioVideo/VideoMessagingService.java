@@ -138,17 +138,17 @@ public class VideoMessagingService extends Service {
             return;
         }
 
-        String teamSession;
+        String session;
         try {
             JSONObject taskAttributes = new JSONObject(taskAttributesString);
-            teamSession = taskAttributes.getString("teamSession");
-            Log.d(TAG, "teamSession: " + teamSession);
+            session = taskAttributes.getString("session");
+            Log.d(TAG, "session: " + session);
         } catch (JSONException ex) {
             Log.w(TAG, "No session found. Can not remove incoming call notification. Invite data: " + invite);
             return;
         }
 
-        int notificationId = teamSession.hashCode();
+        int notificationId = session.hashCode();
         callNotificationManager.removeNotification(
                 getApplicationContext(),
                 notificationId
