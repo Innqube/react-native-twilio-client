@@ -16,6 +16,8 @@ import android.os.PowerManager;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import com.ngs.react.R;
+import android.view.WindowManager;
+import android.app.ActivityManager;
 
 import java.util.List;
 
@@ -61,6 +63,7 @@ public class CallNotificationManager {
     public void createIncomingCallNotification(Context context,
                                                VideoCallInvite callInvite,
                                                int notificationId) {
+        Log.d(TAG, "createIncomingCallNotification with id " + notificationId);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         /*
@@ -72,17 +75,20 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
+        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, callInvite, notificationId);
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VIDEO_CHANNEL)
                 .setSmallIcon(R.drawable.ic_call_white_24dp)
                 .setContentTitle("Incoming video call")
                 .setContentText(callInvite.getFrom() + " is calling")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setAutoCancel(false)
                 .setSound(ringtoneSound, AudioManager.STREAM_RING)
                 .setColor(Color.argb(255, 0, 147, 213))
                 .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
+                .setFullScreenIntent(pendingAnswerIntent, true)
                 .setOngoing(true); // sorted above the regular notifications && do not have an 'X' close button, and are not affected by the "Clear all" button;
 
         // build notification large icon
@@ -97,7 +103,6 @@ public class CallNotificationManager {
         }
 
         PendingIntent pendingRejectIntent = buildRejectIntent(context, callInvite, notificationId);
-        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, callInvite, notificationId);
 
         notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
@@ -125,6 +130,7 @@ public class CallNotificationManager {
     private PendingIntent buildAnswerIntent(Context context, VideoCallInvite callInvite, Integer notificationId) {
         PendingIntent pendingIntent;
         if (isInForeground(context)) {
+            Log.d(TAG, "buildAnswerIntent app is in foreground");
             // If the app is already in the foreground broadcast a notification so that an event is sent to the JS part
             Intent answerIntent = new Intent(ACTION_ANSWER_CALL)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
@@ -137,6 +143,7 @@ public class CallNotificationManager {
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
+            Log.d(TAG, "buildAnswerIntent app is in background");
             // Start the app from the notification as it is in the background currently
             Class clazz = getMainActivityClass(context);
             Intent answerIntent = new Intent(context, clazz)

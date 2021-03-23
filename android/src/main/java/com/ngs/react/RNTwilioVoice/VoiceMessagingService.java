@@ -13,6 +13,7 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactContext;
 import org.json.JSONException;
 import org.json.JSONObject;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 interface ReactContextCallback {
     void execute(ReactContext reactContext);
@@ -22,19 +23,7 @@ public class VoiceMessagingService extends Service {
 
     private static final String TAG = "RNTwilioVoice";
     private CallNotificationManager callNotificationManager;
-    private ServiceHandler handler;
-
-    private final class ServiceHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            Log.d(TAG, "Handling message");
-            VoiceCallInvite invite = msg.getData().getParcelable(VoiceConstants.INCOMING_CALL_INVITE);
-            String action = msg.getData().getString("action");
-            onMessageReceived(action, invite);
-            Log.d(TAG, "About to stop VoiceFirebaseMessagingService");
-            stopSelf(msg.arg1);
-        }
-    }
+    private Handler handler;
 
     @Nullable
     @Override
@@ -47,7 +36,17 @@ public class VoiceMessagingService extends Service {
         super.onCreate();
         Log.d(TAG, "VoiceFirebaseMessagingService created");
         callNotificationManager = new CallNotificationManager();
-        handler = new ServiceHandler();
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                Log.d(TAG, "Handling message");
+                VoiceCallInvite invite = msg.getData().getParcelable(VoiceConstants.INCOMING_CALL_INVITE);
+                String action = msg.getData().getString("action");
+                onMessageReceived(action, invite);
+                Log.d(TAG, "About to stop VoiceFirebaseMessagingService");
+                stopSelf(msg.arg1);
+            }
+        };
     }
 
     @Override
@@ -71,7 +70,7 @@ public class VoiceMessagingService extends Service {
         Log.d(TAG, "onMessageReceived");
 
         // Check if message contains a data payload.
-        if (action == null) {
+        if (action == null || invite == null) {
             return;
         }
 
@@ -106,8 +105,9 @@ public class VoiceMessagingService extends Service {
         );
 
         Intent intent = new Intent(VoiceConstants.ACTION_INCOMING_CALL);
+        intent.putExtra(VoiceConstants.INCOMING_CALL_NOTIFICATION_ID, notificationId);
         intent.putExtra(VoiceConstants.INCOMING_CALL_INVITE, invite);
-        getApplicationContext().sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
     private void handleCancelCallNotification(VoiceCallInvite invite) {
