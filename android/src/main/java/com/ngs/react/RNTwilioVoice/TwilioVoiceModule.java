@@ -97,6 +97,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                         handleCancelCallIntent(intent);
                         break;
                     case VoiceConstants.ACTION_ANSWER_CALL:
+                        activeCallInvite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
                         accept();
                         break;
                     case VoiceConstants.ACTION_REJECT_CALL:
