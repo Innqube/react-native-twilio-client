@@ -16,6 +16,7 @@ import android.os.PowerManager;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import com.ngs.react.R;
+import android.view.WindowManager;
 import android.app.ActivityManager;
 
 import java.util.List;
@@ -106,6 +107,7 @@ public class CallNotificationManager {
         }
 
         PendingIntent pendingRejectIntent = buildRejectIntent(context, invite, notificationId);
+
 
         notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
@@ -230,4 +232,5 @@ public class CallNotificationManager {
         int importance = getApplicationImportance(context);
         return importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
     }
+
 }
