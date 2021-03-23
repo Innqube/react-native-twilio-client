@@ -16,6 +16,7 @@ import android.os.PowerManager;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import com.ngs.react.R;
+import android.app.ActivityManager;
 
 import java.util.List;
 
@@ -77,19 +78,21 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(context, VOICE_CHANNEL)
-                        .setSmallIcon(R.drawable.ic_call_white_24dp)
-                        .setContentTitle("Incoming voice call")
-                        .setContentText(invite.getFrom() + " is calling")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setCategory(NotificationCompat.CATEGORY_CALL)
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setAutoCancel(false)
-                        .setSound(ringtoneSound, AudioManager.STREAM_RING)
-                        .setColor(Color.argb(255, 0, 147, 213))
-                        .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
-                        .setOngoing(true); // sorted above the regular notifications && do not have an 'X' close button, and are not affected by the "Clear all" button;
+        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, invite, notificationId);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VOICE_CHANNEL)
+                .setSmallIcon(R.drawable.ic_call_white_24dp)
+                .setContentTitle("Incoming voice call")
+                .setContentText(invite.getFrom() + " is calling")
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setAutoCancel(false)
+                .setSound(ringtoneSound, AudioManager.STREAM_RING)
+                .setColor(Color.argb(255, 0, 147, 213))
+                .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
+                .setFullScreenIntent(pendingAnswerIntent, true)
+                .setOngoing(true); // sorted above the regular notifications && do not have an 'X' close button, and are not affected by the "Clear all" button;
 
         // build notification large icon
         Resources res = context.getResources();
@@ -103,7 +106,6 @@ public class CallNotificationManager {
         }
 
         PendingIntent pendingRejectIntent = buildRejectIntent(context, invite, notificationId);
-        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, invite, notificationId);
 
         notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
@@ -114,7 +116,8 @@ public class CallNotificationManager {
 
         wakeUpScreen(context);
 
-        notificationManager.notify(notificationId, notificationBuilder.build());
+        Log.d(TAG, "Creating notification with id: " + notificationId);
+        notificationManager.notify(notificationId, notification);
     }
 
     private void wakeUpScreen(Context context) {
