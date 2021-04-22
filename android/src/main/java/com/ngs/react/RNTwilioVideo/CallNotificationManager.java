@@ -18,6 +18,7 @@ import androidx.core.app.NotificationCompat;
 import com.ngs.react.R;
 import android.view.WindowManager;
 import android.app.ActivityManager;
+import com.ngs.react.RNTwilioVoice.VoiceConstants;
 
 import java.util.List;
 
@@ -75,7 +76,13 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
-        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, callInvite, notificationId);
+        Intent callIntent = new Intent(VoiceConstants.INCOMING_CALL_INVITE);
+        PendingIntent pendingCallIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                callIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VIDEO_CHANNEL)
                 .setSmallIcon(R.drawable.ic_call_white_24dp)
@@ -88,7 +95,7 @@ public class CallNotificationManager {
                 .setSound(ringtoneSound, AudioManager.STREAM_RING)
                 .setColor(Color.argb(255, 0, 147, 213))
                 .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
-                .setFullScreenIntent(pendingAnswerIntent, true)
+                .setFullScreenIntent(pendingCallIntent, true)
                 .setOngoing(true); // sorted above the regular notifications && do not have an 'X' close button, and are not affected by the "Clear all" button;
 
         // build notification large icon
@@ -102,6 +109,7 @@ public class CallNotificationManager {
             }
         }
 
+        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, callInvite, notificationId);
         PendingIntent pendingRejectIntent = buildRejectIntent(context, callInvite, notificationId);
 
         notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);

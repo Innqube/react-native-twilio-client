@@ -95,7 +95,7 @@ public class CallNotificationManager {
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .setSound(ringtoneSound, AudioManager.STREAM_RING)
                 .setColor(Color.argb(255, 0, 147, 213))
                 .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
