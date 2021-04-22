@@ -28,6 +28,7 @@ import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.TAG;
 public class CallNotificationManager {
 
     private static final String VOICE_CHANNEL = "voice";
+    private static final String TAG = "RNTwilioVoice";
 
     private NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
@@ -79,7 +80,13 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
-        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, invite, notificationId);
+        Intent callIntent = new Intent(VoiceConstants.INCOMING_CALL_INVITE);
+        PendingIntent pendingCallIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                callIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VOICE_CHANNEL)
                 .setSmallIcon(R.drawable.ic_call_white_24dp)
@@ -88,11 +95,11 @@ public class CallNotificationManager {
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setAutoCancel(false)
+                .setAutoCancel(true)
                 .setSound(ringtoneSound, AudioManager.STREAM_RING)
                 .setColor(Color.argb(255, 0, 147, 213))
                 .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
-                .setFullScreenIntent(pendingAnswerIntent, true)
+                .setFullScreenIntent(pendingCallIntent, true)
                 .setOngoing(true); // sorted above the regular notifications && do not have an 'X' close button, and are not affected by the "Clear all" button;
 
         // build notification large icon
@@ -106,8 +113,8 @@ public class CallNotificationManager {
             }
         }
 
+        PendingIntent pendingAnswerIntent = buildAnswerIntent(context, invite, notificationId);
         PendingIntent pendingRejectIntent = buildRejectIntent(context, invite, notificationId);
-
 
         notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);
         notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
