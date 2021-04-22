@@ -18,7 +18,6 @@ import androidx.core.app.NotificationCompat;
 import com.ngs.react.R;
 import android.view.WindowManager;
 import android.app.ActivityManager;
-import com.ngs.react.RNTwilioVoice.VoiceConstants;
 
 import java.util.List;
 
@@ -76,7 +75,7 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
-        Intent callIntent = new Intent(VoiceConstants.INCOMING_CALL_INVITE);
+        Intent callIntent = new Intent(INCOMING_CALL_INVITE);
         PendingIntent pendingCallIntent = PendingIntent.getBroadcast(
                 context,
                 0,
