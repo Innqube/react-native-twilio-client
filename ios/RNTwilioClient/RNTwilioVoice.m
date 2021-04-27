@@ -566,6 +566,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         params[@"session"] = self.dictionaryPayload[@"session"];
         params[@"companyUuid"] = self.dictionaryPayload[@"companyUuid"];
         params[@"reservationSid"] = self.dictionaryPayload[@"reservationSid"];
+        params[@"uuid"] = self.dictionaryPayload[@"uuid"];
 
         NSString *event = [mode isEqualToString:@"video"] ? @"performEndVideoCall" : @"performEndVoiceCall";
 
