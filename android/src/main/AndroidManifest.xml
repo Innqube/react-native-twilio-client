@@ -9,7 +9,9 @@
             android:name=".RNTwilioVideo.IncomingVideoCallFullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_incoming_call_fullscreen"
-            android:theme="@style/Theme.Android.Fullscreen"></activity>
+            android:theme="@style/Theme.Android.Fullscreen">
+        </activity>
+
         <activity
                 android:name=".RNTwilioVoice.IncomingVoiceCallFullscreenActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
