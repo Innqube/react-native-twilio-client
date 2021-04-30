@@ -13,17 +13,17 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import com.ngs.react.R;
-import android.view.WindowManager;
+
 import android.app.ActivityManager;
 
 import java.util.List;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static com.ngs.react.RNTwilioVideo.VideoConstants.*;
-
 
 public class CallNotificationManager {
 
@@ -75,8 +75,11 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
-        Intent callIntent = new Intent(INCOMING_CALL_INVITE);
-        PendingIntent pendingCallIntent = PendingIntent.getBroadcast(
+        Intent callIntent = new Intent(context, IncomingVideoCallFullscreenActivity.class);
+        callIntent.putExtra(INCOMING_CALL_INVITE, callInvite);
+        callIntent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
+
+        PendingIntent pendingCallIntent = PendingIntent.getActivity(
                 context,
                 0,
                 callIntent,
@@ -225,6 +228,10 @@ public class CallNotificationManager {
         Log.d(TAG, "Removing notification with id: " + id);
 
         if (id != null) {
+            Intent intent = new Intent(ACTION_CANCEL_CALL_INVITE);
+            intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, id);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(id);
         }

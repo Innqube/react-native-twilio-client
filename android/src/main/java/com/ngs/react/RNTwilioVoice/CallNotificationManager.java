@@ -13,27 +13,22 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import com.ngs.react.R;
-import android.view.WindowManager;
+
 import android.app.ActivityManager;
 
 import java.util.List;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.TAG;
-
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.*;
 
 public class CallNotificationManager {
 
     private static final String VOICE_CHANNEL = "voice";
     private static final String TAG = "RNTwilioVoice";
-
-    private NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-
-    public CallNotificationManager() {
-    }
 
     public int getApplicationImportance(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
@@ -80,8 +75,11 @@ public class CallNotificationManager {
                 ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + R.raw.incoming
         );
 
-        Intent callIntent = new Intent(VoiceConstants.INCOMING_CALL_INVITE);
-        PendingIntent pendingCallIntent = PendingIntent.getBroadcast(
+        Intent callIntent = new Intent(context, IncomingVoiceCallFullscreenActivity.class);
+        callIntent.putExtra(INCOMING_CALL_INVITE, invite);
+        callIntent.putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId);
+
+        PendingIntent pendingCallIntent = PendingIntent.getActivity(
                 context,
                 0,
                 callIntent,
@@ -144,9 +142,9 @@ public class CallNotificationManager {
         if (isInForeground(context)) {
             Log.d(TAG, "buildAnswerIntent app is in foreground");
             // If the app is already in the foreground broadcast a notification so that an event is sent to the JS part
-            Intent answerIntent = new Intent(VoiceConstants.ACTION_ANSWER_CALL)
-                    .putExtra(VoiceConstants.INCOMING_CALL_INVITE, callInvite)
-                    .putExtra(VoiceConstants.INCOMING_CALL_NOTIFICATION_ID, notificationId)
+            Intent answerIntent = new Intent(ACTION_ANSWER_CALL)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingIntent = PendingIntent.getBroadcast(
                     context,
@@ -159,8 +157,8 @@ public class CallNotificationManager {
             // Start the app from the notification as it is in the background currently
             Class clazz = getMainActivityClass(context);
             Intent answerIntent = new Intent(context, clazz)
-                    .putExtra(VoiceConstants.INCOMING_CALL_INVITE, callInvite)
-                    .putExtra(VoiceConstants.INCOMING_CALL_NOTIFICATION_ID, notificationId)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getActivity(
                     context,
@@ -176,9 +174,9 @@ public class CallNotificationManager {
     private PendingIntent buildRejectIntent(Context context, VoiceCallInvite callInvite, Integer notificationId) {
         PendingIntent pendingIntent;
         if (isInForeground(context)) {
-            Intent rejectIntent = new Intent(VoiceConstants.ACTION_REJECT_CALL)
-                    .putExtra(VoiceConstants.INCOMING_CALL_INVITE, callInvite)
-                    .putExtra(VoiceConstants.INCOMING_CALL_NOTIFICATION_ID, notificationId)
+            Intent rejectIntent = new Intent(ACTION_REJECT_CALL)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingIntent = PendingIntent.getBroadcast(
                     context,
@@ -189,8 +187,8 @@ public class CallNotificationManager {
         } else {
             // Start the app from the notification as it is in the background currently
             Intent rejectIntent = new Intent(context, VoiceMessagingService.class)
-                    .putExtra(VoiceConstants.INCOMING_CALL_INVITE, callInvite)
-                    .putExtra(VoiceConstants.INCOMING_CALL_NOTIFICATION_ID, notificationId + "")
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId + "")
                     .putExtra("action", "reject")
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getService(
@@ -230,6 +228,10 @@ public class CallNotificationManager {
         Log.d(TAG, "Removing notification with id: " + id);
 
         if (id != null) {
+            Intent intent = new Intent(ACTION_CANCEL_CALL_INVITE);
+            intent.putExtra(INCOMING_CALL_NOTIFICATION_ID, id);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(id);
         }
