@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +16,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.ngs.react.R;
 
@@ -63,6 +67,18 @@ public class IncomingVoiceCallFullscreenActivity extends Activity {
         setContentView(R.layout.activity_incoming_voice_call_fullscreen);
 
         mContentView = findViewById(R.id.fullscreen_content);
+
+        try {
+            ApplicationInfo info = getPackageManager().getApplicationInfo(
+                    getPackageName(), PackageManager.GET_META_DATA
+            );
+            ((TextView)mContentView).setText(getPackageManager().getApplicationLabel(info));
+
+            ImageView background = findViewById(R.id.background_image);
+            background.setImageResource(info.metaData.getInt("com.ngs.react.APP_BACKGROUND"));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+        }
 
         turnScreenOn();
 

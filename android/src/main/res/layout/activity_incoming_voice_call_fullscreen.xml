@@ -1,91 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/fullscreenBackgroundColor"
-    android:theme="@style/ThemeOverlay.Android.FullscreenContainer"
     tools:context=".RNTwilioVoice.IncomingVoiceCallFullscreenActivity">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-    <TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="203dp"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:layout_gravity="center"
-        android:textColor="?attr/fullscreenTextColor"
-        android:textSize="50sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/incomingVoiceCall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#DFFFFFFF"
-        android:text="@string/incoming_voice_call" />
-
-    <FrameLayout
+    <ImageView
+        android:id="@+id/background_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:textAlignment="center">
+        android:layout_gravity="top"
+        android:scaleType="centerCrop" />
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="@style/Widget.Theme.Android.ButtonBar.Fullscreen"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_gradient"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/incomingVoiceCall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
+            android:layout_gravity="center"
+            android:paddingVertical="60dp"
+            android:paddingHorizontal="40dp"
+            android:gravity="start"
+            android:text="@string/incoming_voice_call"
+            android:textColor="#DFFFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/answer_button"
-                style="?android:attr/buttonBarButtonStyle"
+        <TextView
+            android:id="@+id/fullscreen_content"
+            android:layout_width="match_parent"
+            android:layout_height="203dp"
+            android:layout_gravity="center"
+            android:text="@string/incoming_voice_call"
+            android:gravity="center"
+            android:keepScreenOn="true"
+            android:padding="30dp"
+            android:textColor="@color/incoming_call_action_txt"
+            android:textSize="35sp"
+            android:textStyle="bold" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:textAlignment="center">
+
+            <LinearLayout
+                android:id="@+id/fullscreen_content_controls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="1"
-                android:background="@color/light_blue_600"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/answer_button"
-                android:textColor="#C8E6C9"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="60dp"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                tools:ignore="UselessParent">
 
-            <Button
-                android:id="@+id/decline_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="10dp"
-                android:layout_weight="1"
-                android:background="@color/light_blue_600"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/decline_button"
-                android:textColor="#F8BBD0"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-        </LinearLayout>
-    </FrameLayout>
+                    <Button
+                        android:id="@+id/decline_button"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/rounded_button_decline"
+                        android:drawableStart="@drawable/ic_call_white_decline_48dp"
+                        android:gravity="center"
+                        android:padding="15dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:textColor="#F8BBD0"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
-</LinearLayout>
+                    <TextView
+                        android:id="@+id/decline_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:keepScreenOn="true"
+                        android:padding="10dp"
+                        android:shadowColor="@color/decline_shadow"
+                        android:shadowRadius="30"
+                        android:text="@string/decline"
+                        android:textColor="@color/incoming_call_action_txt"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="40dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/answer_button"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/rounded_button_answer"
+                        android:drawableStart="@drawable/ic_call_white_48dp"
+                        android:gravity="center"
+                        android:padding="15dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:textColor="#C8E6C9"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/answer_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:keepScreenOn="true"
+                        android:padding="10dp"
+                        android:shadowColor="@color/answer_shadow"
+                        android:shadowRadius="30"
+                        android:text="@string/accept"
+                        android:textColor="@color/incoming_call_action_txt"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+</FrameLayout>
