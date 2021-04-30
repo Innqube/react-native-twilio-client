@@ -1,6 +1,10 @@
 package com.ngs.react.RNTwilioVoice;
 
-import android.app.*;
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,15 +19,19 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import androidx.core.app.NotificationCompat;
-import com.ngs.react.R;
 
-import android.app.ActivityManager;
+import androidx.core.app.NotificationCompat;
+
+import com.ngs.react.R;
 
 import java.util.List;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static com.ngs.react.RNTwilioVoice.VoiceConstants.*;
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_ANSWER_CALL;
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_CANCEL_CALL_INVITE;
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_REJECT_CALL;
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.INCOMING_CALL_INVITE;
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.INCOMING_CALL_NOTIFICATION_ID;
 
 public class CallNotificationManager {
 
@@ -87,7 +95,7 @@ public class CallNotificationManager {
         );
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VOICE_CHANNEL)
-                .setSmallIcon(R.drawable.ic_call_white_24dp)
+                .setSmallIcon(R.drawable.ic_call_white_48dp)
                 .setContentTitle("Incoming voice call")
                 .setContentText(invite.getFrom() + " is calling")
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -115,7 +123,7 @@ public class CallNotificationManager {
         PendingIntent pendingRejectIntent = buildRejectIntent(context, invite, notificationId);
 
         notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);
-        notificationBuilder.addAction(R.drawable.ic_call_white_24dp, "ANSWER", pendingAnswerIntent);
+        notificationBuilder.addAction(R.drawable.ic_call_white_48dp, "ANSWER", pendingAnswerIntent);
 
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT; // keep the phone ringing
