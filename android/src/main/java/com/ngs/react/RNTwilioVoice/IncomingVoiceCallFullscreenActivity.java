@@ -68,11 +68,17 @@ public class IncomingVoiceCallFullscreenActivity extends Activity {
 
         mContentView = findViewById(R.id.fullscreen_content);
 
+        TextView caller = findViewById(R.id.caller);
+        TextView appName = findViewById(R.id.app_name);
+
+        VoiceCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
+        caller.setText(callInvite.getFrom());
+
         try {
             ApplicationInfo info = getPackageManager().getApplicationInfo(
                     getPackageName(), PackageManager.GET_META_DATA
             );
-            ((TextView)mContentView).setText(getPackageManager().getApplicationLabel(info));
+            appName.setText(getPackageManager().getApplicationLabel(info).toString().toUpperCase());
 
             ImageView background = findViewById(R.id.background_image);
             background.setImageResource(info.metaData.getInt("com.ngs.react.APP_BACKGROUND"));

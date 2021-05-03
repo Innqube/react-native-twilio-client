@@ -7,4 +7,5 @@
     <string name="dummy_content">Interpreter Intelligence</string>
     <string name="incoming_video_call">INCOMING VIDEO CALL</string>
     <string name="incoming_voice_call">INCOMING VOICE CALL</string>
+    <string name="interpreter_intelligence">INTERPRETER INTELLIGENCE</string>
 </resources>

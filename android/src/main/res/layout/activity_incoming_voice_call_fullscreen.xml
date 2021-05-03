@@ -14,6 +14,7 @@
         android:scaleType="centerCrop" />
 
     <LinearLayout
+        android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background_gradient"
@@ -28,21 +29,35 @@
             android:paddingHorizontal="40dp"
             android:gravity="start"
             android:text="@string/incoming_voice_call"
-            android:textColor="#DFFFFFFF"
+            android:textColor="@color/white_35"
             android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/fullscreen_content"
+            android:id="@+id/caller"
             android:layout_width="match_parent"
-            android:layout_height="203dp"
+            android:layout_height="180dp"
             android:layout_gravity="center"
             android:text="@string/incoming_voice_call"
+            android:gravity="bottom|center"
+            android:keepScreenOn="true"
+            android:paddingTop="30dp"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:textColor="@color/incoming_call_action_txt"
+            android:textSize="35sp" />
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/interpreter_intelligence"
             android:gravity="center"
             android:keepScreenOn="true"
-            android:padding="30dp"
-            android:textColor="@color/incoming_call_action_txt"
-            android:textSize="35sp"
+            android:padding="20dp"
+            android:textColor="@color/white_50"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <FrameLayout
