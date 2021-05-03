@@ -25,44 +25,53 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingVertical="60dp"
-            android:paddingHorizontal="40dp"
+            android:background="@color/transparent"
             android:gravity="start"
+            android:paddingHorizontal="40dp"
+            android:paddingTop="60dp"
             android:text="@string/incoming_voice_call"
             android:textColor="@color/white_35"
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/caller"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_gravity="center"
-            android:text="@string/incoming_voice_call"
-            android:gravity="bottom|center"
-            android:keepScreenOn="true"
-            android:paddingTop="30dp"
-            android:paddingStart="30dp"
-            android:paddingEnd="30dp"
-            android:textColor="@color/incoming_call_action_txt"
-            android:textSize="35sp" />
-
-        <TextView
-            android:id="@+id/app_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/interpreter_intelligence"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center"
-            android:keepScreenOn="true"
-            android:padding="20dp"
-            android:textColor="@color/white_50"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/caller"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="bottom|center"
+                android:keepScreenOn="true"
+                android:paddingStart="30dp"
+                android:paddingTop="30dp"
+                android:paddingEnd="30dp"
+                android:text="@string/incoming_voice_call"
+                android:textColor="@color/incoming_call_action_txt"
+                android:textSize="35sp" />
+
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:keepScreenOn="true"
+                android:padding="20dp"
+                android:text="@string/interpreter_intelligence"
+                android:textColor="@color/white_50"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             android:textAlignment="center">
 
@@ -71,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="60dp"
+                android:layout_marginBottom="20dp"
                 android:orientation="horizontal"
                 android:padding="20dp"
                 tools:ignore="UselessParent">
@@ -88,11 +97,11 @@
                         android:layout_width="65dp"
                         android:layout_height="65dp"
                         android:layout_gravity="center"
+                        android:layout_marginHorizontal="10dp"
                         android:background="@drawable/rounded_button_decline"
                         android:drawableStart="@drawable/ic_call_white_decline_48dp"
                         android:gravity="center"
                         android:padding="15dp"
-                        android:layout_marginHorizontal="10dp"
                         android:textColor="#F8BBD0"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -106,7 +115,7 @@
                         android:keepScreenOn="true"
                         android:padding="10dp"
                         android:shadowColor="@color/decline_shadow"
-                        android:shadowRadius="30"
+                        android:shadowRadius="25"
                         android:text="@string/decline"
                         android:textColor="@color/incoming_call_action_txt"
                         android:textSize="14sp"
@@ -130,11 +139,11 @@
                         android:layout_width="65dp"
                         android:layout_height="65dp"
                         android:layout_gravity="center"
+                        android:layout_marginHorizontal="10dp"
                         android:background="@drawable/rounded_button_answer"
                         android:drawableStart="@drawable/ic_call_white_48dp"
                         android:gravity="center"
                         android:padding="15dp"
-                        android:layout_marginHorizontal="10dp"
                         android:textColor="#C8E6C9"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -148,7 +157,7 @@
                         android:keepScreenOn="true"
                         android:padding="10dp"
                         android:shadowColor="@color/answer_shadow"
-                        android:shadowRadius="30"
+                        android:shadowRadius="25"
                         android:text="@string/accept"
                         android:textColor="@color/incoming_call_action_txt"
                         android:textSize="14sp"

@@ -1,7 +1,6 @@
 package com.ngs.react.RNTwilioVideo;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +18,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.ngs.react.R;
 
 import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_ANSWER_CALL;
@@ -27,7 +28,7 @@ import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_REJECT_CALL;
 import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_INVITE;
 import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_NOTIFICATION_ID;
 
-public class IncomingVideoCallFullscreenActivity extends Activity {
+public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
     private static final String TAG = "RNTwilioVideo";
 
     /**
@@ -187,7 +188,7 @@ public class IncomingVideoCallFullscreenActivity extends Activity {
             setTurnScreenOn(true);
         } else {
             getWindow().addFlags(
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
             );
         }
     }
@@ -198,7 +199,7 @@ public class IncomingVideoCallFullscreenActivity extends Activity {
             setTurnScreenOn(false);
         } else {
             getWindow().clearFlags(
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
             );
         }
     }
