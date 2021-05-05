@@ -11,6 +11,7 @@ import static com.ngs.react.RNTwilioVoice.TwilioVoiceModule.TAG;
 
 public class EventManager {
 
+    public static String TAG = "RNTwilioVoice";
     private ReactApplicationContext mContext;
 
     public static final String EVENT_PROXIMITY = "proximity";

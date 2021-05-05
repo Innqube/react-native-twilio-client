@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.twilio.voice.*;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -494,6 +496,13 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "accept()");
             }
+            if (getReactApplicationContext().getCurrentActivity() != null) {
+                Window window = getReactApplicationContext().getCurrentActivity().getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                );
+            }
+
             WritableMap params = buildRNNotification(activeCallInvite);
 //            eventManager.sendEvent(EVENT_CONNECTION_DID_CONNECT, params);
             eventManager.sendEvent(EVENT_CALL_ACCEPTED, params);
