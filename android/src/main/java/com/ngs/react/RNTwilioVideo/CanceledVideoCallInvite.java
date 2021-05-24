@@ -42,7 +42,7 @@ public class CanceledVideoCallInvite implements Parcelable, CallInvite {
     }
 
     @Override
-    public String getFrom() {
+    public String getFrom(String separator) {
         return data.get("displayName");
     }
 

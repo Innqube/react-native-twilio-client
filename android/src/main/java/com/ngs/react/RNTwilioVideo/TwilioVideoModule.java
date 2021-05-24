@@ -103,7 +103,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         Log.d(TAG, "invite: " + invite);
         Log.d(TAG, "notificationId: " + notificationId);
 
-        activeCall = new VideoCall(invite.getSession(), invite.getFrom());
+        activeCall = new VideoCall(invite.getSession(), invite.getFrom("\n"));
 
         WritableMap params = Arguments.createMap();
         for (Map.Entry<String, String> entry : invite.getData().entrySet()) {

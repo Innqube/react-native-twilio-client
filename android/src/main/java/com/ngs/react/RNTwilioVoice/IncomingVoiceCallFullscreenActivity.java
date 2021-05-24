@@ -73,7 +73,7 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
         TextView appName = findViewById(R.id.app_name);
 
         VoiceCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
-        caller.setText(callInvite.getFrom());
+        caller.setText(callInvite.getFrom("\n"));
 
         try {
             ApplicationInfo info = getPackageManager().getApplicationInfo(

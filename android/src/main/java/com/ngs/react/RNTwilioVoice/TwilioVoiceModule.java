@@ -413,7 +413,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
 
     private void handleCancelCallIntent(Intent intent) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "activeCallInvite was cancelled by " + activeCallInvite.getFrom());
+            Log.d(TAG, "activeCallInvite was cancelled by " + activeCallInvite.getFrom(" / "));
         }
         activeCallInvite = null;
         if (!callAccepted) {

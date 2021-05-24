@@ -4,6 +4,6 @@ public interface CallInvite {
 
     String getSession();
 
-    String getFrom();
+    String getFrom(String separator);
 
 }

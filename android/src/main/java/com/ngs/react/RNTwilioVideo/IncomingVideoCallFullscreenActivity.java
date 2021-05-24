@@ -73,7 +73,7 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
         TextView appName = findViewById(R.id.app_name);
 
         VideoCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
-        caller.setText(callInvite.getFrom());
+        caller.setText(callInvite.getFrom("\n"));
 
         try {
             ApplicationInfo info = getPackageManager().getApplicationInfo(

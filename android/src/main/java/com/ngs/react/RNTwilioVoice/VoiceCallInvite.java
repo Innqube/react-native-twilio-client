@@ -72,8 +72,16 @@ public class VoiceCallInvite implements Parcelable {
         }
     }
 
-    public String getFrom() {
-        return this.data != null ? this.data.get("displayName") : null;
+    public String getFrom(String separator) {
+        if (this.data != null) {
+            String customer = this.data.get("customerName") != null ? this.data.get("customerName") : "";
+            String language = this.data.get("languageName") != null ? this.data.get("languageName") : "";
+            String estimatedDuration = this.data.get("estimatedDuration") != null ?
+                    (this.data.get("estimatedDuration").substring(0, this.data.get("estimatedDuration").length() -2) + " minutes") :
+                    "";
+            return language + " / " + estimatedDuration + separator + customer;
+        }
+        return null;
     }
 
     public String getTaskAttributes() { return data.get("taskAttributes"); }
