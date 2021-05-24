@@ -498,9 +498,13 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             }
             if (getReactApplicationContext().getCurrentActivity() != null) {
                 Window window = getReactApplicationContext().getCurrentActivity().getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                );
+                getReactApplicationContext().getCurrentActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+                    };
+                });
             }
 
             WritableMap params = buildRNNotification(activeCallInvite);
