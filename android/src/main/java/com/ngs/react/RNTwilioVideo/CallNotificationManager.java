@@ -97,7 +97,7 @@ public class CallNotificationManager {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VIDEO_CHANNEL)
                 .setSmallIcon(R.drawable.ic_call_white_48dp)
                 .setContentTitle("Incoming video call")
-                .setContentText(callInvite.getFrom() + " is calling")
+                .setContentText(callInvite.getFrom(" / ") + " is calling")
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

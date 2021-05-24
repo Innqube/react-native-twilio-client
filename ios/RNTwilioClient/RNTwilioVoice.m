@@ -264,8 +264,12 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     NSLog(@"[IIMobile - RNTwilioVoice][didReceiveIncomingPushWithPayload] payload %@", payload.dictionaryPayload);
 
     NSString *mode = payload.dictionaryPayload[@"mode"];
-    NSString *msgType = payload.dictionaryPayload[@"twi_message_type"];
     NSString *action = payload.dictionaryPayload[@"action"];
+    NSString *displayName = [NSString stringWithFormat:@"%@ / %@ minutes / %@",
+                             payload.dictionaryPayload[@"languageName"],
+                             [payload.dictionaryPayload[@"estimatedDuration"] substringToIndex: ([payload.dictionaryPayload[@"estimatedDuration"] length] - 2)],
+                             payload.dictionaryPayload[@"customerName"]];
+
     self.dictionaryPayload = payload.dictionaryPayload;
     self.incomingPushCompletionCallback = completion;
 
@@ -281,7 +285,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
             NSDictionary *taskAttributes = payload.dictionaryPayload[@"taskAttributes"];
 
             CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
-            callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:taskAttributes[@"displayName"]];
+            callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:displayName];
             callUpdate.supportsDTMF = YES;
             callUpdate.supportsHolding = NO;
             callUpdate.supportsGrouping = NO;
@@ -303,13 +307,13 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         int _handleType = [self getHandleType:@"generic"];
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:[payload.dictionaryPayload[@"session"] uppercaseString]];
         CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
-        callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:payload.dictionaryPayload[@"displayName"]];
+        callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:displayName];
         callUpdate.supportsDTMF = YES;
         callUpdate.supportsHolding = NO;
         callUpdate.supportsGrouping = NO;
         callUpdate.supportsUngrouping = NO;
         callUpdate.hasVideo = true;
-        callUpdate.localizedCallerName = payload.dictionaryPayload[@"displayName"];
+        callUpdate.localizedCallerName = displayName;
 
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
         [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVoiceChat error:nil];
@@ -325,13 +329,13 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         int _handleType = [self getHandleType:@"generic"];
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:[payload.dictionaryPayload[@"session"] uppercaseString]];
         CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
-        callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:payload.dictionaryPayload[@"displayName"]];
+        callUpdate.remoteHandle = [[CXHandle alloc] initWithType:_handleType value:displayName];
         callUpdate.supportsDTMF = YES;
         callUpdate.supportsHolding = NO;
         callUpdate.supportsGrouping = NO;
         callUpdate.supportsUngrouping = NO;
         callUpdate.hasVideo = NO;
-        callUpdate.localizedCallerName = payload.dictionaryPayload[@"displayName"];
+        callUpdate.localizedCallerName = displayName;
 
         [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *_Nullable error) {
             self.callInvite = @"true";
