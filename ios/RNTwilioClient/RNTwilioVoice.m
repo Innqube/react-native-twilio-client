@@ -139,6 +139,37 @@ RCT_EXPORT_METHOD(sendDigits: (NSString *) digits) {
     }
 }
 
+RCT_REMAP_METHOD(getAvailableAudioInputs, devicesResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    NSArray* inputs = [session availableInputs];
+    NSMutableDictionary *types = [[NSMutableDictionary alloc] init];
+    AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
+
+    for (AVAudioSessionPortDescription* port in inputs) {
+        NSMutableDictionary *type = [[NSMutableDictionary alloc] init];
+        type[@"enabled"] = [NSNumber numberWithBool: [input.portType isEqualToString:port.portType]];
+        type[@"name"] = port.portName;
+        types[port.portType] = type;
+    }
+    resolve(types);
+}
+
+RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portName switchResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
+    if (portName == nil) {
+        reject(@"error", @"portName is required", nil);
+    }
+
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    AVAudioSessionPortDescription* newPort = [self getAudioDeviceFromType:portName];
+    NSError* error;
+
+    if (![session setPreferredInput:newPort error: &error]) {
+        reject(@"error", @"setPreferredInput failed with error", error);
+    }
+
+    resolve(newPort.portType);
+}
+
 RCT_REMAP_METHOD(getDeviceToken, tokenResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioVoice][getDeviceToken] %@", self.deviceTokenString);
 
@@ -224,6 +255,16 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         providerConfiguration.ringtoneSound = _settings[@"ringtoneSound"];
     }
     return providerConfiguration;
+}
+
+- (AVAudioSessionPortDescription*)getAudioDeviceFromType:(NSString*)type {
+    NSArray* inputs = [[AVAudioSession sharedInstance] availableInputs];
+    for (AVAudioSessionPortDescription* port in inputs) {
+        if ([type isEqualToString: port.portType]) {
+            return port;
+        }
+    }
+    return nil;
 }
 
 #pragma mark - PKPushRegistryDelegate ##################

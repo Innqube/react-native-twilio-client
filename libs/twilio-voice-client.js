@@ -29,9 +29,9 @@ const TwilioVoiceClient = {
 
     connect(params = {}, tokenCallback) {
         tokenCallback()
-            .then(token => {
-                return TwilioVoice.connect(params, token)
-            })
+          .then(token => {
+              return TwilioVoice.connect(params, token)
+          })
     },
     disconnect(uuid) {
         if (Platform.OS === IOS) {
@@ -95,6 +95,12 @@ const TwilioVoiceClient = {
         if (Platform.OS === IOS) {
             return TwilioVoice.getDeviceToken();
         }
+    },
+    getAvailableAudioInputs() {
+        return TwilioVoice.getAvailableAudioInputs();
+    },
+    switchAudioInput(input) {
+        return TwilioVoice.switchAudioInput(input);
     }
 }
 
