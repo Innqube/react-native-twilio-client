@@ -150,24 +150,47 @@ RCT_REMAP_METHOD(getAvailableAudioInputs, devicesResolver: (RCTPromiseResolveBlo
         type[@"enabled"] = [NSNumber numberWithBool: [input.portType isEqualToString:port.portType]];
         type[@"name"] = port.portName;
         types[port.portType] = type;
+        NSLog(@"[IIMobile - RNTwilioVoice][getAvailableAudioInputs:input] %@", port.portType);
     }
+
+    AVAudioSessionRouteDescription *currentRoute = [[AVAudioSession sharedInstance] currentRoute];
+    NSArray* outputs = [currentRoute outputs];
+    NSNumber* enabled = @FALSE;
+    for (AVAudioSessionPortDescription *output in outputs) {
+        if ([output.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
+            enabled = @TRUE;
+        }
+    }
+
+    NSMutableDictionary *speakerType = [[NSMutableDictionary alloc] init];
+    speakerType[@"enabled"] = enabled;
+    speakerType[@"name"] = AVAudioSessionPortBuiltInSpeaker;
+    types[AVAudioSessionPortBuiltInSpeaker] = speakerType;
+
     resolve(types);
 }
 
-RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portName switchResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
-    if (portName == nil) {
+RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portType switchResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
+    NSLog(@"[IIMobile - RNTwilioVoice][switchAudioInput:portType] %@", portType);
+    if (portType == nil) {
         reject(@"error", @"portName is required", nil);
     }
+    BOOL speakerEnabled = [portType isEqualToString: AVAudioSessionPortBuiltInSpeaker];
+    [self toggleAudioRoute:&speakerEnabled];
 
-    AVAudioSession* session = [AVAudioSession sharedInstance];
-    AVAudioSessionPortDescription* newPort = [self getAudioDeviceFromType:portName];
-    NSError* error;
+    if (speakerEnabled) {
+        resolve(portType);
+    } else {
+        AVAudioSession* session = [AVAudioSession sharedInstance];
+        AVAudioSessionPortDescription* newPort = [self getAudioDeviceFromType:portType];
+        NSError* error;
 
-    if (![session setPreferredInput:newPort error: &error]) {
-        reject(@"error", @"setPreferredInput failed with error", error);
+        if (![session setPreferredInput:newPort error: &error]) {
+            reject(@"error", @"setPreferredInput failed with error", error);
+        }
+
+        resolve(newPort.portType);
     }
-
-    resolve(newPort.portType);
 }
 
 RCT_REMAP_METHOD(getDeviceToken, tokenResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
