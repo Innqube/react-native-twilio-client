@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.media.AudioDeviceInfo;
 import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -668,6 +669,93 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         // TODO check whether it is necessary to call setAudioFocus again
 //        setAudioFocus();
         audioManager.setSpeakerphoneOn(value);
+    }
+
+    @ReactMethod
+    public void getAvailableAudioInputs(Promise promise) {
+        Log.d(TAG, "getAvailableAudioInputs called");
+        AudioDeviceInfo[] devices = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+
+        WritableMap json = new WritableNativeMap();
+
+        for (AudioDeviceInfo adi : devices) {
+            WritableMap device = new WritableNativeMap();
+            String type = this.getAudioDeviceType(adi.getType());
+            Boolean enabled = this.isDeviceEnabled(type);
+            device.putString("name", String.valueOf(adi.getProductName()));
+            device.putBoolean("enabled", enabled);
+            device.putInt("type", adi.getType());
+            json.putMap(type, device);
+        }
+        promise.resolve(json);
+    }
+
+    private String getAudioDeviceType(int type) {
+        switch (type) {
+            case 1:
+                return AudioDeviceType.BUILTIN_EARPIECE;
+            case 2:
+                return AudioDeviceType.BUILTIN_SPEAKER;
+            case 3:
+                return AudioDeviceType.WIRED_HEADSET;
+            case 7:
+            case 8:
+                return AudioDeviceType.BLUETOOTH_HEADSET;
+            default:
+                return AudioDeviceType.UNKNOWN;
+        }
+    }
+
+    private boolean isDeviceEnabled(String type) {
+        switch (type) {
+            case AudioDeviceType.BUILTIN_SPEAKER:
+                return audioManager.isSpeakerphoneOn();
+            case AudioDeviceType.BLUETOOTH_HEADSET:
+                return audioManager.isBluetoothScoOn();
+            case AudioDeviceType.WIRED_HEADSET:
+                return audioManager.isWiredHeadsetOn();
+            default:
+                return true;
+        }
+    }
+
+    @ReactMethod
+    public void switchAudioInput(String type, Promise promise) {
+        switch (type) {
+            case AudioDeviceType.BUILTIN_EARPIECE:
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setWiredHeadsetOn(false);
+                audioManager.stopBluetoothSco();
+                audioManager.setBluetoothScoOn(false);
+                audioManager.setSpeakerphoneOn(false);
+                promise.resolve(AudioDeviceType.BUILTIN_EARPIECE);
+                break;
+            case AudioDeviceType.BUILTIN_SPEAKER:
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setWiredHeadsetOn(false);
+                audioManager.stopBluetoothSco();
+                audioManager.setBluetoothScoOn(false);
+                audioManager.setSpeakerphoneOn(true);
+                promise.resolve(AudioDeviceType.BUILTIN_SPEAKER);
+                break;
+            case AudioDeviceType.BLUETOOTH_HEADSET:
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setWiredHeadsetOn(false);
+                audioManager.startBluetoothSco();
+                audioManager.setBluetoothScoOn(true);
+                audioManager.setSpeakerphoneOn(false);
+                promise.resolve(AudioDeviceType.BLUETOOTH_HEADSET);
+                break;
+            case AudioDeviceType.WIRED_HEADSET:
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setWiredHeadsetOn(true);
+                audioManager.stopBluetoothSco();
+                audioManager.setBluetoothScoOn(false);
+                audioManager.setSpeakerphoneOn(false);
+                promise.resolve(AudioDeviceType.WIRED_HEADSET);
+                break;
+        }
+        promise.reject(new AssertionException("Invalid type"));
     }
 
     @ReactMethod
