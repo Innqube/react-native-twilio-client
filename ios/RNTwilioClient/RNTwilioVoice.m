@@ -144,13 +144,23 @@ RCT_REMAP_METHOD(getAvailableAudioInputs, devicesResolver: (RCTPromiseResolveBlo
     NSArray* inputs = [session availableInputs];
     NSMutableDictionary *types = [[NSMutableDictionary alloc] init];
     AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
+    BOOL wiredHeadsetPresent = NO;
 
     for (AVAudioSessionPortDescription* port in inputs) {
         NSMutableDictionary *type = [[NSMutableDictionary alloc] init];
         type[@"enabled"] = [NSNumber numberWithBool: [input.portType isEqualToString:port.portType]];
         type[@"name"] = port.portName;
         types[port.portType] = type;
+
+        if ([port.portType isEqualToString:AVAudioSessionPortHeadsetMic]) {
+            wiredHeadsetPresent = YES;
+        }
+
         NSLog(@"[IIMobile - RNTwilioVoice][getAvailableAudioInputs:input] %@", port.portType);
+    }
+
+    if (wiredHeadsetPresent == YES) {
+        [types removeObjectForKey:AVAudioSessionPortBuiltInMic];
     }
 
     AVAudioSessionRouteDescription *currentRoute = [[AVAudioSession sharedInstance] currentRoute];
@@ -189,7 +199,8 @@ RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portType switchResolver: (RCTPr
             reject(@"error", @"setPreferredInput failed with error", error);
         }
 
-        resolve(newPort.portType);
+        AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
+        resolve(input.portType);
     }
 }
 
