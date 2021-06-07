@@ -56,6 +56,7 @@ RCT_EXPORT_MODULE();
            @"typingStarted",
            @"typingEnded",
            @"voiceCallRejected",
+           @"audioRouteChanged",
            ];
 }
 

@@ -46,12 +46,12 @@
 
 RCT_EXPORT_MODULE()
 
-        static RNTwilioVoice *sharedInstance = nil;
-                NSString *const StatePending = @"PENDING";
-                NSString *const StateConnecting = @"CONNECTING";
-                NSString *const StateConnected = @"CONNECTED";
-                NSString *const StateDisconnected = @"DISCONNECTED";
-                NSString *const StateRejected = @"REJECTED";
+static RNTwilioVoice *sharedInstance = nil;
+NSString *const StatePending = @"PENDING";
+NSString *const StateConnecting = @"CONNECTING";
+NSString *const StateConnected = @"CONNECTED";
+NSString *const StateDisconnected = @"DISCONNECTED";
+NSString *const StateRejected = @"REJECTED";
 
 + (id)sharedInstance {
     if (sharedInstance == nil) {
@@ -60,6 +60,7 @@ RCT_EXPORT_MODULE()
             sharedInstance = [self alloc];
         });
         [sharedInstance configureCallKit];
+        [sharedInstance listenForAudioRoutesChanges];
     }
     return sharedInstance;
 }
@@ -245,6 +246,15 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     }
 }
 
+- (void)listenForAudioRoutesChanges {
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                              selector:@selector(handleAudioRouteChange:)
+                                              name:AVAudioSessionRouteChangeNotification
+                                              object:session];
+    NSLog(@"[IIMobile - RNTwilioVoice][audioHardwareRouteChanged]");
+}
+
 - (void)configureCallKit {
     NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
     NSDictionary *options = @{@"appName": appName, @"imageName": @"ii-logo", @"ringtoneSound": @"incoming.mp3"};
@@ -299,6 +309,42 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         }
     }
     return nil;
+}
+
+- (void)handleAudioRouteChange: (NSNotification *) notification {
+    NSInteger routeChangeReason = [notification.userInfo[AVAudioSessionRouteChangeReasonKey] integerValue];
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
+    NSLog(@"[IIMobile - RNTwilioVoice][handleRouteChange] with reason %ld to %@", routeChangeReason, input.portType);
+
+    [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
+                                 andPayload:@{
+                                     @"reason": [self getAudioChangeReason: routeChangeReason],
+                                     @"current": input.portType
+                                 }];
+}
+
+- (NSString*)getAudioChangeReason:(NSInteger) reason {
+    switch (reason) {
+       case AVAudioSessionRouteChangeReasonUnknown:
+           return @"UNKNOWN";
+       case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
+           return @"NEW_DEVICE_AVAILABLE";
+       case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
+           return @"OLD_DEVICE_UNAVAILABLE";
+       case AVAudioSessionRouteChangeReasonCategoryChange:
+           return @"CATEGORY_CHANGE";
+       case AVAudioSessionRouteChangeReasonOverride:
+           return @"OVERRIDE";
+       case AVAudioSessionRouteChangeReasonWakeFromSleep:
+           return @"WAKE_FROM_SLEEP";
+       case AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory:
+           return @"NO_SUITABLE_ROUTE";
+       case AVAudioSessionRouteChangeReasonRouteConfigurationChange:
+            return @"CONFIGURATION_CHANGE";
+       default:
+            return @"UNKNOWN";
+       }
 }
 
 #pragma mark - PKPushRegistryDelegate ##################

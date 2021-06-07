@@ -20,6 +20,7 @@ const _eventHandlers = {
     requestTransactionError: new Map(),
     callRejected: new Map(),
     voipRemoteNotificationsRegistered: new Map(),
+    audioRouteChanged: new Map(),
 
     // Video events
     videoConnectionDidDisconnect: new Map(),
