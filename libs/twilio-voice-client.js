@@ -96,12 +96,6 @@ const TwilioVoiceClient = {
             return TwilioVoice.getDeviceToken();
         }
     },
-    getAvailableAudioInputs() {
-        return TwilioVoice.getAvailableAudioInputs();
-    },
-    switchAudioInput(input) {
-        return TwilioVoice.switchAudioInput(input);
-    }
 }
 
 export default TwilioVoiceClient

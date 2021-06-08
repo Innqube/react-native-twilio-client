@@ -6,6 +6,7 @@ package com.ngs.react.RNTwilioVoice;
  */
 
 public class AudioDeviceType {
+    public static final String BUILTIN_EARPIECE = "BUILTIN_EARPIECE";
     public static final String BUILTIN_SPEAKER = "BUILTIN_SPEAKER";
     public static final String WIRED_HEADSET = "WIRED_HEADSET";
     public static final String BLUETOOTH_HEADSET = "BLUETOOTH_HEADSET";
