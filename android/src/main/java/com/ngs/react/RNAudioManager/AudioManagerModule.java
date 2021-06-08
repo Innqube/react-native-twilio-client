@@ -16,7 +16,7 @@ import com.ngs.react.RNTwilioVoice.EventManager;
  */
 
 public class AudioManagerModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
-    public static String TAG = "RNAudioManagerModule";
+    public static String TAG = "RNAudioManager";
     private AudioManager audioManager;
     private EventManager eventManager;
     private AudioDeviceManager audioDeviceManager;
