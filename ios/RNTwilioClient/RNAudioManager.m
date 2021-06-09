@@ -29,6 +29,7 @@ static RNAudioManager *sharedInstance = nil;
         dispatch_once(&onceToken, ^{
             sharedInstance = [self alloc];
         });
+        [sharedInstance configureAudioSession];
         [sharedInstance listenForAudioRoutesChanges];
     }
     return sharedInstance;
@@ -47,6 +48,11 @@ RCT_EXPORT_MODULE();
                                               name:AVAudioSessionRouteChangeNotification
                                               object:session];
     NSLog(@"[IIMobile - RNAudioManager][listenForAudioRoutesChanges]");
+}
+
+- (void)configureAudioSession {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute error:nil];
+    [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVideoChat error:nil];
 }
 
 - (AVAudioSessionPortDescription*)getAudioDeviceFromType:(NSString*)type {

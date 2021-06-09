@@ -60,7 +60,6 @@ NSString *const StateRejected = @"REJECTED";
             sharedInstance = [self alloc];
         });
         [sharedInstance configureCallKit];
-        [sharedInstance listenForAudioRoutesChanges];
     }
     return sharedInstance;
 }
@@ -140,71 +139,6 @@ RCT_EXPORT_METHOD(sendDigits: (NSString *) digits) {
     }
 }
 
-RCT_REMAP_METHOD(getAvailableAudioInputs, devicesResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
-    AVAudioSession* session = [AVAudioSession sharedInstance];
-    NSArray* inputs = [session availableInputs];
-    NSMutableDictionary *types = [[NSMutableDictionary alloc] init];
-    AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
-    BOOL wiredHeadsetPresent = NO;
-
-    for (AVAudioSessionPortDescription* port in inputs) {
-        NSMutableDictionary *type = [[NSMutableDictionary alloc] init];
-        type[@"enabled"] = [NSNumber numberWithBool: [input.portType isEqualToString:port.portType]];
-        type[@"name"] = port.portName;
-        types[port.portType] = type;
-
-        if ([port.portType isEqualToString:AVAudioSessionPortHeadsetMic]) {
-            wiredHeadsetPresent = YES;
-        }
-
-        NSLog(@"[IIMobile - RNTwilioVoice][getAvailableAudioInputs:input] %@", port.portType);
-    }
-
-    if (wiredHeadsetPresent == YES) {
-        [types removeObjectForKey:AVAudioSessionPortBuiltInMic];
-    }
-
-    AVAudioSessionRouteDescription *currentRoute = [[AVAudioSession sharedInstance] currentRoute];
-    NSArray* outputs = [currentRoute outputs];
-    NSNumber* enabled = @FALSE;
-    for (AVAudioSessionPortDescription *output in outputs) {
-        if ([output.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
-            enabled = @TRUE;
-        }
-    }
-
-    NSMutableDictionary *speakerType = [[NSMutableDictionary alloc] init];
-    speakerType[@"enabled"] = enabled;
-    speakerType[@"name"] = AVAudioSessionPortBuiltInSpeaker;
-    types[AVAudioSessionPortBuiltInSpeaker] = speakerType;
-
-    resolve(types);
-}
-
-RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portType switchResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
-    NSLog(@"[IIMobile - RNTwilioVoice][switchAudioInput:portType] %@", portType);
-    if (portType == nil) {
-        reject(@"error", @"portName is required", nil);
-    }
-    BOOL speakerEnabled = [portType isEqualToString: AVAudioSessionPortBuiltInSpeaker];
-    [self toggleAudioRoute:&speakerEnabled];
-
-    if (speakerEnabled) {
-        resolve(portType);
-    } else {
-        AVAudioSession* session = [AVAudioSession sharedInstance];
-        AVAudioSessionPortDescription* newPort = [self getAudioDeviceFromType:portType];
-        NSError* error;
-
-        if (![session setPreferredInput:newPort error: &error]) {
-            reject(@"error", @"setPreferredInput failed with error", error);
-        }
-
-        AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
-        resolve(input.portType);
-    }
-}
-
 RCT_REMAP_METHOD(getDeviceToken, tokenResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
     NSLog(@"[IIMobile - RNTwilioVoice][getDeviceToken] %@", self.deviceTokenString);
 
@@ -244,15 +178,6 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     } else {
         reject(@"no_call", @"There was no active call", nil);
     }
-}
-
-- (void)listenForAudioRoutesChanges {
-    AVAudioSession* session = [AVAudioSession sharedInstance];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                              selector:@selector(handleAudioRouteChange:)
-                                              name:AVAudioSessionRouteChangeNotification
-                                              object:session];
-    NSLog(@"[IIMobile - RNTwilioVoice][audioHardwareRouteChanged]");
 }
 
 - (void)configureCallKit {
@@ -299,52 +224,6 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         providerConfiguration.ringtoneSound = _settings[@"ringtoneSound"];
     }
     return providerConfiguration;
-}
-
-- (AVAudioSessionPortDescription*)getAudioDeviceFromType:(NSString*)type {
-    NSArray* inputs = [[AVAudioSession sharedInstance] availableInputs];
-    for (AVAudioSessionPortDescription* port in inputs) {
-        if ([type isEqualToString: port.portType]) {
-            return port;
-        }
-    }
-    return nil;
-}
-
-- (void)handleAudioRouteChange: (NSNotification *) notification {
-    NSInteger routeChangeReason = [notification.userInfo[AVAudioSessionRouteChangeReasonKey] integerValue];
-    AVAudioSession* session = [AVAudioSession sharedInstance];
-    AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
-    NSLog(@"[IIMobile - RNTwilioVoice][handleRouteChange] with reason %ld to %@", routeChangeReason, input.portType);
-
-    [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
-                                 andPayload:@{
-                                     @"reason": [self getAudioChangeReason: routeChangeReason],
-                                     @"current": input.portType
-                                 }];
-}
-
-- (NSString*)getAudioChangeReason:(NSInteger) reason {
-    switch (reason) {
-       case AVAudioSessionRouteChangeReasonUnknown:
-           return @"UNKNOWN";
-       case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
-           return @"NEW_DEVICE_AVAILABLE";
-       case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
-           return @"OLD_DEVICE_UNAVAILABLE";
-       case AVAudioSessionRouteChangeReasonCategoryChange:
-           return @"CATEGORY_CHANGE";
-       case AVAudioSessionRouteChangeReasonOverride:
-           return @"OVERRIDE";
-       case AVAudioSessionRouteChangeReasonWakeFromSleep:
-           return @"WAKE_FROM_SLEEP";
-       case AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory:
-           return @"NO_SUITABLE_ROUTE";
-       case AVAudioSessionRouteChangeReasonRouteConfigurationChange:
-            return @"CONFIGURATION_CHANGE";
-       default:
-            return @"UNKNOWN";
-       }
 }
 
 #pragma mark - PKPushRegistryDelegate ##################
@@ -436,8 +315,6 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         callUpdate.hasVideo = true;
         callUpdate.localizedCallerName = displayName;
 
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-        [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeVoiceChat error:nil];
         [[AVAudioSession sharedInstance] setActive: YES error: nil];
 
         [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *_Nullable error) {
@@ -457,6 +334,8 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
         callUpdate.supportsUngrouping = NO;
         callUpdate.hasVideo = NO;
         callUpdate.localizedCallerName = displayName;
+
+        [[AVAudioSession sharedInstance] setActive: YES error: nil];
 
         [self.callKitProvider reportNewIncomingCallWithUUID:uuid update:callUpdate completion:^(NSError *_Nullable error) {
             self.callInvite = @"true";
@@ -592,7 +471,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
 #pragma mark - AVAudioSession
 
-- (void)toggleAudioRoute:(BOOL *)toSpeaker {
+- (void)toggleAudioRoute:(BOOL *)toSpeaker __attribute((deprecated("Use the RNAudioManager instead."))) {
     NSError *error = nil;
     NSLog(@"[IIMobile - RNTwilioVoice] toggleAudioRoute");
 
