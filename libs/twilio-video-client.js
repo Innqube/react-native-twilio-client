@@ -19,6 +19,7 @@ const _eventHandlers = {
     // connectionDidDisconnect: new Map(),
     // callStateRinging: new Map(),
     videoCallInviteCancelled: new Map(),
+    goOffline: new Map(),
     // callRejected: new Map(),
     // Events for TwilioVideo
     // voipRemoteNotificationsRegistered: new Map()
