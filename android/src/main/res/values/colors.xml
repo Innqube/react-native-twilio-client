@@ -6,6 +6,9 @@
     <color name="decline">#990000</color>
     <color name="decline_touched">#CC0000</color>
     <color name="decline_shadow">#66660000</color>
+    <color name="go_offline">#838383</color>
+    <color name="go_offline_touched">#A1A1A1</color>
+    <color name="go_offline_shadow">#80919191</color>
     <color name="incoming_call_action_txt">#E6E6E6</color>
     <color name="white_50">#80FFFFFF</color>
     <color name="white_35">#59FFFFFF</color>

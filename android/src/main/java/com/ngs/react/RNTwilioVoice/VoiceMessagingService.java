@@ -67,7 +67,7 @@ public class VoiceMessagingService extends Service {
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
     public void onMessageReceived(String action, VoiceCallInvite invite) {
-        Log.d(TAG, "onMessageReceived");
+        Log.w(TAG, "VideoMessagingService.onMessageReceived with action: " + action);
 
         // Check if message contains a data payload.
         if (action == null || invite == null) {
@@ -83,7 +83,8 @@ public class VoiceMessagingService extends Service {
                     handleCancelCallNotification(invite);
                     break;
                 case "reject":
-                    handleRejectCall(invite);
+                case "goOffline":
+                    handleRejectCall(invite, action);
                     break;
             }
         });
@@ -119,11 +120,12 @@ public class VoiceMessagingService extends Service {
         getApplicationContext().sendBroadcast(intent);
     }
 
-    private void handleRejectCall(VoiceCallInvite invite) {
+    private void handleRejectCall(VoiceCallInvite invite, String action) {
         Log.d(TAG, "handleRejectCall");
         removeIncomingCallNotification(invite);
+        String intentAction = action.equals("reject") ? VoiceConstants.ACTION_REJECT_CALL : VoiceConstants.ACTION_GO_OFFLINE;
 
-        Intent intent = new Intent(VoiceConstants.ACTION_REJECT_CALL);
+        Intent intent = new Intent(intentAction);
         intent.putExtra(VoiceConstants.INCOMING_CALL_INVITE, invite);
 
         new Handler(Looper.getMainLooper())

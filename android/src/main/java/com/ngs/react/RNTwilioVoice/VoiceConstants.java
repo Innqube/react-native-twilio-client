@@ -11,6 +11,7 @@ public class VoiceConstants {
     public static final String ACTION_MISSED_CALL = "com.ngs.react.TwilioVoice.MISSED_CALL";
     public static final String ACTION_ANSWER_CALL = "com.ngs.react.TwilioVoice.ANSWER_CALL";
     public static final String ACTION_REJECT_CALL = "com.ngs.react.TwilioVoice.REJECT_CALL";
+    public static final String ACTION_GO_OFFLINE = "com.ngs.react.TwilioVoice.GO_OFFLINE";
     public static final String ACTION_HANGUP_CALL = "com.ngs.react.TwilioVoice.HANGUP_CALL";
     public static final String ACTION_CANCEL_CALL_INVITE = "com.ngs.react.TwilioVoice.CANCEL_CALL_INVITE";
     public static final String ACTION_CLEAR_MISSED_CALLS_COUNT = "com.ngs.react.TwilioVoice.CLEAR_MISSED_CALLS_COUNT";

@@ -70,11 +70,13 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         intentFilter.addAction(ACTION_REJECT_CALL);
         intentFilter.addAction(ACTION_HANGUP_CALL);
         intentFilter.addAction(ACTION_CLEAR_MISSED_CALLS_COUNT);
+        intentFilter.addAction(ACTION_GO_OFFLINE);
 
         getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
+                Log.d(TAG, "TwilioVideoModule.BroadCastReceiver.onReceive: " + action);
                 switch (action) {
                     case ACTION_ANSWER_CALL:
                         VideoCallInvite invite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
@@ -91,6 +93,11 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
                         SharedPreferences.Editor sharedPrefEditor = sharedPref.edit();
                         sharedPrefEditor.remove(MISSED_CALLS_GROUP);
                         sharedPrefEditor.commit();
+                        break;
+                    case ACTION_GO_OFFLINE:
+                        VideoCallInvite goOfflineInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+                        Integer goOfflineNotificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
+                        internalGoOffline(goOfflineInvite, goOfflineNotificationId);
                         break;
                 }
                 notificationManager.cancel(intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, 0));
@@ -159,6 +166,15 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         eventManager.sendEvent(EVENT_CONNECTION_DID_REJECT, params);
     }
 
+    private void internalGoOffline(VideoCallInvite invite, Integer notificationId) {
+        Log.d(TAG, "internalGoOffline()");
+        Log.d(TAG, "invite: " + invite);
+        Log.d(TAG, "notificationId: " + notificationId);
+        callNotificationManager.removeNotification(getReactApplicationContext(), notificationId);
+        WritableMap params = buildRNNotification(invite);
+        eventManager.sendEvent(EVENT_GO_OFFLINE, params);
+    }
+
     @ReactMethod
     public void disconnect() {
         activeCall = null;
@@ -202,15 +218,8 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
             String action = intent.getAction();
             Log.d(TAG, "VideoBroadcastReceiver.onReceive " + action + ". Intent " + intent.getExtras());
             if (action.equals(ACTION_INCOMING_CALL)) {
-                handleIncomingCallIntent(intent);
-            } /*else if (action.equals(ACTION_CANCEL_CALL_INVITE)) {
-                handleCancelledInvite(intent);
-            } else if (action.equals(ACTION_MISSED_CALL)) {
-                SharedPreferences sharedPref = getReactApplicationContext().getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
-                SharedPreferences.Editor sharedPrefEditor = sharedPref.edit();
-                sharedPrefEditor.remove(MISSED_CALLS_GROUP);
-                sharedPrefEditor.commit();
-            }*/ else {
+                handlePendingIntent(intent, EVENT_DEVICE_DID_RECEIVE_INCOMING);
+            } else {
                 Log.e(TAG, "received broadcast unhandled action " + action);
             }
         }
@@ -225,16 +234,8 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         }
         return params;
     }
-//
-//    private void handleCancelledInvite(Intent intent) {
-//        CanceledVideoCallInvite cancelledCallInvite = intent.getParcelableExtra(CANCELLED_CALL_INVITE);
-//        clearIncomingNotification(cancelledCallInvite);
-//        WritableMap params = buildRNNotification(cancelledCallInvite);
-//        eventManager.sendEvent(EVENT_CALL_INVITE_CANCELLED, params);
-//        clearIncomingNotification(activeCallInvite);
-//    }
 
-    private void handleIncomingCallIntent(Intent intent) {
+    private void handlePendingIntent(Intent intent, String event) {
         Log.d(TAG, "handleIncomingCallIntent");
         VideoCallInvite activeCallInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
 

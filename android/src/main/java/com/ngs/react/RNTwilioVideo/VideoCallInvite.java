@@ -71,7 +71,7 @@ public class VideoCallInvite implements Parcelable, CallInvite {
             String estimatedDuration = this.data.get("estimatedDuration") != null ?
                     (this.data.get("estimatedDuration").substring(0, this.data.get("estimatedDuration").length() -2) + " minutes") :
                     "";
-            return language + " / " + estimatedDuration + separator + customer;
+            return language + separator + estimatedDuration + separator + customer;
         }
         return null;
     }

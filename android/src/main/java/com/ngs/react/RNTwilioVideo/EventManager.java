@@ -18,6 +18,7 @@ public class EventManager {
     public static final String EVENT_CONNECTION_DID_REJECT = "videoConnectionDidReject";
     public static final String EVENT_DEVICE_DID_RECEIVE_INCOMING = "videoDeviceDidReceiveIncoming";
     public static final String EVENT_CALL_INVITE_CANCELLED = "videoCallInviteCancelled";
+    public static final String EVENT_GO_OFFLINE = "goOffline";
 
     public EventManager(ReactApplicationContext context) {
         mContext = context;

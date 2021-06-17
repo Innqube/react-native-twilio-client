@@ -1,9 +1,11 @@
 <resources>
     <string name="title_activity_incoming_call_fullscreen">Incoming Call</string>
-    <string name="answer_button">ANSWER</string>
+    <string name="answer_button">ACCEPT</string>
     <string name="decline_button">DECLINE</string>
+    <string name="go_offline_button">GO OFFLINE</string>
     <string name="accept">ACCEPT</string>
     <string name="decline">DECLINE</string>
+    <string name="go_offline">GO OFFLINE</string>
     <string name="dummy_content">Interpreter Intelligence</string>
     <string name="incoming_video_call">INCOMING VIDEO CALL</string>
     <string name="incoming_voice_call">INCOMING VOICE CALL</string>

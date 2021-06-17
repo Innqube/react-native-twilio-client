@@ -27,11 +27,7 @@ import com.ngs.react.R;
 import java.util.List;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_ANSWER_CALL;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_CANCEL_CALL_INVITE;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_REJECT_CALL;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_INVITE;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.INCOMING_CALL_NOTIFICATION_ID;
+import static com.ngs.react.RNTwilioVideo.VideoConstants.*;
 
 public class CallNotificationManager {
 
@@ -121,9 +117,11 @@ public class CallNotificationManager {
 
         PendingIntent pendingAnswerIntent = buildAnswerIntent(context, callInvite, notificationId);
         PendingIntent pendingRejectIntent = buildRejectIntent(context, callInvite, notificationId);
+        PendingIntent pendingGoOfflineIntent = buildGoOfflineIntent(context, callInvite, notificationId);
 
-        notificationBuilder.addAction(0, "REJECT", pendingRejectIntent);
-        notificationBuilder.addAction(R.drawable.ic_call_white_48dp, "ANSWER", pendingAnswerIntent);
+        notificationBuilder.addAction(0, "DECLINE", pendingRejectIntent);
+        notificationBuilder.addAction(R.drawable.ic_call_white_48dp, "ACCEPT", pendingAnswerIntent);
+        notificationBuilder.addAction(1, "GO OFFLINE", pendingGoOfflineIntent);
 
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT; // keep the phone ringing
@@ -198,6 +196,36 @@ public class CallNotificationManager {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId + "")
                     .putExtra("action", "reject")
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            pendingIntent = PendingIntent.getService(
+                    context,
+                    0,
+                    answerIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+        }
+        return pendingIntent;
+    }
+
+    private PendingIntent buildGoOfflineIntent(Context context, VideoCallInvite callInvite, Integer notificationId) {
+        PendingIntent pendingIntent;
+        if (isInForeground(context)) {
+            Intent rejectIntent = new Intent(ACTION_GO_OFFLINE)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    1,
+                    rejectIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+        } else {
+            // Start the app from the notification as it is in the background currently
+            Intent answerIntent = new Intent(context, VideoMessagingService.class)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId + "")
+                    .putExtra("action", "goOffline")
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getService(
                     context,

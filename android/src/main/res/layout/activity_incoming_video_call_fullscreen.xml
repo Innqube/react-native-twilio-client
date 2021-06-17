@@ -82,7 +82,7 @@
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal"
-                android:padding="20dp"
+                android:padding="10dp"
                 tools:ignore="UselessParent">
 
                 <LinearLayout
@@ -90,6 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:gravity="center"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <Button
@@ -105,7 +106,6 @@
                         android:textColor="#F8BBD0"
                         android:textSize="18sp"
                         android:textStyle="bold" />
-
                     <TextView
                         android:id="@+id/decline_text"
                         android:layout_width="match_parent"
@@ -122,16 +122,13 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="40dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:gravity="center"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <Button
@@ -147,7 +144,6 @@
                         android:textColor="#C8E6C9"
                         android:textSize="18sp"
                         android:textStyle="bold" />
-
                     <TextView
                         android:id="@+id/answer_text"
                         android:layout_width="match_parent"
@@ -159,6 +155,44 @@
                         android:shadowColor="@color/answer_shadow"
                         android:shadowRadius="25"
                         android:text="@string/accept"
+                        android:textColor="@color/incoming_call_action_txt"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/go_offline_button"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:layout_gravity="center"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@drawable/rounded_button_go_offline"
+                        android:drawableStart="@drawable/baseline_logout_24"
+                        android:gravity="center"
+                        android:padding="15dp"
+                        android:textColor="#C8E6C9"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/go_offline_text"
+                        android:layout_width="108dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:keepScreenOn="true"
+                        android:padding="10dp"
+                        android:shadowColor="@color/answer_shadow"
+                        android:shadowRadius="25"
+                        android:text="@string/go_offline"
                         android:textColor="@color/incoming_call_action_txt"
                         android:textSize="14sp"
                         android:textStyle="bold" />

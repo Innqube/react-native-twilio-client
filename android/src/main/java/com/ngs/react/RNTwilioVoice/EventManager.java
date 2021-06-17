@@ -29,6 +29,7 @@ public class EventManager {
     public static final String EVENT_CALL_ACCEPTED = "voiceCallAccepted";
     public static final String EVENT_CALL_REJECTED = "voiceCallRejected";
     public static final String EVENT_AUDIO_ROUTE_CHANGED = "audioRouteChanged";
+    public static final String EVENT_GO_OFFLINE = "goOffline";
 
 
     public EventManager(ReactApplicationContext context) {

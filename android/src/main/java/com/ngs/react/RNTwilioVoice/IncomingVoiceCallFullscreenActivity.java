@@ -24,6 +24,7 @@ import com.ngs.react.R;
 
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_ANSWER_CALL;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_CANCEL_CALL_INVITE;
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_GO_OFFLINE;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_REJECT_CALL;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.INCOMING_CALL_INVITE;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.INCOMING_CALL_NOTIFICATION_ID;
@@ -92,6 +93,7 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
         Log.d(TAG, "Attaching touch listeners");
         findViewById(R.id.answer_button).setOnClickListener(answer());
         findViewById(R.id.decline_button).setOnClickListener(decline());
+        findViewById(R.id.go_offline_button).setOnClickListener(goOffline());
     }
 
     private View.OnClickListener answer() {
@@ -130,6 +132,34 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
             int notificationId = getIntent().getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
 
             Intent rejectIntent = new Intent(ACTION_REJECT_CALL)
+                    .putExtra(INCOMING_CALL_INVITE, callInvite)
+                    .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    this,
+                    1,
+                    rejectIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
+            try {
+                pendingIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                Log.i(TAG, e.getMessage());
+                e.printStackTrace();
+            } finally {
+                finish();
+            }
+        };
+    }
+
+    private View.OnClickListener goOffline() {
+        return (event) -> {
+            Log.i(TAG, "goOffline");
+            VoiceCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
+            int notificationId = getIntent().getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
+
+            Intent rejectIntent = new Intent(ACTION_GO_OFFLINE)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

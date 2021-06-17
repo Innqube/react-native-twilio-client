@@ -73,6 +73,7 @@ public class VideoMessagingService extends Service {
             Log.d(TAG, "Action: " + action);
             Log.d(TAG, "Bundle data: " + invite);
         }
+        Log.w(TAG, "VideoMessagingService.onMessageReceived with action: " + action);
 
         // Check if message contains a data payload.
         if (invite != null) {
@@ -89,7 +90,9 @@ public class VideoMessagingService extends Service {
                     cancelIncomingCallNotification(invite);
                     break;
                 case "reject":
+                case "goOffline":
                     Integer notificationId = invite.getSession().hashCode();
+                    String eventName = action.equals("reject") ? "performEndVideoCall" : "goOffline";
                     callNotificationManager.removeNotification(getApplicationContext(), notificationId);
                     startReactContext(reactContext -> {
                         new Handler(Looper.getMainLooper())
@@ -99,7 +102,7 @@ public class VideoMessagingService extends Service {
                                     for (Map.Entry<String, String> entry : invite.getData().entrySet()) {
                                         params.putString(entry.getKey(), entry.getValue());
                                     }
-                                    em.sendEvent("performEndVideoCall", params);
+                                    em.sendEvent(eventName, params);
                                 }, 4000);
                     });
                     break;

@@ -8,6 +8,7 @@ public class VideoConstants {
     public static final String ACTION_ANSWER_CALL = "com.ngs.react.TwilioVideo.ANSWER_CALL";
     public static final String ACTION_REJECT_CALL = "com.ngs.react.TwilioVideo.REJECT_CALL";
     public static final String ACTION_HANGUP_CALL = "com.ngs.react.TwilioVideo.HANGUP_CALL";
+    public static final String ACTION_GO_OFFLINE = "com.ngs.react.TwilioVideo.GO_OFFLINE";
     public static final String ACTION_CANCEL_CALL_INVITE = "com.ngs.react.TwilioVideo.CANCEL_CALL_INVITE";
     public static final String ACTION_CLEAR_MISSED_CALLS_COUNT = "com.ngs.react.TwilioVideo.CLEAR_MISSED_CALLS_COUNT";
 

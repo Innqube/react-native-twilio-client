@@ -92,6 +92,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 Log.d(TAG, "Broadcast receiver - action: " + action);
+                VoiceCallInvite invite;
                 switch (action) {
                     case VoiceConstants.ACTION_INCOMING_CALL:
                         handleIncomingCallIntent(intent);
@@ -104,8 +105,12 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                         accept();
                         break;
                     case VoiceConstants.ACTION_REJECT_CALL:
-                        VoiceCallInvite invite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
+                        invite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
                         rejectInternal(invite);
+                        break;
+                    case VoiceConstants.ACTION_GO_OFFLINE:
+                        invite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
+                        internalGoOffline(invite);
                         break;
                     case VoiceConstants.ACTION_HANGUP_CALL:
                         disconnect();
@@ -373,6 +378,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             intentFilter.addAction(VoiceConstants.ACTION_CLEAR_MISSED_CALLS_COUNT);
             intentFilter.addAction(VoiceConstants.ACTION_INCOMING_CALL);
             intentFilter.addAction(VoiceConstants.ACTION_CANCEL_CALL_INVITE);
+            intentFilter.addAction(VoiceConstants.ACTION_GO_OFFLINE);
 
             getReactApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
             isReceiverRegistered = true;
@@ -522,6 +528,12 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         WritableMap params = buildRNNotification(invite);
         clearIncomingNotification(invite.getSession());
         eventManager.sendEvent(EVENT_CALL_REJECTED, params);
+    }
+
+    private void internalGoOffline(VoiceCallInvite invite) {
+        WritableMap params = buildRNNotification(invite);
+        clearIncomingNotification(invite.getSession());
+        eventManager.sendEvent(EVENT_GO_OFFLINE, params);
     }
 
     @ReactMethod
