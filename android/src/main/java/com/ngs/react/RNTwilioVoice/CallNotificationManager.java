@@ -23,14 +23,11 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.ngs.react.R;
-import com.ngs.react.RNTwilioVideo.VideoCallInvite;
-import com.ngs.react.RNTwilioVideo.VideoConstants;
-import com.ngs.react.RNTwilioVideo.VideoMessagingService;
 
 import java.util.List;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static com.ngs.react.RNTwilioVideo.VideoConstants.ACTION_GO_OFFLINE;
+import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_GO_OFFLINE;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_ANSWER_CALL;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_CANCEL_CALL_INVITE;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_REJECT_CALL;
