@@ -57,6 +57,8 @@ RCT_EXPORT_MODULE();
            @"typingEnded",
            @"voiceCallRejected",
            @"audioRouteChanged",
+           @"voiceGoOffline",
+           @"videoGoOffline",
            ];
 }
 
