@@ -67,16 +67,21 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)handleAudioRouteChange: (NSNotification *) notification {
-    NSInteger routeChangeReason = [notification.userInfo[AVAudioSessionRouteChangeReasonKey] integerValue];
+    NSInteger routeChangeReason = [notification.userInfo[AVAudioSessionRouteChangeReasonKey] integerValue] || 0;
     AVAudioSession* session = [AVAudioSession sharedInstance];
     AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
     NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %ld to %@", routeChangeReason, input.portType);
+    NSString *reason = [self getAudioChangeReason: routeChangeReason];
 
-    [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
-                                 andPayload:@{
-                                     @"reason": [self getAudioChangeReason: routeChangeReason],
-                                     @"current": input.portType
-                                 }];
+    if (input != nil) {
+        [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
+                                     andPayload:@{
+                                         @"reason": reason != nil ? reason : @"UNKNOWN",
+                                         @"current": input.portType
+                                     }];
+    } else {
+        NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] canoot change audio route: input cannot be null");
+    }
 }
 
 - (NSString*)getAudioChangeReason:(NSInteger) reason {
