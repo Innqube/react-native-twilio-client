@@ -21,6 +21,7 @@
 @implementation RNAudioManager
 
 static RNAudioManager *sharedInstance = nil;
+BOOL *speakerEnabled;
 
 #pragma mark Singleton Methods
 + (id)sharedInstance {
@@ -70,15 +71,21 @@ RCT_EXPORT_MODULE();
     NSInteger routeChangeReason = [notification.userInfo[AVAudioSessionRouteChangeReasonKey] integerValue] || 0;
     AVAudioSession* session = [AVAudioSession sharedInstance];
     AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
-    NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %ld to %@", routeChangeReason, input.portType);
     NSString *reason = [self getAudioChangeReason: routeChangeReason];
+    NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %@ to %@", reason, input.portType);
 
     if (input != nil) {
-        [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
-                                     andPayload:@{
-                                         @"reason": reason != nil ? reason : @"UNKNOWN",
-                                         @"current": input.portType
-                                     }];
+        if (![input.portType isEqualToString:AVAudioSessionPortBuiltInMic]) {
+            [self toggleAudioRoute:false];
+        }
+
+        if (!([input.portType isEqualToString:AVAudioSessionPortBuiltInMic] && speakerEnabled)) {
+            [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
+                                         andPayload:@{
+                                             @"reason": reason != nil ? reason : @"UNKNOWN",
+                                             @"current": input.portType
+                                         }];
+       }
     } else {
         NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] canoot change audio route: input cannot be null");
     }
@@ -112,6 +119,7 @@ RCT_EXPORT_MODULE();
 - (void)toggleAudioRoute:(BOOL *)toSpeaker {
     NSError *error = nil;
     NSLog(@"[IIMobile - RNAudioManager] toggleAudioRoute");
+    speakerEnabled = toSpeaker;
 
     if (toSpeaker) {
         if (![[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker
@@ -144,7 +152,7 @@ RCT_REMAP_METHOD(getAvailableAudioInputs, devicesResolver: (RCTPromiseResolveBlo
             wiredHeadsetPresent = YES;
         }
 
-        NSLog(@"[IIMobile - RNTwilioVoice][getAvailableAudioInputs:input] %@", port.portType);
+        NSLog(@"[IIMobile - RNAudioManager][getAvailableAudioInputs:input] %@", port.portType);
     }
 
     if (wiredHeadsetPresent == YES) {
@@ -169,7 +177,7 @@ RCT_REMAP_METHOD(getAvailableAudioInputs, devicesResolver: (RCTPromiseResolveBlo
 }
 
 RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portType switchResolver: (RCTPromiseResolveBlock)resolve rej:(RCTPromiseRejectBlock)reject) {
-    NSLog(@"[IIMobile - RNTwilioVoice][switchAudioInput:portType] %@", portType);
+    NSLog(@"[IIMobile - RNAudioManager][switchAudioInput:portType] %@", portType);
     if (portType == nil) {
         reject(@"error", @"portName is required", nil);
     }
