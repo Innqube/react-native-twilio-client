@@ -17,7 +17,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -185,6 +185,7 @@ public class CallNotificationManager {
     private PendingIntent buildRejectIntent(Context context, VoiceCallInvite callInvite, Integer notificationId) {
         PendingIntent pendingIntent;
         if (isInForeground(context)) {
+            Log.d(TAG, "buildRejectIntent app is in background");
             Intent rejectIntent = new Intent(ACTION_REJECT_CALL)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
@@ -197,6 +198,7 @@ public class CallNotificationManager {
             );
         } else {
             // Start the app from the notification as it is in the background currently
+            Log.d(TAG, "buildRejectIntent app is in background");
             Intent rejectIntent = new Intent(context, VoiceMessagingService.class)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId + "")
@@ -215,6 +217,7 @@ public class CallNotificationManager {
     private PendingIntent buildGoOfflineIntent(Context context, VoiceCallInvite callInvite, Integer notificationId) {
         PendingIntent pendingIntent;
         if (isInForeground(context)) {
+            Log.d(TAG, "buildGoOfflineIntent app is in background");
             Intent rejectIntent = new Intent(ACTION_GO_OFFLINE)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
@@ -227,6 +230,7 @@ public class CallNotificationManager {
             );
         } else {
             // Start the app from the notification as it is in the background currently
+            Log.d(TAG, "buildGoOfflineIntent app is in background");
             Intent rejectIntent = new Intent(context, VoiceMessagingService.class)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId + "")
@@ -234,7 +238,7 @@ public class CallNotificationManager {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getService(
                     context,
-                    0,
+                    2,
                     rejectIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT
             );

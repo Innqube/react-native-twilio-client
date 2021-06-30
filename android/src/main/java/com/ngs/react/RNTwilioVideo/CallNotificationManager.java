@@ -17,7 +17,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -229,7 +229,7 @@ public class CallNotificationManager {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getService(
                     context,
-                    0,
+                    2,
                     answerIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
