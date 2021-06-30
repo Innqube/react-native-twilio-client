@@ -92,7 +92,7 @@ public class VideoMessagingService extends Service {
                 case "reject":
                 case "goOffline":
                     Integer notificationId = invite.getSession().hashCode();
-                    String eventName = action.equals("reject") ? "performEndVideoCall" : "goOffline";
+                    String eventName = action.equals("reject") ? "performEndVideoCall" : EventManager.EVENT_GO_OFFLINE;
                     callNotificationManager.removeNotification(getApplicationContext(), notificationId);
                     startReactContext(reactContext -> {
                         new Handler(Looper.getMainLooper())
