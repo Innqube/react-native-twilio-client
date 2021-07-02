@@ -97,6 +97,9 @@ const TwilioVoiceClient = {
             return TwilioVoice.getDeviceToken();
         }
     },
+    setEdge(edge) {
+        TwilioVoice.setEdge(edge)
+    }
 }
 
 export default TwilioVoiceClient

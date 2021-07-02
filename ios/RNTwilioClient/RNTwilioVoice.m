@@ -90,6 +90,7 @@ RCT_EXPORT_METHOD(sendMessage:(NSString *) message) {
 
 RCT_EXPORT_METHOD(connect: (NSDictionary *)params andToken: (NSString *) token) {
     NSLog(@"[IIMobile - RNTwilioVoice][connect] Calling phone number %@", [params valueForKey:@"To"]);
+    NSLog(@"[IIMobile - RNTwilioVoice][connect] edge: %@", TwilioVoice.edge);
     _token = token;
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
@@ -178,6 +179,11 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
     } else {
         reject(@"no_call", @"There was no active call", nil);
     }
+}
+
+RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
+    NSLog(@"[IIMobile - RNTwilioVoice] setEdge(%@)", edge);
+    TwilioVoice.edge = edge;
 }
 
 - (void)configureCallKit {

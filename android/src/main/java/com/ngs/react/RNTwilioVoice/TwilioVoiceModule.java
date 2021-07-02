@@ -65,7 +65,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
     private EventManager eventManager;
 
     public TwilioVoiceModule(ReactApplicationContext reactContext,
-    boolean shouldAskForMicPermission) {
+                             boolean shouldAskForMicPermission) {
         super(reactContext);
         if (BuildConfig.DEBUG) {
             Voice.setLogLevel(LogLevel.DEBUG);
@@ -338,7 +338,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
 
 
                 Log.e(TAG, String.format("CallListener onConnectFailure error: %d, %s",
-                    error.getErrorCode(), error.getMessage()));
+                        error.getErrorCode(), error.getMessage()));
 
                 WritableMap params = Arguments.createMap();
                 params.putString("err", error.getMessage());
@@ -559,6 +559,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
 
     @ReactMethod
     public void connect(ReadableMap params, String accessToken) {
+        Log.d(TAG, "current edge: " + Voice.getEdge());
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "connect params: "+params);
         }
@@ -609,9 +610,9 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         }
 
         ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
-            .enableDscp(true)
-            .params(twiMLParams)
-            .build();
+                .enableDscp(true)
+                .params(twiMLParams)
+                .build();
 
         activeCall = Voice.connect(getReactApplicationContext(), connectOptions, callListener);
     }
@@ -694,6 +695,12 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         }
     }
 
+    @ReactMethod
+    public void setEdge(String edge) {
+        Log.d(TAG, "setEdge: " + edge);
+        Voice.setEdge(edge);
+    }
+
     private void setAudioFocus() {
         if (audioManager == null) {
             audioManager.setMode(originalAudioMode);
@@ -704,25 +711,25 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         // Request audio focus before making any device switch
         if (Build.VERSION.SDK_INT >= 26) {
             AudioAttributes playbackAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                .build();
+                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build();
             focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
-                .setAudioAttributes(playbackAttributes)
-                .setAcceptsDelayedFocusGain(true)
-                .setOnAudioFocusChangeListener(new AudioManager.OnAudioFocusChangeListener() {
-                    @Override
-                    public void onAudioFocusChange(int i) { }
-                })
-                .build();
+                    .setAudioAttributes(playbackAttributes)
+                    .setAcceptsDelayedFocusGain(true)
+                    .setOnAudioFocusChangeListener(new AudioManager.OnAudioFocusChangeListener() {
+                        @Override
+                        public void onAudioFocusChange(int i) { }
+                    })
+                    .build();
             audioManager.requestAudioFocus(focusRequest);
         } else {
             int focusRequestResult = audioManager.requestAudioFocus(new AudioManager.OnAudioFocusChangeListener() {
-                @Override
-                public void onAudioFocusChange(int focusChange) {}
-            },
-            AudioManager.STREAM_VOICE_CALL,
-            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+                                                                        @Override
+                                                                        public void onAudioFocusChange(int focusChange) {}
+                                                                    },
+                    AudioManager.STREAM_VOICE_CALL,
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         }
         /*
          * Start by setting MODE_IN_COMMUNICATION as default audio mode. It is
@@ -772,36 +779,36 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         Log.d(TAG, "unregistering with token: " + token);
 
         FirebaseInstanceId
-            .getInstance()
-            .getInstanceId()
-            .addOnCompleteListener(task -> {
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "getInstanceId failed", task.getException());
-                    promise.reject("666", "getInstanceId failed");
-                    return;
-                }
+                .getInstance()
+                .getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "getInstanceId failed", task.getException());
+                        promise.reject("666", "getInstanceId failed");
+                        return;
+                    }
 
-                // Get new Instance ID token
-                String fcmToken = task.getResult().getToken();
-                if (fcmToken != null) {
+                    // Get new Instance ID token
+                    String fcmToken = task.getResult().getToken();
+                    if (fcmToken != null) {
 
-                    Log.d(TAG, "Unregistering with FCM token: " + fcmToken + " and access token: " + accessToken);
+                        Log.d(TAG, "Unregistering with FCM token: " + fcmToken + " and access token: " + accessToken);
 
-                    Voice.unregister(token, Voice.RegistrationChannel.FCM, fcmToken, new UnregistrationListener() {
-                        @Override
-                        public void onUnregistered(String accessToken, String fcmToken) {
-                            WritableMap json = new WritableNativeMap();
-                            json.putString("accessToken", accessToken);
-                            json.putString("fcmToken", fcmToken);
-                            promise.resolve(json);
-                        }
+                        Voice.unregister(token, Voice.RegistrationChannel.FCM, fcmToken, new UnregistrationListener() {
+                            @Override
+                            public void onUnregistered(String accessToken, String fcmToken) {
+                                WritableMap json = new WritableNativeMap();
+                                json.putString("accessToken", accessToken);
+                                json.putString("fcmToken", fcmToken);
+                                promise.resolve(json);
+                            }
 
-                        @Override
-                        public void onError(RegistrationException registrationException, String accessToken, String fcmToken) {
-                            promise.reject(registrationException);
-                        }
-                    });
-                }
-            });
+                            @Override
+                            public void onError(RegistrationException registrationException, String accessToken, String fcmToken) {
+                                promise.reject(registrationException);
+                            }
+                        });
+                    }
+                });
     }
 }
