@@ -22,6 +22,7 @@
 
 static RNAudioManager *sharedInstance = nil;
 BOOL *speakerEnabled;
+AVAudioSessionMode sessionMode;
 
 #pragma mark Singleton Methods
 + (id)sharedInstance {
@@ -30,15 +31,11 @@ BOOL *speakerEnabled;
         dispatch_once(&onceToken, ^{
             sharedInstance = [self alloc];
         });
-        //[sharedInstance configureAudioSession];
         [sharedInstance listenForAudioRoutesChanges];
         [sharedInstance listenForInterruptions];
         [sharedInstance listenForMediaServicesReset];
         [sharedInstance listenForMediaServicesWereLost];
-
-        if (@available(iOS 14.5, *)) {
-            [[AVAudioSession sharedInstance] setPrefersNoInterruptionsFromSystemAlerts:NO error: nil];
-        }
+        sessionMode = AVAudioSessionModeVoiceChat;
     }
     return sharedInstance;
 }
@@ -89,10 +86,6 @@ RCT_EXPORT_MODULE();
     AVAudioSession *session = [AVAudioSession sharedInstance];
     NSError *error;
 
-    if (![session setActive: NO error:&error]) {
-        NSLog(@"[IIMobile - RNAudioManager][configureAudioSession] inactivate session failed with error %@", [error debugDescription]);
-    }
-
     if (![session setCategory:AVAudioSessionCategoryPlayAndRecord
              withOptions:(AVAudioSessionCategoryOptionAllowBluetooth, AVAudioSessionCategoryOptionAllowBluetoothA2DP)
                    error:&error
@@ -100,7 +93,7 @@ RCT_EXPORT_MODULE();
         NSLog(@"[IIMobile - RNAudioManager][configureAudioSession] setCategory failed with error %@", [error debugDescription]);
     }
 
-    if (![session setMode:AVAudioSessionModeVoiceChat error:&error]) {
+    if (![session setMode:sessionMode error:&error]) {
         NSLog(@"[IIMobile - RNAudioManager][configureAudioSession] setMode failed with error %@", [error debugDescription]);
     }
 
@@ -136,10 +129,6 @@ RCT_EXPORT_MODULE();
     NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %@ from OUTPUT %@ to %@", reason, previousOutput.portType, output.portType);
 
     if (input != nil) {
-        if (![input.portType isEqualToString:AVAudioSessionPortBuiltInMic]) {
-            [self toggleAudioRoute:false];
-        }
-
         if (!([input.portType isEqualToString:AVAudioSessionPortBuiltInMic] && speakerEnabled)) {
             [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
                                          andPayload:@{
@@ -149,16 +138,6 @@ RCT_EXPORT_MODULE();
        }
     } else {
         NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] cannot change audio route: input cannot be null");
-        NSError *error;
-        [session setPreferredInput:previousInput error:&error];
-        if (error != nil) {
-            NSLog(@"[IIMobile - RNAudioManager][handleAudioRouteChange] an error ocurred while setPreferredInput: %@", [error debugDescription]);
-        }
-        error = nil;
-        [session setActive:YES error:&error];
-        if (error != nil) {
-            NSLog(@"[IIMobile - RNAudioManager][handleAudioRouteChange] an error ocurred while activating the audio session: %@", [error debugDescription]);
-        }
     }
 }
 
@@ -169,13 +148,7 @@ RCT_EXPORT_MODULE();
 
 - (void)handleMediaServerReset: (NSNotification *) notification {
     NSLog(@"[IIMobile - RNAudioManager][handleMediaServerReset]");
-    NSError *error;
-
     [self configureAudioSession];
-
-    if (![[AVAudioSession sharedInstance] setPreferredInput:nil error:&error]) {
-        NSLog(@"[IIMobile - RNAudioManager][handleMediaServerReset] clear preferred input failed with error: %@", [error debugDescription]);
-    }
 }
 
 - (void)handleMediaServerServicesWereLost: (NSNotification *) notification {
@@ -275,15 +248,19 @@ RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portType switchResolver: (RCTPr
     if (portType == nil) {
         reject(@"error", @"portName is required", nil);
     }
-    BOOL speakerEnabled = [portType isEqualToString: AVAudioSessionPortBuiltInSpeaker];
-    [self toggleAudioRoute:&speakerEnabled];
+    BOOL enableSpeaker = [portType isEqualToString: AVAudioSessionPortBuiltInSpeaker];
+    [self toggleAudioRoute:&enableSpeaker];
 
-    if (speakerEnabled) {
+    if (enableSpeaker) {
         resolve(portType);
     } else {
         AVAudioSession* session = [AVAudioSession sharedInstance];
         AVAudioSessionPortDescription* newPort = [self getAudioDeviceFromType:portType];
         NSError* error;
+
+        if (speakerEnabled) {
+            [self toggleAudioRoute:FALSE];
+        }
 
         [session setPreferredInput:newPort error: &error];
         if (error != nil) {
@@ -294,6 +271,16 @@ RCT_EXPORT_METHOD(switchAudioInput: (NSString *) portType switchResolver: (RCTPr
         AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
         resolve(input.portType);
     }
+}
+
+RCT_EXPORT_METHOD(configure: (NSString*) mode) {
+    if ([mode isEqualToString:@"video"]) {
+        sessionMode = AVAudioSessionModeVideoChat;
+    } else {
+        sessionMode = AVAudioSessionModeVoiceChat;
+    }
+
+    [self configureAudioSession];
 }
 
 + (BOOL)requiresMainQueueSetup {
