@@ -222,7 +222,7 @@ RCT_REMAP_METHOD(getAvailableAudioInputs, devicesResolver: (RCTPromiseResolveBlo
         NSLog(@"[IIMobile - RNAudioManager][getAvailableAudioInputs] input %@", port.portType);
     }
 
-    if (wiredHeadsetPresent == YES) {
+    if (wiredHeadsetPresent == YES || [sessionMode isEqualToString:AVAudioSessionModeVideoChat]) {
         [types removeObjectForKey:AVAudioSessionPortBuiltInMic];
     }
 
