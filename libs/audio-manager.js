@@ -1,4 +1,4 @@
-import {NativeEventEmitter, NativeModules} from 'react-native';
+import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
 
 /**
  * @author Enrique Viard.
@@ -22,6 +22,9 @@ const AudioManager = {
   },
   switchAudioInput(input) {
     return RNAudioManager.switchAudioInput(input);
+  },
+  configure(mode) {
+    Platform.OS === 'ios' ? RNAudioManager.configure(mode) : null;
   },
   addEventListener(type, handler) {
     if (!_eventHandlers.hasOwnProperty(type)) {
