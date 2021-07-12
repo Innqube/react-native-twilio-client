@@ -41,6 +41,7 @@
 @implementation RNTwilioVoice {
     NSMutableDictionary *_settings;
     NSMutableDictionary *_callParams;
+    NSArray *_iceServers;
     NSString *_token;
 }
 
@@ -65,7 +66,7 @@ NSString *const StateRejected = @"REJECTED";
 }
 
 - (id)init {
-//     [TwilioVoice setLogLevel:TVOLogLevelAll];
+    // [TwilioVoice setLogLevel:TVOLogLevelAll];
     return [RNTwilioVoice sharedInstance];
 }
 
@@ -88,7 +89,7 @@ RCT_EXPORT_METHOD(sendMessage:(NSString *) message) {
     }
 }
 
-RCT_EXPORT_METHOD(connect: (NSDictionary *)params andToken: (NSString *) token) {
+RCT_EXPORT_METHOD(connect: (NSDictionary *)params nts: (NSArray *)iceServers andToken: (NSString *) token) {
     NSLog(@"[IIMobile - RNTwilioVoice][connect] Calling phone number %@", [params valueForKey:@"To"]);
     NSLog(@"[IIMobile - RNTwilioVoice][connect] edge: %@", TwilioVoice.edge);
     _token = token;
@@ -100,6 +101,7 @@ RCT_EXPORT_METHOD(connect: (NSDictionary *)params andToken: (NSString *) token) 
     } else {
         NSString *handle = [params valueForKey:@"To"];
         _callParams = [[NSMutableDictionary alloc] initWithDictionary:params];
+        _iceServers = iceServers;
 
         if (handle == nil) {
             __weak typeof(self) weakSelf = self;
@@ -702,10 +704,24 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
     if (_token == nil) {
         [RNEventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": @"Invalid access token"}];
     } else {
+        NSMutableArray *iceServers = [NSMutableArray array];
+
+        for (NSDictionary *is in _iceServers) {
+            TVOIceServer *iceServer = [[TVOIceServer alloc] initWithURLString:[is objectForKey:@"url"]
+                                                                      username:[is objectForKey:@"username"]
+                                                                      password:[is objectForKey:@"credential"]];
+            [iceServers addObject:iceServer];
+        }
+
+        TVOIceOptions *iceOptions = [TVOIceOptions optionsWithBlock:^(TVOIceOptionsBuilder *builder) {
+            builder.servers = iceServers;
+        }];
+
         TVOConnectOptions *options = [TVOConnectOptions optionsWithAccessToken:_token
                                                                          block:^(TVOConnectOptionsBuilder *builder) {
                                                                              builder.params = _callParams;
                                                                              builder.uuid = uuid;
+                                                                             builder.iceOptions = iceOptions;
                                                                          }];
 
         self.call = [TwilioVoice connectWithOptions:options delegate:self];

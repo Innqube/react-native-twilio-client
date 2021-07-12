@@ -28,10 +28,10 @@ const _eventHandlers = {
 
 const TwilioVoiceClient = {
 
-    connect(params = {}, tokenCallback) {
+    connect(params = {}, iceServers = {}, tokenCallback) {
         tokenCallback()
           .then(token => {
-              return TwilioVoice.connect(params, token)
+              return TwilioVoice.connect(params, iceServers, token)
           })
     },
     disconnect(uuid) {
