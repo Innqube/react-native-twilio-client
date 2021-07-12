@@ -24,8 +24,7 @@ import com.twilio.voice.*;
 import android.view.Window;
 import android.view.WindowManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.ngs.react.RNTwilioVoice.EventManager.*;
 
@@ -68,7 +67,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                              boolean shouldAskForMicPermission) {
         super(reactContext);
         if (BuildConfig.DEBUG) {
-            Voice.setLogLevel(LogLevel.DEBUG);
+            Voice.setLogLevel(LogLevel.ALL);
         } else {
             Voice.setLogLevel(LogLevel.ERROR);
         }
@@ -558,7 +557,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
     }
 
     @ReactMethod
-    public void connect(ReadableMap params, String accessToken) {
+    public void connect(ReadableMap params, ReadableArray iceServers, String accessToken) {
         Log.d(TAG, "current edge: " + Voice.getEdge());
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "connect params: "+params);
@@ -609,9 +608,26 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             }
         }
 
+        Log.d(TAG, "IceServers: " + iceServers.toString() + ".");
+
+        Set<IceServer> iss = new HashSet<IceServer>();
+        for (int i = 0; i < iceServers.size(); i++) {
+            ReadableMap is = iceServers.getMap(i);
+            if (is.hasKey("credential")) {
+                iss.add(new IceServer(is.getString("url"), is.getString("username"), is.getString("credential")));
+            } else {
+                iss.add(new IceServer(is.getString("url")));
+            }
+        }
+
+        IceOptions iceOptions = new IceOptions.Builder()
+                .iceServers(iss)
+                .build();
+
         ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
                 .enableDscp(true)
                 .params(twiMLParams)
+                .iceOptions(iceOptions)
                 .build();
 
         activeCall = Voice.connect(getReactApplicationContext(), connectOptions, callListener);
