@@ -122,7 +122,7 @@ RCT_EXPORT_METHOD(connect: (NSDictionary *)params nts: (NSArray *)iceServers and
 RCT_EXPORT_METHOD(disconnect:(NSString *) uuidStr) {
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidStr];
     NSLog(@"[IIMobile - RNTwilioVoice][disconnect] Disconnecting call with UUID: %@", uuidStr);
-    [self performEndCallActionWithUUID:(uuid != nil ? uuid : self.call.uuid)];
+    [self performEndCallActionWithUUID:(uuid != nil ? uuid : self.callUuid)];
 }
 
 RCT_EXPORT_METHOD(setMuted:(BOOL *) muted) {
