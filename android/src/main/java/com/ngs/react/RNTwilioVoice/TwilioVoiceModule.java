@@ -568,19 +568,6 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             eventManager.sendEvent(EVENT_DEVICE_NOT_READY, errParams);
             return;
         }
-//        if (params == null) {
-//            errParams.putString("err", "Invalid parameters");
-//            eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, errParams);
-//            return;
-//        } else if (!params.hasKey("To")) {
-//            errParams.putString("err", "Invalid To parameter");
-//            eventManager.sendEvent(EVENT_CONNECTION_DID_DISCONNECT, errParams);
-//            return;
-//        }
-//        toNumber = params.getString("To");
-//        if (params.hasKey("ToName")) {
-//            toName = params.getString("ToName");
-//        }
 
         twiMLParams.clear();
 
@@ -608,27 +595,36 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             }
         }
 
-        Log.d(TAG, "IceServers: " + iceServers.toString() + ".");
+        ConnectOptions connectOptions;
 
-        Set<IceServer> iss = new HashSet<IceServer>();
-        for (int i = 0; i < iceServers.size(); i++) {
-            ReadableMap is = iceServers.getMap(i);
-            if (is.hasKey("credential")) {
-                iss.add(new IceServer(is.getString("url"), is.getString("username"), is.getString("credential")));
-            } else {
-                iss.add(new IceServer(is.getString("url")));
+        if (iceServers.size() > 0) {
+            Log.d(TAG, "IceServers: " + iceServers.toString() + ".");
+
+            Set<IceServer> iss = new HashSet<IceServer>();
+            for (int i = 0; i < iceServers.size(); i++) {
+                ReadableMap is = iceServers.getMap(i);
+                if (is.hasKey("credential")) {
+                    iss.add(new IceServer(is.getString("url"), is.getString("username"), is.getString("credential")));
+                } else {
+                    iss.add(new IceServer(is.getString("url")));
+                }
             }
+
+            IceOptions iceOptions = new IceOptions.Builder()
+                    .iceServers(iss)
+                    .build();
+
+            connectOptions = new ConnectOptions.Builder(accessToken)
+                    .enableDscp(true)
+                    .params(twiMLParams)
+                    .iceOptions(iceOptions)
+                    .build();
+        } else { // FIXME Legacy Code (V3.86)
+            connectOptions = new ConnectOptions.Builder(accessToken)
+                    .enableDscp(true)
+                    .params(twiMLParams)
+                    .build();
         }
-
-        IceOptions iceOptions = new IceOptions.Builder()
-                .iceServers(iss)
-                .build();
-
-        ConnectOptions connectOptions = new ConnectOptions.Builder(accessToken)
-                .enableDscp(true)
-                .params(twiMLParams)
-                .iceOptions(iceOptions)
-                .build();
 
         activeCall = Voice.connect(getReactApplicationContext(), connectOptions, callListener);
     }

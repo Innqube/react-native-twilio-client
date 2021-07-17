@@ -705,24 +705,33 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
         [RNEventEmitterHelper emitEventWithName:@"requestTransactionError" andPayload:@{@"error": @"Invalid access token"}];
     } else {
         NSMutableArray *iceServers = [NSMutableArray array];
+        TVOConnectOptions *options;
 
-        for (NSDictionary *is in _iceServers) {
-            TVOIceServer *iceServer = [[TVOIceServer alloc] initWithURLString:[is objectForKey:@"url"]
-                                                                      username:[is objectForKey:@"username"]
-                                                                      password:[is objectForKey:@"credential"]];
-            [iceServers addObject:iceServer];
+        if (_iceServers != nil && [_iceServers count] > 0) {
+            for (NSDictionary *is in _iceServers) {
+                TVOIceServer *iceServer = [[TVOIceServer alloc] initWithURLString:[is objectForKey:@"url"]
+                                                                          username:[is objectForKey:@"username"]
+                                                                          password:[is objectForKey:@"credential"]];
+                [iceServers addObject:iceServer];
+            }
+
+            TVOIceOptions *iceOptions = [TVOIceOptions optionsWithBlock:^(TVOIceOptionsBuilder *builder) {
+                builder.servers = iceServers;
+            }];
+
+            options = [TVOConnectOptions optionsWithAccessToken:_token
+                                                                             block:^(TVOConnectOptionsBuilder *builder) {
+                                                                                  builder.params = _callParams;
+                                                                                 builder.uuid = uuid;
+                                                                                 builder.iceOptions = iceOptions;
+                                                                             }];
+        } else { // Legacy code V3.86
+            options = [TVOConnectOptions optionsWithAccessToken:_token
+                                                                             block:^(TVOConnectOptionsBuilder *builder) {
+                                                                                 builder.params = _callParams;
+                                                                                 builder.uuid = uuid;
+                                                                             }];
         }
-
-        TVOIceOptions *iceOptions = [TVOIceOptions optionsWithBlock:^(TVOIceOptionsBuilder *builder) {
-            builder.servers = iceServers;
-        }];
-
-        TVOConnectOptions *options = [TVOConnectOptions optionsWithAccessToken:_token
-                                                                         block:^(TVOConnectOptionsBuilder *builder) {
-                                                                             builder.params = _callParams;
-                                                                             builder.uuid = uuid;
-                                                                             builder.iceOptions = iceOptions;
-                                                                         }];
 
         self.call = [TwilioVoice connectWithOptions:options delegate:self];
         self.callKitCompletionCallback = completionHandler;
