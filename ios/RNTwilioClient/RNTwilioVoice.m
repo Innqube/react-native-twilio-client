@@ -12,12 +12,16 @@
 #import <PushKit/PushKit.h>
 #import <CallKit/CallKit.h>
 #import "RNEventEmitterHelper.h"
+#import "RNNetworkMonitor.h"
+#import "RNTwilioMos.h"
 
 @import AVFoundation;
 @import PushKit;
 @import CallKit;
 @import TwilioVoice;
 @import UIKit;
+@import Foundation;
+@import SystemConfiguration;
 
 @interface RNTwilioVoice () <PKPushRegistryDelegate, CXProviderDelegate, TVOCallDelegate>
 @property(nonatomic, strong) NSString *deviceTokenString;
@@ -36,6 +40,9 @@
 @property(nonatomic, strong) TVODefaultAudioDevice *audioDevice;
 @property(nonatomic, strong) void(^incomingPushCompletionCallback)(void);
 @property(nonatomic, strong) CXStartCallAction *action;
+@property (nonatomic, strong) RNNetworkMonitor *monitor;
+@property (nonatomic, strong) RNTwilioMos *twilioMos;
+
 @end
 
 @implementation RNTwilioVoice {
@@ -67,6 +74,7 @@ NSString *const StateRejected = @"REJECTED";
 
 - (id)init {
     // [TwilioVoice setLogLevel:TVOLogLevelAll];
+    self.monitor = [[RNNetworkMonitor alloc] init];
     return [RNTwilioVoice sharedInstance];
 }
 
@@ -96,6 +104,8 @@ RCT_EXPORT_METHOD(connect: (NSDictionary *)params nts: (NSArray *)iceServers and
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
 
+    [self.monitor startNetworkMonitoring];
+
     if (self.call && self.call.state == TVOCallStateConnected) {
         [self.call disconnect];
     } else {
@@ -123,6 +133,7 @@ RCT_EXPORT_METHOD(disconnect:(NSString *) uuidStr) {
     NSUUID *remoteUuid = [[NSUUID alloc] initWithUUIDString:uuidStr];
     NSUUID *uuid = remoteUuid != nil ? remoteUuid : self.call != nil ? self.call.uuid : self.callUuid;
     NSLog(@"[IIMobile - RNTwilioVoice][disconnect] Disconnecting call with UUID: %@", [uuid UUIDString]);
+    [self.monitor stopNetworkMonitoring];
     [self performEndCallActionWithUUID:(uuid)];
 }
 
@@ -390,6 +401,8 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
     self.callKitCompletionCallback(YES);
     self.callKitCompletionCallback = nil;
 
+    self.twilioMos = [[RNTwilioMos alloc] initWithTVOCall:call];
+
     NSMutableDictionary *callParams = [[NSMutableDictionary alloc] init];
     callParams[@"call_sid"] = call.sid;
     if (call.state == TVOCallStateConnecting) {
@@ -426,6 +439,8 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
 - (void)callDisconnected:(NSError *)error {
     NSLog(@"[IIMobile - RNTwilioVoice] callDisconnected with error: %@", error ? error.localizedDescription : @"");
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    [self.twilioMos stop]; // Stop MOS listener
+
     if (error) {
         NSString *errMsg = [error localizedDescription];
         if (error.localizedFailureReason) {
@@ -445,6 +460,10 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
     if (self.call.state == TVOCallStateDisconnected) {
         params[@"call_state"] = StateDisconnected;
     }
+    params[@"averageMos"] = [[NSDecimalNumber alloc] initWithDouble: [self.twilioMos getAverageMos]];
+    params[@"maxMos"] = [[NSDecimalNumber alloc] initWithDouble: [self.twilioMos getMaxMos]];
+    params[@"minMos"] = [[NSDecimalNumber alloc] initWithDouble: [self.twilioMos getMinMos]];
+
     [RNEventEmitterHelper emitEventWithName:@"connectionDidDisconnect" andPayload:params];
 
     [self.call disconnect];
@@ -476,6 +495,54 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
      accepted on the callee's side. The application can use the `AVAudioPlayer` to play custom audio files
      between the `[TVOCallDelegate callDidStartRinging:]` and the `[TVOCallDelegate callDidConnect:]` callbacks.
      */
+}
+
+- (void)call:(TVOCall *)call
+didReceiveQualityWarnings:(NSSet<NSNumber *> *)currentWarnings
+previousWarnings:(NSSet<NSNumber *> *)previousWarnings {
+    NSMutableSet *warningIntersetction = [currentWarnings mutableCopy];
+    [warningIntersetction intersectSet:previousWarnings];
+
+    NSMutableSet *newWarnings = [currentWarnings mutableCopy];
+    [newWarnings minusSet:warningIntersetction];
+    if ([newWarnings count] > 0) {
+        for (NSNumber *warning in newWarnings) {
+            NSString *warningName = [self warningString:[warning unsignedIntValue]];
+            NSLog(@"[IIMobile - RNTwilioVoice] didReceiveQualityWarnings NEW WARNING: %@", warningName);
+        }
+    }
+
+    NSMutableSet *clearedWarnings = [previousWarnings mutableCopy];
+    [clearedWarnings minusSet:warningIntersetction];
+    if ([clearedWarnings count] > 0) {
+        for (NSNumber *warning in clearedWarnings) {
+            NSString *warningName = [self warningString:[warning unsignedIntValue]];
+            NSLog(@"[IIMobile - RNTwilioVoice] didReceiveQualityWarnings WARNING CLEARED: %@", warningName);
+        }
+    }
+}
+
+- (NSString *)warningString:(TVOCallQualityWarning)qualityWarning {
+    switch (qualityWarning) {
+        case TVOCallQualityWarningHighRtt:
+            return @"high-rtt";
+            break;
+        case TVOCallQualityWarningHighJitter:
+            return @"high-jitter";
+            break;
+        case TVOCallQualityWarningHighPacketsLostFraction:
+            return @"high-packets-lost-fraction";
+            break;
+        case TVOCallQualityWarningLowMos:
+            return @"low-mos";
+            break;
+        case TVOCallQualityWarningConstantAudioInputLevel:
+            return @"constant-audio-input-level";
+            break;
+        default:
+            return @"Unknown warning";
+            break;
+    }
 }
 
 #pragma mark - AVAudioSession

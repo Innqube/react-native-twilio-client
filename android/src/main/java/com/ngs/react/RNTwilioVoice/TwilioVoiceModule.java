@@ -62,6 +62,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
     private AudioFocusRequest focusRequest;
     private HeadsetManager headsetManager;
     private EventManager eventManager;
+    private TwilioMos twilioMos;
 
     public TwilioVoiceModule(ReactApplicationContext reactContext,
                              boolean shouldAskForMicPermission) {
@@ -234,6 +235,9 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "CALL CONNECTED callListener().onConnected call state = "+call.getState());
                 }
+
+                twilioMos = new TwilioMos(call);
+
                 setAudioFocus();
                 proximityManager.startProximitySensor();
                 headsetManager.startWiredHeadsetEvent(getReactApplicationContext());
@@ -303,6 +307,7 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                 proximityManager.stopProximitySensor();
                 headsetManager.stopWiredHeadsetEvent(getReactApplicationContext());
                 callAccepted = false;
+                twilioMos.stop(); // Stop MOS listener
 
                 WritableMap params = Arguments.createMap();
                 String callSid = "";
@@ -312,6 +317,10 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                     params.putString("call_state", call.getState().name());
                     params.putString("call_from", call.getFrom());
                     params.putString("call_to", call.getTo());
+                    params.putString("call_to", call.getTo());
+                    params.putDouble("maxMos", twilioMos.getMaxMos());
+                    params.putDouble("minMos", twilioMos.getMinMos());
+                    params.putDouble("averageMos", twilioMos.getAverageMos());
                 }
                 if (error != null) {
                     Log.e(TAG, String.format("CallListener onDisconnected error: %d, %s",
