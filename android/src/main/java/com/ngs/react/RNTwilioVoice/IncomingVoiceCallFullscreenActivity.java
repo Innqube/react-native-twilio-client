@@ -2,10 +2,7 @@ package com.ngs.react.RNTwilioVoice;
 
 import android.app.ActionBar;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -21,6 +18,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ngs.react.R;
+import com.ngs.react.RNLocalizedStrings.LocalizedKeys;
 
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_ANSWER_CALL;
 import static com.ngs.react.RNTwilioVoice.VoiceConstants.ACTION_CANCEL_CALL_INVITE;
@@ -72,6 +70,19 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
 
         TextView caller = findViewById(R.id.caller);
         TextView appName = findViewById(R.id.app_name);
+        TextView incomingVoiceCall = (TextView) findViewById(R.id.incomingVoiceCall);
+        TextView decline = (TextView) findViewById(R.id.decline_text);
+        TextView answer = (TextView) findViewById(R.id.answer_text);
+        TextView goOffline = (TextView) findViewById(R.id.go_offline_text);
+
+        Context context = getApplicationContext();
+
+        SharedPreferences sharedPref = context.getSharedPreferences("db", Context.MODE_PRIVATE);
+
+        incomingVoiceCall.setText(sharedPref.getString(LocalizedKeys.INCOMING_VOICE_CALL, "Incoming voice call"));
+        decline.setText(sharedPref.getString(LocalizedKeys.DECLINE, "Decline"));
+        answer.setText(sharedPref.getString(LocalizedKeys.ACCEPT, "Accept"));
+        goOffline.setText(sharedPref.getString(LocalizedKeys.GO_OFFLINE, "Go offline"));
 
         VoiceCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
         caller.setText(callInvite.getFrom("\n"));

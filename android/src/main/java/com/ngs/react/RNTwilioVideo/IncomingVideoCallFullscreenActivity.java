@@ -2,10 +2,7 @@ package com.ngs.react.RNTwilioVideo;
 
 import android.app.ActionBar;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -21,6 +18,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ngs.react.R;
+import com.ngs.react.RNLocalizedStrings.LocalizedKeys;
 
 import static com.ngs.react.RNTwilioVideo.VideoConstants.*;
 
@@ -67,6 +65,19 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
 
         TextView caller = findViewById(R.id.caller);
         TextView appName = findViewById(R.id.app_name);
+        TextView incomingVoiceCall = (TextView) findViewById(R.id.incomingVoiceCall);
+        TextView decline = (TextView) findViewById(R.id.decline_text);
+        TextView answer = (TextView) findViewById(R.id.answer_text);
+        TextView goOffline = (TextView) findViewById(R.id.go_offline_text);
+
+//        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        Context context = getApplicationContext();
+        SharedPreferences sharedPref = context.getSharedPreferences("db", Context.MODE_PRIVATE);
+
+        incomingVoiceCall.setText(sharedPref.getString(LocalizedKeys.INCOMING_VIDEO_CALL, "Incoming video call"));
+        decline.setText(sharedPref.getString(LocalizedKeys.DECLINE, "Decline"));
+        answer.setText(sharedPref.getString(LocalizedKeys.ACCEPT, "Accept"));
+        goOffline.setText(sharedPref.getString(LocalizedKeys.GO_OFFLINE, "Go offline"));
 
         VideoCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
         caller.setText(callInvite.getFrom("\n"));

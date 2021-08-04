@@ -7,3 +7,4 @@ exports.LogHelper = require('./log-helper').default;
 exports.Channel = require('./domain/channel').default;
 exports.Message = require('./domain/message').default;
 exports.AudioManager = require('./audio-manager').default;
+exports.LocalizedStrings = require('./localized-strings').default;

@@ -1,13 +1,7 @@
 package com.ngs.react.RNTwilioVoice;
 
-import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
+import android.app.*;
+import android.content.*;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +17,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.ngs.react.R;
+import com.ngs.react.RNLocalizedStrings.LocalizedKeys;
 
 import java.util.List;
 
@@ -95,10 +90,13 @@ public class CallNotificationManager {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
+        SharedPreferences sharedPref = context.getSharedPreferences("db", Context.MODE_PRIVATE);
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VOICE_CHANNEL)
                 .setSmallIcon(R.drawable.ic_call_white_48dp)
-                .setContentTitle("Incoming voice call")
-                .setContentText(invite.getFrom(" / ") + " is calling")
+//                .setContentTitle("Incoming voice call")
+                .setContentTitle(sharedPref.getString(LocalizedKeys.INCOMING_VOICE_CALL, "Incoming voice call"))
+                .setContentText(invite.getFrom(" / ") + sharedPref.getString(LocalizedKeys.IS_CALLING, "is calling"))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -124,9 +122,9 @@ public class CallNotificationManager {
         PendingIntent pendingRejectIntent = buildRejectIntent(context, invite, notificationId);
         PendingIntent pendingGoOfflineIntent = buildGoOfflineIntent(context, invite, notificationId);
 
-        notificationBuilder.addAction(0, "DECLINE", pendingRejectIntent);
-        notificationBuilder.addAction(R.drawable.ic_call_white_48dp, "ACCEPT", pendingAnswerIntent);
-        notificationBuilder.addAction(1, "GO OFFLINE", pendingGoOfflineIntent);
+        notificationBuilder.addAction(0, sharedPref.getString(LocalizedKeys.DECLINE, "DECLINE"), pendingRejectIntent);
+        notificationBuilder.addAction(R.drawable.ic_call_white_48dp, sharedPref.getString(LocalizedKeys.ACCEPT, "ACCEPT"), pendingAnswerIntent);
+        notificationBuilder.addAction(1, sharedPref.getString(LocalizedKeys.GO_OFFLINE, "GO OFFLINE"), pendingGoOfflineIntent);
 
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT; // keep the phone ringing
