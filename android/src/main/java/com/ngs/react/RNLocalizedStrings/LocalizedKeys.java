@@ -15,5 +15,5 @@ public class LocalizedKeys {
     public static String INCOMING_VIDEO_CALL = "incomingVideoCall";
     public static String MINUTES = "minutes";
     public static String HOUR = "hour";
-    public static String HOURS = "hours";
+    public static String HOURS = "hoursOrMore";
 }

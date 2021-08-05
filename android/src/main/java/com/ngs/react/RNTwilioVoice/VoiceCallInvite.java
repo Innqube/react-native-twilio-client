@@ -94,7 +94,7 @@ public class VoiceCallInvite implements Parcelable {
             return duration.substring(0, 2) + " minutes";
         }
         try {
-            Integer minutes = Integer.parseInt(duration);
+            Integer minutes = Double.valueOf(duration).intValue();
             if (minutes.equals(120)) {
                 return "2 " + sharedPref.getString(LocalizedKeys.HOURS, "hours (or more)");
             }
