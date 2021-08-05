@@ -1,13 +1,16 @@
 package com.ngs.react.RNTwilioVideo;
 
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+import com.ngs.react.RNLocalizedStrings.LocalizedKeys;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class VideoCallInvite implements Parcelable, CallInvite {
-
+    private static final String TAG = "RNTwilioVideo";
     private Map<String, String> data;
 
     static VideoCallInvite create(Map<String, String> data) {
@@ -64,16 +67,35 @@ public class VideoCallInvite implements Parcelable, CallInvite {
     }
 
     @Override
-    public String getFrom(String separator) {
+    public String getFrom(String separator, SharedPreferences sharedPref) {
         if (data != null) {
             String customer = this.data.get("customerName") != null ? this.data.get("customerName") : "";
             String language = this.data.get("languageName") != null ? this.data.get("languageName") : "";
             String estimatedDuration = this.data.get("estimatedDuration") != null ?
-                    (this.data.get("estimatedDuration").substring(0, this.data.get("estimatedDuration").length() -2) + " minutes") :
+                    this.getCallDurationString(this.data.get("estimatedDuration"), sharedPref) :
                     "";
             return language + separator + estimatedDuration + separator + customer;
         }
         return null;
+    }
+
+    private String getCallDurationString(String duration, SharedPreferences sharedPref) {
+        if (sharedPref == null) {
+            return duration.substring(0, 2) + " minutes";
+        }
+        try {
+            Integer minutes = Double.valueOf(duration).intValue();
+            if (minutes.equals(120)) {
+                return "2 " + sharedPref.getString(LocalizedKeys.HOURS, "hours (or more)");
+            }
+            if (minutes.equals(60)) {
+                return "1 " + sharedPref.getString(LocalizedKeys.HOUR, "hour");
+            }
+            return minutes + " " + sharedPref.getString(LocalizedKeys.MINUTES, "minutes");
+        } catch (Exception ex) {
+            Log.i(TAG, "getCallDurationString error: " + ex.getMessage());
+            return "";
+        }
     }
 
     public String getTaskAttributes() { return data.get("taskAttributes"); }
