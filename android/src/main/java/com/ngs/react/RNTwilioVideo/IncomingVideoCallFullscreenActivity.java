@@ -79,7 +79,7 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
         goOffline.setText(sharedPref.getString(LocalizedKeys.GO_OFFLINE, "Go offline"));
 
         VideoCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
-        caller.setText(callInvite.getFrom("\n"));
+        caller.setText(callInvite.getFrom("\n", sharedPref));
 
         try {
             ApplicationInfo info = getPackageManager().getApplicationInfo(
