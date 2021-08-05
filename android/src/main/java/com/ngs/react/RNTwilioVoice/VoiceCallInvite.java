@@ -2,6 +2,7 @@ package com.ngs.react.RNTwilioVoice;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VoiceCallInvite implements Parcelable {
+    private static final String TAG = "RNTwilioVoice";
 
     private Map<String, String> data;
 
@@ -73,6 +75,7 @@ public class VoiceCallInvite implements Parcelable {
     }
 
     public String getFrom(String separator) {
+        Log.i(TAG, "estimatedDuration: " + this.data.get("estimatedDuration"));
         if (this.data != null) {
             String customer = this.data.get("customerName") != null ? this.data.get("customerName") : "";
             String language = this.data.get("languageName") != null ? this.data.get("languageName") : "";

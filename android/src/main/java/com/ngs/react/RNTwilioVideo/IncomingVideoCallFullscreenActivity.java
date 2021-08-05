@@ -70,7 +70,6 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
         TextView answer = (TextView) findViewById(R.id.answer_text);
         TextView goOffline = (TextView) findViewById(R.id.go_offline_text);
 
-//        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         Context context = getApplicationContext();
         SharedPreferences sharedPref = context.getSharedPreferences("db", Context.MODE_PRIVATE);
 

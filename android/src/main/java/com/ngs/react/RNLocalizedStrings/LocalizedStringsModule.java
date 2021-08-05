@@ -28,7 +28,6 @@ public class LocalizedStringsModule extends ReactContextBaseJavaModule {
     public void setTranslations(String language, ReadableMap translations) {
         Log.d(TAG, "setTranslations called: " + language);
         SharedPreferences sharedPref = reactContext.getSharedPreferences("db", Context.MODE_PRIVATE);
-//        SharedPreferences sharedPref = getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("language", language);
 

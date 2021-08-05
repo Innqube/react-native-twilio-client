@@ -94,7 +94,6 @@ public class CallNotificationManager {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, VOICE_CHANNEL)
                 .setSmallIcon(R.drawable.ic_call_white_48dp)
-//                .setContentTitle("Incoming voice call")
                 .setContentTitle(sharedPref.getString(LocalizedKeys.INCOMING_VOICE_CALL, "Incoming voice call"))
                 .setContentText(invite.getFrom(" / ") + sharedPref.getString(LocalizedKeys.IS_CALLING, "is calling"))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
