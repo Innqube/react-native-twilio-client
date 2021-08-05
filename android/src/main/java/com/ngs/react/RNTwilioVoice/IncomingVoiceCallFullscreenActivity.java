@@ -85,7 +85,7 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
         goOffline.setText(sharedPref.getString(LocalizedKeys.GO_OFFLINE, "Go offline"));
 
         VoiceCallInvite callInvite = getIntent().getParcelableExtra(INCOMING_CALL_INVITE);
-        caller.setText(callInvite.getFrom("\n"));
+        caller.setText(callInvite.getFrom("\n", sharedPref));
 
         try {
             ApplicationInfo info = getPackageManager().getApplicationInfo(
