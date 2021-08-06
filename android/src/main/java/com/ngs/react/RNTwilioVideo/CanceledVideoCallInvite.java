@@ -1,5 +1,6 @@
 package com.ngs.react.RNTwilioVideo;
 
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -42,7 +43,7 @@ public class CanceledVideoCallInvite implements Parcelable, CallInvite {
     }
 
     @Override
-    public String getFrom(String separator) {
+    public String getFrom(String separator, SharedPreferences sharedPref) {
         return data.get("displayName");
     }
 
