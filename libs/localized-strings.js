@@ -7,8 +7,8 @@ import {NativeModules} from 'react-native';
 const {RNLocalizedStrings} = NativeModules;
 
 const LocalizedStrings = {
-  setTranslations(language, translations) {
-    RNLocalizedStrings.setTranslations(language, translations);
+  configure(language, translations) {
+    RNLocalizedStrings.configure(language, translations);
   },
 };
 
