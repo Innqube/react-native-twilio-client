@@ -6,7 +6,6 @@
 //  Copyright © 2021 No Good Software Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "RNLocalizedStrings.h"
 
 @interface RNLocalizedStrings ()
@@ -15,6 +14,8 @@
 @end
 
 @implementation RNLocalizedStrings
+
+RCT_EXPORT_MODULE();
 
 static RNLocalizedStrings *sharedInstance = nil;
 
@@ -29,18 +30,18 @@ static RNLocalizedStrings *sharedInstance = nil;
     return sharedInstance;
 }
 
--(id) init {
+- (id)init {
     return [RNLocalizedStrings sharedInstance];
 }
 
-RCT_EXPORT_MODULE();
-
 - (NSString *)translate:(NSString*) key {
-    return [self.translations valueForKey: key];
+    NSString *translation = [self.translations valueForKey: key];
+    NSLog(@"[IIMobile - RNLocalizedStrings] get translation %@ for key %@", translation, key);
+    return translation;
 }
 
-
 RCT_EXPORT_METHOD(configure: (NSString *) languageCode andTranslations: (NSDictionary *) translations) {
+    NSLog(@"[IIMobile - RNLocalizedStrings] configure %@", languageCode);
     self.languageCode = languageCode;
     self.translations = translations;
 }

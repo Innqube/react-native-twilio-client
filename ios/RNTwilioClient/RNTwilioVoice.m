@@ -14,6 +14,7 @@
 #import "RNEventEmitterHelper.h"
 #import "RNNetworkMonitor.h"
 #import "RNTwilioMos.h"
+#import "RNLocalizedStrings.h"
 
 @import AVFoundation;
 @import PushKit;
@@ -40,8 +41,8 @@
 @property(nonatomic, strong) TVODefaultAudioDevice *audioDevice;
 @property(nonatomic, strong) void(^incomingPushCompletionCallback)(void);
 @property(nonatomic, strong) CXStartCallAction *action;
-@property (nonatomic, strong) RNNetworkMonitor *monitor;
-@property (nonatomic, strong) RNTwilioMos *twilioMos;
+@property(nonatomic, strong) RNNetworkMonitor *monitor;
+@property(nonatomic, strong) RNTwilioMos *twilioMos;
 
 @end
 
@@ -285,9 +286,9 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
 
     NSString *mode = payload.dictionaryPayload[@"mode"];
     NSString *action = payload.dictionaryPayload[@"action"];
-    NSString *displayName = [NSString stringWithFormat:@"%@ / %@ minutes / %@",
+    NSString *displayName = [NSString stringWithFormat:@"%@ / %@ / %@",
                              payload.dictionaryPayload[@"languageName"],
-                             [payload.dictionaryPayload[@"estimatedDuration"] substringToIndex: ([payload.dictionaryPayload[@"estimatedDuration"] length] - 2)],
+                             [self getCallDurationString: payload.dictionaryPayload[@"estimatedDuration"]],
                              payload.dictionaryPayload[@"customerName"]];
 
     self.dictionaryPayload = payload.dictionaryPayload;
@@ -391,6 +392,21 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
         self.incomingPushCompletionCallback();
         self.incomingPushCompletionCallback = nil;
     }
+}
+
+- (NSString *)getCallDurationString:(NSString *)duration {
+    int minutes = [duration intValue];
+
+    if (minutes == 120) {
+        NSString *unit = [[RNLocalizedStrings sharedInstance] translate:@"hoursOrMore"];
+        return [NSString stringWithFormat:@"2 %@", unit];
+    }
+    if (minutes == 60) {
+        NSString *unit = [[RNLocalizedStrings sharedInstance] translate:@"hour"];
+        return [NSString stringWithFormat:@"1 %@", unit];
+    }
+    NSString *unit = [[RNLocalizedStrings sharedInstance] translate:@"minutes"];
+    return [NSString stringWithFormat:@"%d %@", minutes, unit];
 }
 
 #pragma mark - TVOCallDelegate
