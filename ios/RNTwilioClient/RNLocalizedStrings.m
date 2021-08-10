@@ -10,7 +10,6 @@
 
 @interface RNLocalizedStrings ()
 @property(nonatomic, strong) NSString *languageCode;
-@property(nonatomic, strong) NSDictionary *translations;
 @end
 
 @implementation RNLocalizedStrings
@@ -31,19 +30,38 @@ static RNLocalizedStrings *sharedInstance = nil;
 }
 
 - (id)init {
-    return [RNLocalizedStrings sharedInstance];
+    [RNLocalizedStrings sharedInstance];
+    return self;
 }
 
 - (NSString *)translate:(NSString*) key {
-    NSString *translation = [self.translations valueForKey: key];
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSDictionary *translations = [preferences objectForKey:@"translations"];
+    NSString *translation = [translations valueForKey: key];
+
+    if (translation == nil) {
+        if ([key isEqualToString:@"minutes"]) {
+            translation = @"minutes";
+        }
+        if ([key isEqualToString:@"hour"]) {
+            translation = @"hour";
+        }
+        if ([key isEqualToString:@"hours"]) {
+            translation = @"hours (or more)";
+        }
+    }
+
     NSLog(@"[IIMobile - RNLocalizedStrings] get translation %@ for key %@", translation, key);
     return translation;
 }
 
 RCT_EXPORT_METHOD(configure: (NSString *) languageCode andTranslations: (NSDictionary *) translations) {
-    NSLog(@"[IIMobile - RNLocalizedStrings] configure %@", languageCode);
-    self.languageCode = languageCode;
-    self.translations = translations;
+    NSLog(@"[IIMobile - RNLocalizedStrings] configure: language %@", languageCode);
+
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    [preferences setObject:translations forKey:@"translations"];
+    [preferences setValue:languageCode forKey:@"languageCode"];
+    [preferences synchronize];
 }
 
 + (BOOL)requiresMainQueueSetup {
