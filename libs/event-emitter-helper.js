@@ -65,6 +65,7 @@ const EventEmitterHelper = {
         }))
     },
     removeEventListener(type, handler) {
+        NativeAppEventEmitter.removeAllListeners(type)
         if (!_eventHandlers[type].has(handler)) {
             return
         }

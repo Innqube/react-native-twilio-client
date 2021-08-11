@@ -86,6 +86,7 @@ const TwilioVoiceClient = {
         _eventHandlers[type].set(handler, NativeAppEventEmitter.addListener(type, rtn => { handler(rtn) }))
     },
     removeEventListener(type, handler) {
+        NativeAppEventEmitter.removeAllListeners(type)
         if (!_eventHandlers[type].has(handler)) {
             return
         }
