@@ -100,7 +100,7 @@ RCT_EXPORT_METHOD(sendMessage:(NSString *) message) {
 
 RCT_EXPORT_METHOD(connect: (NSDictionary *)params nts: (NSArray *)iceServers andToken: (NSString *) token) {
     NSLog(@"[IIMobile - RNTwilioVoice][connect] Calling phone number %@", [params valueForKey:@"To"]);
-    NSLog(@"[IIMobile - RNTwilioVoice][connect] edge: %@", TwilioVoice.edge);
+    NSLog(@"[IIMobile - RNTwilioVoice][connect] edge: %@", TwilioVoiceSDK.edge);
     _token = token;
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
@@ -198,7 +198,7 @@ RCT_REMAP_METHOD(getActiveCall, resolver:(RCTPromiseResolveBlock)resolve rejecte
 
 RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
     NSLog(@"[IIMobile - RNTwilioVoice] setEdge(%@)", edge);
-    TwilioVoice.edge = edge;
+    TwilioVoiceSDK.edge = edge;
 }
 
 - (void)configureCallKit {
@@ -817,7 +817,7 @@ previousWarnings:(NSSet<NSNumber *> *)previousWarnings {
                                                                              }];
         }
 
-        self.call = [TwilioVoice connectWithOptions:options delegate:self];
+        self.call = [TwilioVoiceSDK connectWithOptions:options delegate:self];
         self.callKitCompletionCallback = completionHandler;
     }
 }
