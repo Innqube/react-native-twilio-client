@@ -69,6 +69,7 @@ NSString *const StateRejected = @"REJECTED";
             sharedInstance = [self alloc];
         });
         [sharedInstance configureCallKit];
+        [sharedInstance configureAudioDevice];
     }
     return sharedInstance;
 }
@@ -210,6 +211,10 @@ RCT_EXPORT_METHOD(setEdge:(NSString *) edge) {
     [self.callKitProvider setDelegate:self queue:nil];
 }
 
+- (void)configureAudioDevice {
+    self.audioDevice = [TVODefaultAudioDevice audioDevice];
+    TwilioVoiceSDK.audioDevice = self.audioDevice;
+}
 
 - (void)initPushRegistry {
     self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
@@ -584,7 +589,7 @@ previousWarnings:(NSSet<NSNumber *> *)previousWarnings {
 
 - (void)providerDidReset:(CXProvider *)provider {
     NSLog(@"[IIMobile - RNTwilioVoice] providerDidReset");
-    //self.audioDevice.enabled = YES;
+    self.audioDevice.enabled = YES;
 }
 
 - (void)providerDidBegin:(CXProvider *)provider {
@@ -593,12 +598,12 @@ previousWarnings:(NSSet<NSNumber *> *)previousWarnings {
 
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
     NSLog(@"[IIMobile - RNTwilioVoice] provider:didActivateAudioSession");
-    //self.audioDevice.enabled = YES;
+    self.audioDevice.enabled = YES;
 }
 
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession {
     NSLog(@"[IIMobile - RNTwilioVoice] provider:didDeactivateAudioSession");
-    //self.audioDevice.enabled = NO;
+    self.audioDevice.enabled = NO;
 }
 
 - (void)provider:(CXProvider *)provider timedOutPerformingAction:(CXAction *)action {
