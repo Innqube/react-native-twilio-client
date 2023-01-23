@@ -67,7 +67,7 @@ public class VoiceMessagingService extends Service {
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
     public void onMessageReceived(String action, VoiceCallInvite invite) {
-        Log.w(TAG, "VideoMessagingService.onMessageReceived with action: " + action);
+        Log.w(TAG, "VoiceMessagingService.onMessageReceived with action: " + action);
 
         // Check if message contains a data payload.
         if (action == null || invite == null) {

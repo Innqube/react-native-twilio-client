@@ -89,7 +89,7 @@ public class CallNotificationManager {
                 context,
                 0,
                 callIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
         );
 
         SharedPreferences sharedPref = context.getSharedPreferences("db", Context.MODE_PRIVATE);
@@ -160,7 +160,7 @@ public class CallNotificationManager {
                     context,
                     0,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
             Log.d(TAG, "buildAnswerIntent app is in background");
@@ -174,7 +174,7 @@ public class CallNotificationManager {
                     context,
                     0,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         }
 
@@ -192,7 +192,7 @@ public class CallNotificationManager {
                     context,
                     1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
             // Start the app from the notification as it is in the background currently
@@ -205,7 +205,7 @@ public class CallNotificationManager {
                     context,
                     0,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         }
         return pendingIntent;
@@ -222,7 +222,7 @@ public class CallNotificationManager {
                     context,
                     1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
             // Start the app from the notification as it is in the background currently
@@ -235,7 +235,7 @@ public class CallNotificationManager {
                     context,
                     2,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         }
         return pendingIntent;

@@ -87,7 +87,7 @@ public class CallNotificationManager {
                 context,
                 0,
                 callIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
         );
 
         SharedPreferences sharedPref = context.getSharedPreferences("db", Context.MODE_PRIVATE);
@@ -104,6 +104,7 @@ public class CallNotificationManager {
                 .setColor(Color.argb(255, 0, 147, 213))
                 .setLights(Color.argb(255, 0, 147, 213), 1000, 250)
                 .setFullScreenIntent(pendingCallIntent, true)
+//                .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
                 .setOngoing(true); // sorted above the regular notifications && do not have an 'X' close button, and are not affected by the "Clear all" button;
 
         // build notification large icon
@@ -156,9 +157,9 @@ public class CallNotificationManager {
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingIntent = PendingIntent.getBroadcast(
                     context,
-                    0,
+                    2,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
             Log.d(TAG, "buildAnswerIntent app is in background");
@@ -170,9 +171,9 @@ public class CallNotificationManager {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getActivity(
                     context,
-                    0,
+                    2,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         }
 
@@ -182,7 +183,7 @@ public class CallNotificationManager {
     private PendingIntent buildRejectIntent(Context context, VoiceCallInvite callInvite, Integer notificationId) {
         PendingIntent pendingIntent;
         if (isInForeground(context)) {
-            Log.d(TAG, "buildRejectIntent app is in background");
+            Log.d(TAG, "buildRejectIntent app is in foreground");
             Intent rejectIntent = new Intent(ACTION_REJECT_CALL)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
@@ -191,7 +192,7 @@ public class CallNotificationManager {
                     context,
                     1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
             // Start the app from the notification as it is in the background currently
@@ -203,9 +204,9 @@ public class CallNotificationManager {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getService(
                     context,
-                    0,
+                    1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         }
         return pendingIntent;
@@ -214,16 +215,16 @@ public class CallNotificationManager {
     private PendingIntent buildGoOfflineIntent(Context context, VoiceCallInvite callInvite, Integer notificationId) {
         PendingIntent pendingIntent;
         if (isInForeground(context)) {
-            Log.d(TAG, "buildGoOfflineIntent app is in background");
+            Log.d(TAG, "buildGoOfflineIntent app is in foreground");
             Intent rejectIntent = new Intent(ACTION_GO_OFFLINE)
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingIntent = PendingIntent.getBroadcast(
                     context,
-                    1,
+                    3,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         } else {
             // Start the app from the notification as it is in the background currently
@@ -235,9 +236,9 @@ public class CallNotificationManager {
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             pendingIntent = PendingIntent.getService(
                     context,
-                    2,
+                    3,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
         }
         return pendingIntent;
