@@ -6,7 +6,7 @@
 
     <application>
         <activity
-                android:exported="false"
+                android:exported="true"
                 android:name=".RNTwilioVideo.IncomingVideoCallFullscreenActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:label="@string/title_activity_incoming_call_fullscreen"
@@ -14,7 +14,7 @@
         </activity>
 
         <activity
-                android:exported="false"
+                android:exported="true"
                 android:name=".RNTwilioVoice.IncomingVoiceCallFullscreenActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:label="@string/title_activity_incoming_call_fullscreen"
