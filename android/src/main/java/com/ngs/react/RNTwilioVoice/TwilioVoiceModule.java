@@ -687,17 +687,21 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
         Log.d(TAG, "getCallInvite");
 
         Activity activity = getCurrentActivity();
-        Intent intent = activity.getIntent();
-        activeCallInvite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
+        if (activity != null) {
+            Intent intent = activity.getIntent();
+            activeCallInvite = intent.getParcelableExtra(VoiceConstants.INCOMING_CALL_INVITE);
 
-        if (activeCallInvite != null) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Call invite found "+ activeCallInvite);
+            if (activeCallInvite != null) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Call invite found "+ activeCallInvite);
+                }
+                intent.removeExtra(VoiceConstants.INCOMING_CALL_INVITE);
+                WritableMap params = buildRNNotification(activeCallInvite);
+                promise.resolve(params);
+                return;
             }
-            intent.removeExtra(VoiceConstants.INCOMING_CALL_INVITE);
-            WritableMap params = buildRNNotification(activeCallInvite);
-            promise.resolve(params);
-            return;
+        } else {
+            Log.d(TAG, "Warning! getCurrentActivity() is null");
         }
         promise.resolve(null);
     }

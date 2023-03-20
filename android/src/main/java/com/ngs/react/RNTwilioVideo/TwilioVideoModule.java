@@ -195,18 +195,23 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getCallInvite(Promise promise) {
+        Log.d(TAG, "getCallInvite");
         Activity activity = getCurrentActivity();
-        Intent intent = activity.getIntent();
-        VideoCallInvite activeCallInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+        if (activity != null) {
+            Intent intent = activity.getIntent();
+            VideoCallInvite activeCallInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
 
-        if (activeCallInvite != null) {
-            Log.d(TAG, "Call invite found " + activeCallInvite);
-            WritableMap params = Arguments.createMap();
-            for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
-                params.putString(entry.getKey(), entry.getValue());
+            if (activeCallInvite != null) {
+                Log.d(TAG, "Call invite found " + activeCallInvite);
+                WritableMap params = Arguments.createMap();
+                for (Map.Entry<String, String> entry : activeCallInvite.getData().entrySet()) {
+                    params.putString(entry.getKey(), entry.getValue());
+                }
+                promise.resolve(params);
+                return;
             }
-            promise.resolve(params);
-            return;
+        } else {
+            Log.d(TAG, "Warning! getCurrentActivity() is null");
         }
         promise.resolve(null);
     }

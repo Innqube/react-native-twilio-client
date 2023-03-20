@@ -8,7 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -122,7 +122,7 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
                     this,
                     0,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
 
             try {
@@ -150,7 +150,7 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
                     this,
                     1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
 
             try {
@@ -178,7 +178,7 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
                     this,
                     1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
 
             try {

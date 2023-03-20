@@ -8,7 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -65,7 +65,7 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
 
         TextView caller = findViewById(R.id.caller);
         TextView appName = findViewById(R.id.app_name);
-        TextView incomingVoiceCall = (TextView) findViewById(R.id.incomingVoiceCall);
+        TextView incomingVideoCall = (TextView) findViewById(R.id.incomingVideoCall);
         TextView decline = (TextView) findViewById(R.id.decline_text);
         TextView answer = (TextView) findViewById(R.id.answer_text);
         TextView goOffline = (TextView) findViewById(R.id.go_offline_text);
@@ -73,7 +73,7 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         SharedPreferences sharedPref = context.getSharedPreferences("db", Context.MODE_PRIVATE);
 
-        incomingVoiceCall.setText(sharedPref.getString(LocalizedKeys.INCOMING_VIDEO_CALL, "Incoming video call"));
+        incomingVideoCall.setText(sharedPref.getString(LocalizedKeys.INCOMING_VIDEO_CALL, "Incoming video call"));
         decline.setText(sharedPref.getString(LocalizedKeys.DECLINE, "Decline"));
         answer.setText(sharedPref.getString(LocalizedKeys.ACCEPT, "Accept"));
         goOffline.setText(sharedPref.getString(LocalizedKeys.GO_OFFLINE, "Go offline"));
@@ -116,7 +116,7 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
                     this,
                     0,
                     answerIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
 
             try {
@@ -144,7 +144,7 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
                     this,
                     1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
 
             try {
@@ -172,7 +172,7 @@ public class IncomingVideoCallFullscreenActivity extends AppCompatActivity {
                     this,
                     1,
                     rejectIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
             );
 
             try {
