@@ -307,11 +307,13 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
                 proximityManager.stopProximitySensor();
                 headsetManager.stopWiredHeadsetEvent(getReactApplicationContext());
                 callAccepted = false;
-                twilioMos.stop(); // Stop MOS listener
+                if (twilioMos != null) {
+                    twilioMos.stop(); // Stop MOS listener
+                }
 
                 WritableMap params = Arguments.createMap();
                 String callSid = "";
-                if (call != null) {
+                if (twilioMos != null && call != null) {
                     callSid = call.getSid();
                     params.putString("call_sid", callSid);
                     params.putString("call_state", call.getState().name());
