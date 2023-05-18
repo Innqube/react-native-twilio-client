@@ -116,19 +116,20 @@ RCT_EXPORT_MODULE();
 - (void)handleAudioRouteChange: (NSNotification *) notification {
     NSInteger routeChangeReason = [notification.userInfo[AVAudioSessionRouteChangeReasonKey] integerValue] || 0;
     AVAudioSession* session = [AVAudioSession sharedInstance];
+    NSArray<AVAudioSessionPortDescription *> *inputs = session.currentRoute.inputs;
+    NSArray<AVAudioSessionPortDescription *> *outputs = session.currentRoute.outputs;
 
-    AVAudioSessionPortDescription *input = [[session.currentRoute.inputs count] ? session.currentRoute.inputs:nil objectAtIndex:0];
-    AVAudioSessionPortDescription *output = [[session.currentRoute.outputs count] ? session.currentRoute.outputs:nil objectAtIndex:0];
-    NSString *reason = [self getAudioChangeReason: routeChangeReason];
+    if (inputs && inputs.count > 0) {
+        AVAudioSessionPortDescription *input = [[inputs count] ? inputs:nil objectAtIndex:0];
+        AVAudioSessionPortDescription *output = [[outputs count] ? outputs:nil objectAtIndex:0];
+        NSString *reason = [self getAudioChangeReason: routeChangeReason];
 
-    AVAudioSessionRouteDescription *previousRoute = notification.userInfo[AVAudioSessionRouteChangePreviousRouteKey];
-    AVAudioSessionPortDescription *previousInput = [[previousRoute.inputs count] ? previousRoute.inputs:nil objectAtIndex:0];
-    AVAudioSessionPortDescription *previousOutput = [[previousRoute.outputs count] ? previousRoute.outputs:nil objectAtIndex:0];
+        AVAudioSessionRouteDescription *previousRoute = notification.userInfo[AVAudioSessionRouteChangePreviousRouteKey];
+        AVAudioSessionPortDescription *previousInput = [[previousRoute.inputs count] ? previousRoute.inputs:nil objectAtIndex:0];
+        AVAudioSessionPortDescription *previousOutput = [[previousRoute.outputs count] ? previousRoute.outputs:nil objectAtIndex:0];
 
-    NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %@ from INPUT %@ to %@", reason, previousInput.portType, input.portType);
-    NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %@ from OUTPUT %@ to %@", reason, previousOutput.portType, output.portType);
-
-    if (input != nil) {
+        NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %@ from INPUT %@ to %@", reason, previousInput.portType, input.portType);
+        NSLog(@"[IIMobile - RNAudioManager][handleRouteChange] with reason %@ from OUTPUT %@ to %@", reason, previousOutput.portType, output.portType);
         if (!([input.portType isEqualToString:AVAudioSessionPortBuiltInMic] && speakerEnabled)) {
             [RNEventEmitterHelper emitEventWithName:@"audioRouteChanged"
                                          andPayload:@{
