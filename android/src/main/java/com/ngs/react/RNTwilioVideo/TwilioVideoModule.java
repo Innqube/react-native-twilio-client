@@ -178,6 +178,13 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void disconnect() {
         activeCall = null;
+        // Remove layout flags to allow phone to re-lock
+        if (getReactApplicationContext().getCurrentActivity() != null) {
+            Window window = getReactApplicationContext().getCurrentActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+            );
+        }
     }
 
     @ReactMethod

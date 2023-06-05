@@ -647,6 +647,17 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             activeCall = null;
         }
         activeCallInvite = null;
+        // Remove layout flags to allow phone to re-lock
+        if (getReactApplicationContext().getCurrentActivity() != null) {
+            Window window = getReactApplicationContext().getCurrentActivity().getWindow();
+            getReactApplicationContext().getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                            | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+                };
+            });
+        }
     }
 
     @ReactMethod
