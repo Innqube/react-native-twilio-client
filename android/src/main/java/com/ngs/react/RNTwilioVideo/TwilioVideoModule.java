@@ -112,6 +112,17 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
 
         activeCall = new VideoCall(invite.getSession(), invite.getFrom("\n", null));
 
+        if (getReactApplicationContext().getCurrentActivity() != null) {
+            Window window = getReactApplicationContext().getCurrentActivity().getWindow();
+            getReactApplicationContext().getCurrentActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                            | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+                };
+            });
+        }
+
         WritableMap params = Arguments.createMap();
         for (Map.Entry<String, String> entry : invite.getData().entrySet()) {
             params.putString(entry.getKey(), entry.getValue());
@@ -254,12 +265,6 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         Log.d(TAG, "activeCallInvite: " + activeCallInvite.toString());
 
         if (activeCallInvite != null) {
-            if (getReactApplicationContext().getCurrentActivity() != null) {
-                Window window = getReactApplicationContext().getCurrentActivity().getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                );
-            }
             // send a JS event ONLY if the app's importance is FOREGROUND or SERVICE
             // at startup the app would try to fetch the activeIncoming calls
             int appImportance = callNotificationManager.getApplicationImportance(getReactApplicationContext());
