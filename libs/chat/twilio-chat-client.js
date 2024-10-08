@@ -12,6 +12,7 @@ class TwilioChatClient {
 
     _channels = {};
     _eventEmitter;
+    _listener;
 
     static getInstance() {
         if (!this._instance) {
@@ -35,11 +36,11 @@ class TwilioChatClient {
                     const _firstSynchronizationListener = (payload) => {
                         switch (payload.status) {
                             case SynchronizationStatus.COMPLETED:
-                                NativeAppEventEmitter.removeListener('synchronizationStatusUpdated', _firstSynchronizationListener);
+                                this._listener.remove();
                                 resolve(this);
                                 break;
                             case SynchronizationStatus.FAILED:
-                                NativeAppEventEmitter.removeListener('synchronizationStatusUpdated', _firstSynchronizationListener);
+                                this._listener.remove();
                                 reject('Synchronization failed');
                                 break;
                         }
@@ -51,7 +52,7 @@ class TwilioChatClient {
                             if (payload.status === 'COMPLETED') {
                                 resolve(this);
                             } else {
-                                NativeAppEventEmitter.addListener(
+                                this._listener = NativeAppEventEmitter.addListener(
                                     'synchronizationStatusUpdated',
                                     _firstSynchronizationListener
                                 )
