@@ -390,7 +390,11 @@ public class TwilioVoiceModule extends ReactContextBaseJavaModule implements Act
             intentFilter.addAction(VoiceConstants.ACTION_CANCEL_CALL_INVITE);
             intentFilter.addAction(VoiceConstants.ACTION_GO_OFFLINE);
 
-            getReactApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                getReactApplicationContext().registerReceiver(broadcastReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                getReactApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
+            }
             isReceiverRegistered = true;
         }
     }

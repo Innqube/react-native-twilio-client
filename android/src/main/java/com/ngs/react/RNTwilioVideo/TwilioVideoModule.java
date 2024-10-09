@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.*;
+import android.os.Build;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,6 +24,7 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
     private final CallNotificationManager callNotificationManager;
     private final NotificationManager notificationManager;
     private final VideoBroadcastReceiver videoBroadcastReceiver;
+    private BroadcastReceiver broadcastReceiver;
 
     private VideoCall activeCall;
     private boolean isReceiverRegistered = false;
@@ -34,6 +36,38 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         videoBroadcastReceiver = new VideoBroadcastReceiver();
         callNotificationManager = new CallNotificationManager();
         notificationManager = (NotificationManager) rc.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                Log.d(TAG, "TwilioVideoModule.BroadCastReceiver.onReceive: " + action);
+                switch (action) {
+                    case ACTION_ANSWER_CALL:
+                        VideoCallInvite invite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+                        Integer answerNotificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
+                        internalAccept(invite, answerNotificationId);
+                        break;
+                    case ACTION_REJECT_CALL:
+                        VideoCallInvite rejectInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+                        Integer rejectNotificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
+                        internalReject(rejectInvite, rejectNotificationId);
+                        break;
+                    case ACTION_CLEAR_MISSED_CALLS_COUNT:
+                        SharedPreferences sharedPref = getReactApplicationContext().getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor sharedPrefEditor = sharedPref.edit();
+                        sharedPrefEditor.remove(MISSED_CALLS_GROUP);
+                        sharedPrefEditor.commit();
+                        break;
+                    case ACTION_GO_OFFLINE:
+                        VideoCallInvite goOfflineInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
+                        Integer goOfflineNotificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
+                        internalGoOffline(goOfflineInvite, goOfflineNotificationId);
+                        break;
+                }
+                notificationManager.cancel(intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, 0));
+            }
+        };
 
         registerBroadcastReceiver();
     }
@@ -72,37 +106,11 @@ public class TwilioVideoModule extends ReactContextBaseJavaModule {
         intentFilter.addAction(ACTION_CLEAR_MISSED_CALLS_COUNT);
         intentFilter.addAction(ACTION_GO_OFFLINE);
 
-        getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                Log.d(TAG, "TwilioVideoModule.BroadCastReceiver.onReceive: " + action);
-                switch (action) {
-                    case ACTION_ANSWER_CALL:
-                        VideoCallInvite invite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
-                        Integer answerNotificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
-                        internalAccept(invite, answerNotificationId);
-                        break;
-                    case ACTION_REJECT_CALL:
-                        VideoCallInvite rejectInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
-                        Integer rejectNotificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
-                        internalReject(rejectInvite, rejectNotificationId);
-                        break;
-                    case ACTION_CLEAR_MISSED_CALLS_COUNT:
-                        SharedPreferences sharedPref = getReactApplicationContext().getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
-                        SharedPreferences.Editor sharedPrefEditor = sharedPref.edit();
-                        sharedPrefEditor.remove(MISSED_CALLS_GROUP);
-                        sharedPrefEditor.commit();
-                        break;
-                    case ACTION_GO_OFFLINE:
-                        VideoCallInvite goOfflineInvite = intent.getParcelableExtra(INCOMING_CALL_INVITE);
-                        Integer goOfflineNotificationId = intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, -1);
-                        internalGoOffline(goOfflineInvite, goOfflineNotificationId);
-                        break;
-                }
-                notificationManager.cancel(intent.getIntExtra(INCOMING_CALL_NOTIFICATION_ID, 0));
-            }
-        }, intentFilter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getReactApplicationContext().registerReceiver(broadcastReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            getReactApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
+        }
     }
 
     private void internalAccept(VideoCallInvite invite, Integer notificationId) {

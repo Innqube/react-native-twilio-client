@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Build;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 
@@ -50,7 +51,12 @@ public class AudioDeviceManager {
             intentFilter.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);
             intentFilter.addAction(AudioManager.ACTION_HEADSET_PLUG);
             intentFilter.addAction(AudioManager.EXTRA_AUDIO_PLUG_STATE);
-            reactContext.registerReceiver(this.receiver, intentFilter);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                reactContext.registerReceiver(this.receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                reactContext.registerReceiver(this.receiver, intentFilter);
+            }
 
             this.isAlreadyRegistered = true;
         }
@@ -98,5 +104,4 @@ public class AudioDeviceManager {
                 return AudioDeviceType.UNKNOWN;
         }
     }
-
 }
