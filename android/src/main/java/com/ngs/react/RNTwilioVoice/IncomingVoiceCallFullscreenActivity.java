@@ -117,6 +117,11 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
+                answerIntent.setPackage(getApplicationContext().getPackageName());
+            }
+
             Log.i(TAG, "getBroadcast");
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     this,
@@ -146,6 +151,11 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
+                rejectIntent.setPackage(getApplicationContext().getPackageName());
+            }
+
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     this,
                     1,
@@ -174,6 +184,11 @@ public class IncomingVoiceCallFullscreenActivity extends AppCompatActivity {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
+                rejectIntent.setPackage(getApplicationContext().getPackageName());
+            }
+
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     this,
                     1,

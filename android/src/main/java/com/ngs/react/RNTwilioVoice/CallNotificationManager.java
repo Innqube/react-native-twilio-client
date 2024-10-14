@@ -155,6 +155,11 @@ public class CallNotificationManager {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
+                answerIntent.setPackage(context.getPackageName());
+            }
+
             pendingIntent = PendingIntent.getBroadcast(
                     context,
                     2,
@@ -169,6 +174,11 @@ public class CallNotificationManager {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
+                answerIntent.setPackage(context.getPackageName());
+            }
+
             pendingIntent = PendingIntent.getActivity(
                     context,
                     2,
@@ -188,6 +198,11 @@ public class CallNotificationManager {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
+                rejectIntent.setPackage(context.getPackageName());
+            }
+
             pendingIntent = PendingIntent.getBroadcast(
                     context,
                     1,
@@ -220,6 +235,11 @@ public class CallNotificationManager {
                     .putExtra(INCOMING_CALL_INVITE, callInvite)
                     .putExtra(INCOMING_CALL_NOTIFICATION_ID, notificationId)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
+                rejectIntent.setPackage(context.getPackageName());
+            }
+
             pendingIntent = PendingIntent.getBroadcast(
                     context,
                     3,
